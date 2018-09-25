@@ -2,6 +2,7 @@ import json
 
 import re
 
+import os
 from lxml import etree
 import requests
 from bs4 import BeautifulSoup
@@ -220,5 +221,13 @@ def posiciones(bot, update, **kwargs):
         text=pretty,
         parse_mode='markdown'
     )
+
+def link_ticket(bot, update, **kwargs):
+    ticket_id = kwargs.get('groupdict').get('ticket')
+    if ticket_id:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=os.environ['jira'].format(ticket_id)
+        )
 
 
