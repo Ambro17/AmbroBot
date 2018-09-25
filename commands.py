@@ -195,6 +195,7 @@ def parse_posiciones(tabla, posiciones=None):
     # #, Equipo, pts y PJ
     posiciones = int(posiciones[0]) if posiciones else 5
     logger.info(f'received argument {posiciones}')
+    logger.info(f'raw_table={tabla}')
     LIMIT = 4
     headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
     res = [
@@ -215,6 +216,8 @@ def prettify_table(info):
         ))
     except Exception:
         logger.error(f"Error Prettying info {info}")
+        return 'No te entiendo..'
+
 def posiciones(bot, update, **kwargs):
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})
