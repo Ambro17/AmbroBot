@@ -1,8 +1,8 @@
 import json
-
+import logging
 import re
-
 import os
+
 from lxml import etree
 import requests
 from bs4 import BeautifulSoup
@@ -10,6 +10,7 @@ from collections import defaultdict
 
 from utils import get_moneda, format_moneda_output
 
+logger = logging.getLogger(__name__)
 
 def extraer_info(partido):
     logo = partido.img.attrs['src']
@@ -193,6 +194,7 @@ def normalize(text, limit=11):
 def parse_posiciones(tabla, posiciones=None):
     # #, Equipo, pts y PJ
     posiciones = int(posiciones[0]) if posiciones else 5
+    logger.info(f'received argument {posiciones}')
     LIMIT = 4
     headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
     res = [
@@ -206,11 +208,13 @@ def monospace(text):
     return f'```\n{text}\n```'
 
 def prettify_table(info):
-    return monospace('\n'.join(
-        '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for
-        team_stat in info
-    ))
-
+    try:
+        return monospace('\n'.join(
+            '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for
+            team_stat in info
+        ))
+    except Exception:
+        logger.error(f"Error Prettying info {info}")
 def posiciones(bot, update, **kwargs):
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})

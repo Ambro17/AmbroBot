@@ -20,6 +20,8 @@ from commands import (
 )
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+logger = logging.getLogger(__name__)
+
 TICKET_REGEX = re.compile(r'((t|osp\-?)(?P<ticket>\d{5,6}))', re.IGNORECASE)
 
 #  Add Commands.
@@ -42,3 +44,4 @@ dispatcher.add_handler(generic_handler)
 dispatcher.add_handler(tickets_handler)
 
 updater.start_polling()
+logger.info('Listening humans..')
