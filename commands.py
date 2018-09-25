@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 
 from utils import get_moneda, format_moneda_output
+from telegram.ext.dispatcher import run_async
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,7 @@ def soupify_url(url, timeout=2):
     else:
         raise ConnectionError(f'{url} did not respond.')
 
+@run_async
 def partido(bot, update, args):
     soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')
     partido = soup.find('div', {'class': 'widget-partido'}).find('div', {'class': 'cont'})
@@ -102,6 +105,7 @@ def pretty_print_dolar(cotizaciones):
             for banco, valor in cotizaciones.items()
         ))
 
+@run_async
 def dolar_hoy(bot, update):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
@@ -120,27 +124,13 @@ def meme(bot, update):
         text="En un futuro voy a entender que me pases un identificador y una imagen y despues voy a reenviarla dado "
              "ese identificador")
 
-
+@run_async
 def default(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text="No sé qué decirte..")
 
-
-def dolar(bot, update):
-    response = requests.get("https://api-contenidos.lanacion.com.ar/json/v2/economia/cotizacion")
-    if response.status_code == 200:
-        response = json.loads(response.text)
-        dolar = get_moneda("DLRBILL", response)
-        cotizacion = format_moneda_output(dolar)
-        message = str(cotizacion)
-    else:
-        message = "No pude averiguarlo, disculpá maestro"
-
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=message)
-
+@run_async
 def dolar_futuro(bot, update):
     url = 'http://www.ambito.com/economia/mercados/indices/rofex/'
     r = requests.get(url)
@@ -218,6 +208,7 @@ def prettify_table(info):
         logger.error(f"Error Prettying info {info}")
         return 'No te entiendo..'
 
+@run_async
 def posiciones(bot, update, **kwargs):
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})
@@ -229,6 +220,7 @@ def posiciones(bot, update, **kwargs):
         parse_mode='markdown'
     )
 
+@run_async
 def link_ticket(bot, update, **kwargs):
     ticket_id = kwargs.get('groupdict').get('ticket')
     if ticket_id:
