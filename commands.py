@@ -246,8 +246,16 @@ def subte(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text=monospace('\n'.join(
-            "{} - {}".format(*info_de_linea)
+            format_estado_de_linea(info_de_linea)
             for info_de_linea in estado_lineas
         )),
         parse_mode='markdown'
     )
+
+def format_estado_de_linea(info_de_linea):
+    linea, estado = info_de_linea
+    if estado.lower() == 'normal':
+        estado = '✅'
+    else:
+        estado = f'⚠ {estado} ⚠'
+    return f'{linea} {estado}'
