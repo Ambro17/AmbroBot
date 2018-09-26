@@ -230,3 +230,24 @@ def link_ticket(bot, update, **kwargs):
         )
 
 
+def subte(bot, update):
+    # kwarg can be a b c.
+    soup = soupify_url('https://www.metrovias.com.ar/')
+    subtes = soup.find('table', {'class': 'table'})
+    REGEX = re.compile(r'Línea *([A-Z]){1} +(.*)', re.IGNORECASE)
+    estado_lineas = []
+    for tr in subtes.tbody.find_all('tr'):
+        estado_linea = tr.text.strip().replace('\n', ' ')
+        match = REGEX.search(estado_linea)
+        if match:
+            linea, estado = match.groups()
+            estado_lineas.append((linea, estado))
+
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=monospace('\n'.join(
+            "{} - {}".format(*info_de_linea)
+            for info_de_linea in estado_lineas
+        )),
+        parse_mode='markdown'
+    )

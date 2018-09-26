@@ -17,6 +17,7 @@ from commands import (
     default,
     posiciones,
     link_ticket,
+    subte,
 )
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -32,6 +33,7 @@ ping_handler = CommandHandler('ping', ping)
 dolar_handler = CommandHandler('dolar', dolar_hoy)
 dolar_futuro_handler = CommandHandler('fdolar', dolar_futuro)
 posiciones_hanlder = CommandHandler('posiciones', posiciones, pass_args=True)
+subte_handler = CommandHandler('subte', subte)
 generic_handler = MessageHandler(Filters.command, default)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 
@@ -40,6 +42,7 @@ dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_futuro_handler)
 dispatcher.add_handler(posiciones_hanlder)
+dispatcher.add_handler(subte_handler)
 dispatcher.add_handler(generic_handler)
 dispatcher.add_handler(tickets_handler)
 
