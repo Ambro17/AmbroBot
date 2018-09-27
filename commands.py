@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 import os
@@ -8,7 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 from collections import defaultdict
 
-from utils import get_moneda, format_moneda_output
 from telegram.ext.dispatcher import run_async
 
 
@@ -274,3 +272,19 @@ def format_estado_de_linea(info_de_linea):
         estado = f'⚠ {estado} ⚠'
     return f'{linea} {estado}'
 
+def cartelera(bot, update):
+    CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
+    soup = soupify_url(CINE_URL)
+    cartelera = soup.find('div', {'class': 'contenidoRankingContainer'})
+    listado = [ (rank, li.text, CINE_URL+li.a['href'])
+                for rank, li in
+                enumerate(cartelera.div.ol.find_all('li'), 1)]
+    top_5 = '\n'.join(
+        f'[{rank}. {title}]({link})' for rank, title, link
+        in listado[:5]
+    )
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=top_5,
+        parse_mode='markdown'
+    )

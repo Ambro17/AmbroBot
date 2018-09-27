@@ -19,6 +19,7 @@ from commands import (
     link_ticket,
     subte,
     format_code,
+    cartelera,
 )
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -35,8 +36,9 @@ partido_handler = CommandHandler('partido', partido, pass_args=True)
 ping_handler = CommandHandler('ping', ping)
 dolar_handler = CommandHandler('dolar', dolar_hoy)
 dolar_futuro_handler = CommandHandler('fdolar', dolar_futuro)
-posiciones_hanlder = CommandHandler('posiciones', posiciones, pass_args=True)
+posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
+cartelera_handler = CommandHandler('peliculas', cartelera)
 generic_handler = MessageHandler(Filters.command, default)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
@@ -45,8 +47,9 @@ tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_futuro_handler)
-dispatcher.add_handler(posiciones_hanlder)
+dispatcher.add_handler(posiciones_handler)
 dispatcher.add_handler(subte_handler)
+dispatcher.add_handler(cartelera_handler)
 dispatcher.add_handler(generic_handler)
 dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(code_handler)
