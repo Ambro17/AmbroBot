@@ -28,6 +28,7 @@ def soupify_url(url, timeout=2):
 
 @run_async
 def partido(bot, update, args):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')
     partido = soup.find('div', {'class': 'widget-partido'}).find('div', {'class': 'cont'})
     logo, *info = extraer_info(partido)
@@ -105,6 +106,7 @@ def pretty_print_dolar(cotizaciones):
 
 @run_async
 def dolar_hoy(bot, update):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
 
@@ -130,6 +132,7 @@ def default(bot, update):
 
 @run_async
 def dolar_futuro(bot, update):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     url = 'http://www.ambito.com/economia/mercados/indices/rofex/'
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -208,6 +211,7 @@ def prettify_table(info):
 
 @run_async
 def posiciones(bot, update, **kwargs):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})
     info = parse_posiciones(tabla, posiciones=kwargs.get('args'))
@@ -220,6 +224,7 @@ def posiciones(bot, update, **kwargs):
 
 @run_async
 def link_ticket(bot, update, **kwargs):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     ticket_id = kwargs.get('groupdict').get('ticket')
     if ticket_id:
         bot.send_message(
@@ -230,6 +235,7 @@ def link_ticket(bot, update, **kwargs):
 
 @run_async
 def format_code(bot, update, **kwargs):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     code = kwargs.get('groupdict').get('code')
     if code:
         reply_markdown(code, bot, update)
@@ -241,8 +247,10 @@ def reply_markdown(message, bot, update):
         parse_mode='markdown'
     )
 
+
+@run_async
 def subte(bot, update):
-    # kwarg can be a b c.
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url('https://www.metrovias.com.ar/')
     subtes = soup.find('table', {'class': 'table'})
     REGEX = re.compile(r'Línea *([A-Z]){1} +(.*)', re.IGNORECASE)
@@ -263,7 +271,6 @@ def subte(bot, update):
         parse_mode='markdown'
     )
 
-@run_async
 def format_estado_de_linea(info_de_linea):
     linea, estado = info_de_linea
     if estado.lower() == 'normal':
@@ -273,6 +280,7 @@ def format_estado_de_linea(info_de_linea):
     return f'{linea} {estado}'
 
 def cartelera(bot, update):
+    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
     soup = soupify_url(CINE_URL)
     cartelera = soup.find('div', {'class': 'contenidoRankingContainer'})
