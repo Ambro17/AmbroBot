@@ -230,6 +230,19 @@ def link_ticket(bot, update, **kwargs):
         )
 
 
+@run_async
+def format_code(bot, update, **kwargs):
+    code = kwargs.get('groupdict').get('code')
+    if code:
+        reply_markdown(code, bot, update)
+
+def reply_markdown(message, bot, update):
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=monospace(message),
+        parse_mode='markdown'
+    )
+
 def subte(bot, update):
     # kwarg can be a b c.
     soup = soupify_url('https://www.metrovias.com.ar/')
@@ -252,6 +265,7 @@ def subte(bot, update):
         parse_mode='markdown'
     )
 
+@run_async
 def format_estado_de_linea(info_de_linea):
     linea, estado = info_de_linea
     if estado.lower() == 'normal':
@@ -259,3 +273,4 @@ def format_estado_de_linea(info_de_linea):
     else:
         estado = f'⚠ {estado} ⚠'
     return f'{linea} {estado}'
+
