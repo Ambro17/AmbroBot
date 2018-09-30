@@ -1,37 +1,31 @@
+import json
 import logging
 import re
 import os
 
+import telegram
 from lxml import etree
 import requests
 from bs4 import BeautifulSoup
 from collections import defaultdict
 
+from telegram import MessageEntity
 from telegram.ext.dispatcher import run_async
 
+from decorators import send_typing_action
+from utils.command_utils import monospace, soupify_url, get_cotizaciones, pretty_print_dolar, info_de_partido, \
+    parse_posiciones, prettify_table_posiciones, format_estado_de_linea
 
 logger = logging.getLogger(__name__)
 
-def extraer_info(partido):
-    logo = partido.img.attrs['src']
-    fecha = partido.find('div', {'class': 'temp'}).text
-    hora, tv, estadio, arbitro =[p.text for p in partido.find_all('p') if p.text]
-    return logo, fecha, hora, tv, estadio, arbitro
 
-def soupify_url(url, timeout=2):
-    """Given a url returns a BeautifulSoup object"""
-    r = requests.get(url, timeout=timeout)
-    if r.status_code == 200:
-        return BeautifulSoup(r.text, 'lxml')
-    else:
-        raise ConnectionError(f'{url} did not respond.')
-
+# ------------- PARTIDO -----------------
 @run_async
 def partido(bot, update, args):
     bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')
     partido = soup.find('div', {'class': 'widget-partido'}).find('div', {'class': 'cont'})
-    logo, *info = extraer_info(partido)
+    logo, *info = info_de_partido(partido)
     bot.send_photo(chat_id=update.message.chat_id, photo=logo)
     bot.send_message(
         chat_id=update.message.chat_id,
@@ -39,74 +33,10 @@ def partido(bot, update, args):
     )
 
 
-def ping(bot, update):
-    FECHA_PATH = './div/table/tr[2]/td/div/strong/text()'
-    CALENDAR_PATH = ('/html/body/table/tr/td/div/table/tr/td/table/tr[3]/td/'
-                     'table/tr/td[2]/table/tr/td/table/tr/td/table/tr[2]/td/'
-                     'table/tr[3]/td/div/table/tr/td/table/tr[2]/td[1]')
-    r = requests.get('https://www.tenisdemesaparatodos.com/calendario.asp')
-    html = etree.HTML(r.text)
-    calendario = html.xpath(CALENDAR_PATH)[0]
-    fecha = calendario.xpath(FECHA_PATH)[0]
-    torneo = calendario.xpath('./div/table/tr[3]/td/table/tr/td[2]/a/strong/span/text()')[0]
-    torneo2 = calendario.xpath('./div/table/tr[5]/td/table/tr/td[2]/a/strong/span/text()')[0]
-    # /html/body/table/tbody/tr/td/div/table/tbody/tr/td/table/tbody/tr[3]/td/table/tbody/tr/td[2]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr[2]/
-    # td/table/tbody/tr[3]/td/div/table/tbody/tr/td/table/tbody/tr[2]/td
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="El próximo torneo de ping pong es el {}"
-    )
-
-
-def rec(bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="Tenes que acordarte de hacer {} a las 11 y esto {} a las 12"
-    )
-
-def get_cotizaciones(response_soup):
-    """Returns a dict of cotizaciones with banco as keys and exchange rate as value.
-
-    {
-        "Banco Nación": {
-            "Compra": "30.00",
-            "Venta": "32.00",
-        },
-        "Banco Galicia": {
-            "Compra": "31.00",
-            "Venta": "33.00",
-        }
-    }
-
-    """
-    cotizaciones = defaultdict(dict)
-    for table in response_soup:
-        # Get cotizaciones
-        for row_cotizacion in table.tbody.find_all('tr'):
-            banco, compra, venta = (item.get_text() for item in row_cotizacion.find_all('td'))
-            banco = banco.replace('Banco ', '')
-            cotizaciones[banco]['compra'] = compra
-            cotizaciones[banco]['venta'] = venta
-
-    return cotizaciones
-
-def pretty_print_dolar(cotizaciones):
-    """Returns dolar rates separated by newlines and with code markdown syntax.
-    ```
-    Banco Nacion  | $30.00 | $40.00
-    Banco Galicia | $30.00 | $40.00
-                   ...
-    ```
-    """
-    MONOSPACE = "```\n{}\n```"
-    return MONOSPACE.format('\n'.join(
-            "{:8} | {:7} | {:7}".format(normalize(banco, limit=7), valor['compra'], valor['venta'])
-            for banco, valor in cotizaciones.items()
-        ))
-
+# ------------- DOLAR_HOY -----------------
+@send_typing_action
 @run_async
 def dolar_hoy(bot, update):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
 
@@ -118,21 +48,11 @@ def dolar_hoy(bot, update):
         parse_mode='markdown'
     )
 
-def meme(bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="En un futuro voy a entender que me pases un identificador y una imagen y despues voy a reenviarla dado "
-             "ese identificador")
 
-@run_async
-def default(bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="No sé qué decirte..")
-
+# ------------- LINK_TICKET -----------------
+@send_typing_action
 @run_async
 def dolar_futuro(bot, update):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     url = 'http://www.ambito.com/economia/mercados/indices/rofex/'
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -178,53 +98,27 @@ def dolar_futuro(bot, update):
         parse_mode='markdown'
     )
 
-def normalize(text, limit=11):
-    """Trim and append . if text is too long. Else return it unmodified"""
-    return f'{text[:limit]}.' if len(text) > limit else text
 
-def parse_posiciones(tabla, posiciones=None):
-    # #, Equipo, pts y PJ
-    posiciones = int(posiciones[0]) if posiciones else 5
-    logger.info(f'received argument {posiciones}')
-    logger.info(f'raw_table={tabla}')
-    LIMIT = 4
-    headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
-    res = [
-        [normalize(r.text) for r in row.find_all('td')[:LIMIT]]
-        for row in
-        tabla.tbody.find_all('tr')[:posiciones]]
-    res.insert(0, headers)
-    return res
-
-def monospace(text):
-    return f'```\n{text}\n```'
-
-def prettify_table(info):
-    try:
-        return monospace('\n'.join(
-            '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for
-            team_stat in info
-        ))
-    except Exception:
-        logger.error(f"Error Prettying info {info}")
-        return 'No te entiendo..'
-
+# ------------- POSICIONES -----------------
+@send_typing_action
 @run_async
 def posiciones(bot, update, **kwargs):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})
     info = parse_posiciones(tabla, posiciones=kwargs.get('args'))
-    pretty = prettify_table(info)
+    pretty = prettify_table_posiciones(info)
     bot.send_message(
         chat_id=update.message.chat_id,
         text=pretty,
         parse_mode='markdown'
     )
 
+
+# ------------- LINK_TICKET -----------------
+@send_typing_action
 @run_async
 def link_ticket(bot, update, **kwargs):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
+    """Given a ticket id, return the url."""
     ticket_id = kwargs.get('groupdict').get('ticket')
     if ticket_id:
         bot.send_message(
@@ -233,24 +127,25 @@ def link_ticket(bot, update, **kwargs):
         )
 
 
+# ------------- FORMAT_CODE -----------------
+@send_typing_action
 @run_async
 def format_code(bot, update, **kwargs):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
+    """Format text as code if it starts with $, ~, \c or \code."""
     code = kwargs.get('groupdict').get('code')
     if code:
-        reply_markdown(code, bot, update)
-
-def reply_markdown(message, bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=monospace(message),
-        parse_mode='markdown'
-    )
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=monospace(code),
+            parse_mode='markdown'
+        )
 
 
+# ------------- SUBTE -----------------
+@send_typing_action
 @run_async
 def subte(bot, update):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
+    """Estado de las lineas de subte, premetro y urquiza."""
     soup = soupify_url('https://www.metrovias.com.ar/')
     subtes = soup.find('table', {'class': 'table'})
     REGEX = re.compile(r'Línea *([A-Z]){1} +(.*)', re.IGNORECASE)
@@ -271,22 +166,19 @@ def subte(bot, update):
         parse_mode='markdown'
     )
 
-def format_estado_de_linea(info_de_linea):
-    linea, estado = info_de_linea
-    if estado.lower() == 'normal':
-        estado = '✅'
-    else:
-        estado = f'⚠ {estado} ⚠'
-    return f'{linea} {estado}'
 
+# ------------- CARTELERA -----------------
+@send_typing_action
+@run_async
 def cartelera(bot, update):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
+    """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
     soup = soupify_url(CINE_URL)
     cartelera = soup.find('div', {'class': 'contenidoRankingContainer'})
-    listado = [ (rank, li.text, CINE_URL+li.a['href'])
-                for rank, li in
-                enumerate(cartelera.div.ol.find_all('li'), 1)]
+    listado = [
+        (rank, li.text, CINE_URL+li.a['href'])
+        for rank, li in
+        enumerate(cartelera.div.ol.find_all('li'), 1)]
     top_5 = '\n'.join(
         f'[{rank}. {title}]({link})' for rank, title, link
         in listado[:5]
@@ -295,4 +187,21 @@ def cartelera(bot, update):
         chat_id=update.message.chat_id,
         text=top_5,
         parse_mode='markdown'
+    )
+
+
+# ------------- DEFAULT -----------------
+@send_typing_action
+@run_async
+def default(bot, update):
+    """If a user sends an unknown command, answer accordingly"""
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text="No sé qué decirte..")
+
+# to be implemented
+def rec(bot, update):
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text="Tenes que acordarte de hacer {} a las 11 y esto {} a las 12"
     )
