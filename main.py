@@ -37,12 +37,12 @@ updater = Updater(os.environ['PYTEL'])
 dispatcher = updater.dispatcher
 
 # Add command handlers
-partido_handler = CommandHandler('partido', partido, pass_args=True)
+partido_handler = CommandHandler('partido', partido)
 dolar_handler = CommandHandler('dolar', dolar_hoy)
 dolar_futuro_handler = CommandHandler('fdolar', dolar_futuro)
 posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
-cartelera_handler = CommandHandler('peliculas', cartelera)
+cartelera_handler = CommandHandler('cartelera', cartelera)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all  = CommandHandler('setall', set_all_members, pass_args=True)

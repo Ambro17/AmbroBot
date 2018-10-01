@@ -3,6 +3,7 @@ from collections import defaultdict
 
 import requests
 from bs4 import BeautifulSoup
+from cachetools import TTLCache
 
 logger = logging.getLogger(__name__)
 
@@ -11,13 +12,42 @@ logger = logging.getLogger(__name__)
 def monospace(text):
     return f'```\n{text}\n```'
 
+
 def normalize(text, limit=11):
     """Trim and append . if text is too long. Else return it unmodified"""
     return f'{text[:limit]}.' if len(text) > limit else text
 
+
+class Soupifier(object):
+    """Implements a cache with expiration for the given urls.
+
+    Each url is a key of the cache dict. Its value is the soupified url.
+    During n minutes, the value will be remembered, after that it will be
+    removed and the request will happen again
+    """
+
+    def __init__(self, minutes_to_live=5, timeout=2):
+        self.cache = TTLCache(maxsize=10, ttl=60*minutes_to_live)
+        self.timeout = timeout
+
+    def soupify(self, url):
+        try:
+            soup = self.cache[url]
+            logger.info("Cached value for %s", url)
+            return soup
+        except KeyError:
+            logger.info("Caché for %s expired. Updating.", url)
+            self.cache[url] = soupify_url(url, timeout=self.timeout)
+            return self.cache[url]
+
+# To be used after profiling bot use
+soup = Soupifier()
+_soupify_url = soup.soupify
+
 def soupify_url(url, timeout=2):
     """Given a url returns a BeautifulSoup object"""
     r = requests.get(url, timeout=timeout)
+    r.encoding = 'utf-8'
     if r.status_code == 200:
         return BeautifulSoup(r.text, 'lxml')
     else:
