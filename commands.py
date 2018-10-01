@@ -1,28 +1,29 @@
-import json
+# -*- coding: utf-8 -*-
 import logging
 import re
 import os
 
-import telegram
-from lxml import etree
-import requests
-from bs4 import BeautifulSoup
-from collections import defaultdict
-
-from telegram import MessageEntity
 from telegram.ext.dispatcher import run_async
 
-from decorators import send_typing_action
-from utils.command_utils import monospace, soupify_url, get_cotizaciones, pretty_print_dolar, info_de_partido, \
-    parse_posiciones, prettify_table_posiciones, format_estado_de_linea
-
+from decorators import send_typing_action, log_time
+from utils.command_utils import (
+    monospace,
+    soupify_url,
+    get_cotizaciones,
+    pretty_print_dolar,
+    info_de_partido,
+    parse_posiciones,
+    prettify_table_posiciones,
+    format_estado_de_linea,
+)
 logger = logging.getLogger(__name__)
 
 
 # ------------- PARTIDO -----------------
+@send_typing_action
 @run_async
-def partido(bot, update, args):
-    bot.send_chat_action(chat_id=update.message.chat_id, action='typing')
+@log_time
+def partido(bot, update):
     soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')
     partido = soup.find('div', {'class': 'widget-partido'}).find('div', {'class': 'cont'})
     logo, *info = info_de_partido(partido)
@@ -36,6 +37,7 @@ def partido(bot, update, args):
 # ------------- DOLAR_HOY -----------------
 @send_typing_action
 @run_async
+@log_time
 def dolar_hoy(bot, update):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
@@ -49,15 +51,14 @@ def dolar_hoy(bot, update):
     )
 
 
-# ------------- LINK_TICKET -----------------
+# ------------- DOLAR_FUTURO -----------------
 @send_typing_action
 @run_async
+@log_time
 def dolar_futuro(bot, update):
-    url = 'http://www.ambito.com/economia/mercados/indices/rofex/'
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content, 'html.parser')
+    soup = soupify_url('http://www.ambito.com/economia/mercados/indices/rofex/')
     rofex_table = soup.find("table", {"id": "rofextable"})
-
+    NUMBER = re.compile(r'^\d+')
     def get_rofex():
         rofex = []
         # Get headers
@@ -79,15 +80,30 @@ def dolar_futuro(bot, update):
     def empty(val, val2):
         return val == '-' or val2 == '-'
 
-    def conditional_format(a, b, c):
+    def compact_contrato(contrato):
+        """Reduces length of str to make it more compact.
+
+        Turns Octubre 2018 into Oct. '18,
+              Noviembre 2018 into Nov. '18
+        """
+        try:
+            mes, año = contrato.split()
+        except ValueError:
+            # Return it unmodified
+            return contrato
+
+        return f"{mes[:3]}. '{año[-2:]}"
+
+
+    def conditional_format(contrato, compra, venta):
         """Prepends a $ if str is a number"""
-        b = f'$ {b}' if re.match(r'^\d+', b) else b
-        c = f'$ {c}' if re.match(r'^\d+', c) else c
-        return "{:16} | {:7} | {:7}".format(a,b,c)
+        contrato = compact_contrato(contrato)
+        compra = f'$ {compra[:5]}' if NUMBER.match(compra) else compra
+        venta = f'$ {venta[:5]}' if NUMBER.match(venta) else venta
+        return "{:8} | {:7} | {:7}".format(contrato, compra, venta)
 
     def prettify_rofex(rofex_vals):
-        MONOSPACE = "```\n{}\n```"
-        return MONOSPACE.format('\n'.join(
+        return monospace('\n'.join(
             conditional_format(a,b,c)
             for a, b, c in rofex_vals
         ))
@@ -102,6 +118,7 @@ def dolar_futuro(bot, update):
 # ------------- POSICIONES -----------------
 @send_typing_action
 @run_async
+@log_time
 def posiciones(bot, update, **kwargs):
     soup = soupify_url('http://www.promiedos.com.ar/primera')
     tabla = soup.find('table', {'id': 'posiciones'})
@@ -112,19 +129,6 @@ def posiciones(bot, update, **kwargs):
         text=pretty,
         parse_mode='markdown'
     )
-
-
-# ------------- LINK_TICKET -----------------
-@send_typing_action
-@run_async
-def link_ticket(bot, update, **kwargs):
-    """Given a ticket id, return the url."""
-    ticket_id = kwargs.get('groupdict').get('ticket')
-    if ticket_id:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text=os.environ['jira'].format(ticket_id)
-        )
 
 
 # ------------- FORMAT_CODE -----------------
@@ -144,6 +148,7 @@ def format_code(bot, update, **kwargs):
 # ------------- SUBTE -----------------
 @send_typing_action
 @run_async
+@log_time
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
     soup = soupify_url('https://www.metrovias.com.ar/')
@@ -170,6 +175,7 @@ def subte(bot, update):
 # ------------- CARTELERA -----------------
 @send_typing_action
 @run_async
+@log_time
 def cartelera(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
@@ -198,6 +204,20 @@ def default(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text="No sé qué decirte..")
+
+
+# ------------- LINK_TICKET -----------------
+@send_typing_action
+@run_async
+def link_ticket(bot, update, **kwargs):
+    """Given a ticket id, return the url."""
+    ticket_id = kwargs.get('groupdict').get('ticket')
+    if ticket_id:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=os.environ['jira'].format(ticket_id)
+        )
+
 
 # to be implemented
 def rec(bot, update):
