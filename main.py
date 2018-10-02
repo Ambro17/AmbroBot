@@ -18,7 +18,8 @@ from commands import (
     link_ticket,
     subte,
     format_code,
-    cartelera,
+    cinearg,
+    buscar_peli
 )
 from command.tagger.all_tagger import (
     tag_all, set_all_members
@@ -42,24 +43,26 @@ dolar_handler = CommandHandler('dolar', dolar_hoy)
 dolar_futuro_handler = CommandHandler('fdolar', dolar_futuro)
 posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
-cartelera_handler = CommandHandler('cartelera', cartelera)
+cartelera_handler = CommandHandler('cartelera', cinearg)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all  = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
+pelis = CommandHandler('pelicula', buscar_peli, pass_args=True)
 generic_handler = MessageHandler(Filters.command, default)
 
 #  Associate command with actions.
-dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(partido_handler)
+dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(dolar_futuro_handler)
 dispatcher.add_handler(posiciones_handler)
 dispatcher.add_handler(subte_handler)
 dispatcher.add_handler(cartelera_handler)
+dispatcher.add_handler(code_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
-dispatcher.add_handler(code_handler)
+dispatcher.add_handler(pelis)
 dispatcher.add_handler(generic_handler)
 
 updater.start_polling()

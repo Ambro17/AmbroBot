@@ -5,6 +5,7 @@ import os
 
 from telegram.ext.dispatcher import run_async
 
+from command.movies.movie_utils import search_movie
 from decorators import send_typing_action, log_time
 from utils.command_utils import (
     monospace,
@@ -16,6 +17,7 @@ from utils.command_utils import (
     prettify_table_posiciones,
     format_estado_de_linea,
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -176,7 +178,7 @@ def subte(bot, update):
 @send_typing_action
 @run_async
 @log_time
-def cartelera(bot, update):
+def cinearg(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
     soup = soupify_url(CINE_URL)
@@ -194,6 +196,26 @@ def cartelera(bot, update):
         text=top_5,
         parse_mode='markdown'
     )
+
+# ------------- BUSCAR_PELICULA -----------------
+@send_typing_action
+@run_async
+@log_time
+def buscar_peli(bot, update, **kwargs):
+    pelicula = kwargs.get('args')
+    if not pelicula:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Necesito que me pases una pelicula. /pelicula <nombre>')
+    else:
+        pelicula = ' '.join(pelicula)
+        movie_details = search_movie(pelicula)
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=movie_details,
+            parse_mode='markdown'
+        )
+        # Add photo
 
 
 # ------------- DEFAULT -----------------
