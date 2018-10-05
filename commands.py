@@ -4,7 +4,6 @@ import re
 import os
 
 import requests
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 from telegram.ext.dispatcher import run_async
 
 from command.movies.movie_utils import search_movie
@@ -218,13 +217,19 @@ def buscar_peli(bot, update, **kwargs):
             chat_id=update.message.chat_id,
             text='Necesito que me pases una pelicula. /pelicula <nombre>')
     else:
-        pelicula = ' '.join(pelicula)
-        movie_details = search_movie(pelicula)
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text=movie_details,
-            parse_mode='markdown'
-        )
+        try:
+            pelicula = ' '.join(pelicula)
+            movie_details = search_movie(pelicula)
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=movie_details,
+                parse_mode='markdown'
+            )
+        except requests.exceptions.ConnectionError:
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text='Estoy descansando ahora, probá después de la siesta',
+                parse_mode='markdown')
         # Add photo
 
 
