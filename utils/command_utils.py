@@ -119,7 +119,7 @@ def get_cotizaciones(response_soup):
 
 
 # Helper func for dolar_hoy
-def pretty_print_dolar(cotizaciones):
+def pretty_print_dolar(cotizaciones, limit=7):
     """Returns dolar rates separated by newlines and with code markdown syntax.
     ```
     Banco Nacion  | $30.00 | $40.00
@@ -127,9 +127,8 @@ def pretty_print_dolar(cotizaciones):
                    ...
     ```
     """
-    MONOSPACE = "```\n{}\n```"
-    return MONOSPACE.format('\n'.join(
-            "{:8} | {:7} | {:7}".format(normalize(banco, limit=7), valor['compra'], valor['venta'])
+    return monospace('\n'.join(
+            "{:8} | {:7} | {:7}".format(normalize(banco, limit), valor['compra'], valor['venta'])
             for banco, valor in cotizaciones.items()
         ))
 

@@ -2,10 +2,13 @@ import requests
 import logging
 from  urllib.parse import quote_plus as encode_for_url
 
+from command.movies.torrents import magnet_to_torrent
+
 TMDB_KEY = '7f76943e1557e33276e0f595c2128f68'
 logger = logging.getLogger(__name__)
+
 def search_movie(pelicula):
-    params = {'api_key': TMDB_KEY, 'query': pelicula}
+    params = {'api_key': TMDB_KEY, 'query': pelicula, 'language': 'es-AR'}
     r = requests.get('https://api.themoviedb.org/3/search/movie', params=params)
     if r.status_code == 200:
         movies = r.json()['results']
@@ -32,7 +35,7 @@ def get_movie_info(movie):
     imdb_id = data['imdb_id']
     imdb_link = f"http://www.imdb.com/title/{imdb_id}"
     yt_trailer = get_yt_trailer(data)
-    magnet = search_magnet_link(title, imdb_id)
+    magnet = get_magnet_link(title, imdb_id)
     return title, rating, overview, year, imdb_link, yt_trailer, magnet
 
 def get_yt_trailer(data):
@@ -43,8 +46,13 @@ def prettify_movie_info(title, rating, overview, year, imdb, yt, magnet):
     stars = int(rating // 2)
     imdb_line = f'[🎭 IMDB]({imdb})'
     yt_line = f'[▶ Trailer]({yt})'
-#    magnet = f'🏴‍☠[MAGNET]({magnet})'  # Telegram does not detect magnet links
-    return f"{title} ({year})\n{'⭐'*stars}\n\n{overview}\n\n{imdb_line} | {yt_line}"
+    if magnet:
+        magnet = f"🏴‍☠[MAGNET]({magnet_to_torrent(magnet)})"
+    return (f"{title} ({year})\n"
+            f"{'⭐'*stars}\n\n"
+            f"{overview}\n\n"
+            f"{imdb_line} | {yt_line}" + f" | {magnet}" if magnet else ''
+    )
 
 
 
@@ -62,7 +70,7 @@ def get_trackers():
         f'&tr={tracker}' for tracker in trackers
     )
 
-def search_magnet_link(title, imdb_id):
+def get_magnet_link(title, imdb_id):
     MAGNET = "magnet:?xt=urn:btih:{torrent_hash}&dn={movie_name}{trackers}"
     jash = request_hash_from_yts(imdb_id)
     if jash:

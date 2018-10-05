@@ -3,10 +3,13 @@ import logging
 import re
 import os
 
+import requests
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 from telegram.ext.dispatcher import run_async
 
 from command.movies.movie_utils import search_movie
 from decorators import send_typing_action, log_time
+from keyboards.bancos_keyboard import banco_keyboard
 from utils.command_utils import (
     monospace,
     soupify_url,
@@ -40,15 +43,22 @@ def partido(bot, update):
 @send_typing_action
 @run_async
 @log_time
-def dolar_hoy(bot, update):
+def dolar_hoy(bot, update, chat_data):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
 
     cotiz = get_cotizaciones(data)
     pretty_result = pretty_print_dolar(cotiz)
+
+    chat_data['context'] = {
+        'data': cotiz,
+        'command': 'dolarhoy'
+    }
+    keyboard = banco_keyboard()
     bot.send_message(
-        chat_id=update.message.chat_id,
+        update.message.chat_id,
         text=pretty_result,
+        reply_markup=keyboard,
         parse_mode='markdown'
     )
 
@@ -239,6 +249,31 @@ def link_ticket(bot, update, **kwargs):
             chat_id=update.message.chat_id,
             text=os.environ['jira'].format(ticket_id)
         )
+
+
+# ------------- YTS -----------------
+def yts_movies(bot, update, chat_data):
+    params = dict(limit=10, minimum_rating=7, with_rt_ratings=True)
+    pass
+
+
+def prettify_yts_movie(movie):
+    return (
+        f"{movie['title']}\n{movie['rating']}\n"
+        f"[Torrent]({movie['url']})\n{movie['size']}\n{movie['quality']}\n{movie['seeds']}"
+    )
+
+def _get_yts_movie_info(movie):
+    torrent = movie['torrents'][0]
+    return dict(
+        title=movie['title_long'],
+        rating=movie['rating'],
+        imdb=movie['imdb_code'],
+        url=torrent['url'],
+        size=torrent['size'],
+        quality=torrent['quality'],
+        seeds=torrent['seeds'],
+    )
 
 
 # to be implemented
