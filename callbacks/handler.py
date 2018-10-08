@@ -18,6 +18,8 @@ def handle_callbacks(bot, update, chat_data):
             text=message,
             parse_mode='markdown'
         )
+        # Notify telegram we have answered
+        update.callback_query.answer(text='')
         return
 
     # Get user selection
@@ -28,6 +30,8 @@ def handle_callbacks(bot, update, chat_data):
 
     # Get the relevant info based on user choice
     handled_response = callback_handler(context['data'], answer)
+    # Notify that api we have succesfully handled the query
+    update.callback_query.answer(text='')
 
     # Rebuild the same keyboard
     if context['command'] == 'dolarhoy':
