@@ -1,22 +1,32 @@
 import logging
-import json
 
+import os
+import psycopg2
 from telegram import MessageEntity
 
+from decorators import admin_only, log_time
+
 logger = logging.getLogger(__name__)
+
+DB = os.environ['DATABASE_URL']
 
 def tag_all(bot, update):
     """Reply to a message containing '@all' tagging all users so they can read the msg."""
     try:
-       with open('all_users.json', 'r') as f:
-           users = json.load(f)
-           update.message.reply_markdown(
-               text=' '.join(users['data']) if users else 'No users added to @all tag.',
-               quote=True
-           )
-    except FileNotFoundError:
-        logger.info("all_users file not found. Probably called before setting members")
+        with psycopg2.connect(DB) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("select * from t3;")
+                users = cursor.fetchone()
+                update.message.reply_markdown(
+                    text=users[0] if users else 'No users added to @all tag.',
+                    quote=True
+                )
+    except Exception as  e:
+        logger.exception("Error writing to db")
+        logger.error(e)
 
+@log_time
+@admin_only
 def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')
@@ -28,16 +38,20 @@ def set_all_members(bot, update, **kwargs):
     user_entities = update.message.parse_entities(
         [MessageEntity.MENTION, MessageEntity.TEXT_MENTION]
     )
-    tagged_users = _tag_users(user_entities)
-    with open("all_users.json", 'w') as f:
-        f.write(json.dumps({'data': tagged_users}))
-        logger.info("Users under @all tag updated. Members: %s", tagged_users)
+    updated = update_all_users(user_entities)
+    if updated:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Users added to the @all tag'
         )
+    else:
+        pass
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Algo pasó. Hablale a @BoedoCrow y pedile que vea los logs.'
+        )
 
-def _tag_users(users):
+def update_all_users(users):
     """Tag users whether they have username or not.
 
     Users in telegram may or may not have username.
@@ -59,13 +73,32 @@ def _tag_users(users):
         tagged_users list(str): List of ready-to-be-tagged users.
 
     """
+    # Get users mentions
     ready_to_be_tagged_users = []
     for entity, value in users.items():
         if entity['type'] == 'text_mention':
             ready_to_be_tagged_users.append(
                 f"[@{entity.user.first_name}](tg://user?id={entity.user.id})"
             )
-        else:
+        elif entity['type'] == 'mention':
             ready_to_be_tagged_users.append(value)
 
-    return ready_to_be_tagged_users
+    # Save it to db
+    users = ' '.join(ready_to_be_tagged_users)
+    logger.info("users %r", users)
+    try:
+        with psycopg2.connect(DB) as conn:
+            with conn.cursor() as curs:
+                # Delete previous definition if any
+                curs.execute("DELETE FROM t3;")
+                # Add new values.
+                curs.execute("INSERT INTO t3 (admins) VALUES (%s);", (users,))
+                logger.info("Users '%s' successfully added to db", users)
+                conn.commit()
+                success = True
+    except Exception:
+        logger.exception("Error writing to db")
+        success = False
+
+
+    return success
