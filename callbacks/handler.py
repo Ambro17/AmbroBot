@@ -1,9 +1,7 @@
 from callbacks.command_callbacks import dolarhoy_callback
 from keyboards.bancos_keyboard import banco_keyboard
 
-command_callback = {
-    'dolarhoy': dolarhoy_callback
-}
+command_callback = {'dolarhoy': dolarhoy_callback}
 
 
 def handle_callbacks(bot, update, chat_data):
@@ -22,7 +20,5 @@ def handle_callbacks(bot, update, chat_data):
     original_text = update.callback_query.message.text
 
     update.callback_query.edit_message_text(
-        text=handled_response,
-        reply_markup=keyboard,
-        parse_mode='markdown'
+        text=handled_response, reply_markup=keyboard, parse_mode='markdown'
     )

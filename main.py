@@ -2,19 +2,35 @@ import os
 import logging
 import re
 
-from telegram.ext import (CommandHandler, Updater, Filters, MessageHandler,
-                          RegexHandler, CallbackQueryHandler)
-
-from callbacks.handler import handle_callbacks
-from commands import (dolar_hoy, partido, dolar_futuro, default, posiciones,
-                      link_ticket, subte, format_code, cinearg, buscar_peli,
-                      yts_movies)
-from command.tagger.all_tagger import (
-    tag_all, set_all_members
+from telegram.ext import (
+    CommandHandler,
+    Updater,
+    Filters,
+    MessageHandler,
+    RegexHandler,
+    CallbackQueryHandler,
 )
 
+from callbacks.handler import handle_callbacks
+from commands import (
+    dolar_hoy,
+    partido,
+    dolar_futuro,
+    default,
+    posiciones,
+    link_ticket,
+    subte,
+    format_code,
+    cinearg,
+    buscar_peli,
+    yts_movies,
+)
+from command.tagger.all_tagger import tag_all, set_all_members
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 TICKET_REGEX = re.compile(r'((t|osp\-?)(?P<ticket>\d{5,6}))', re.IGNORECASE)
@@ -36,7 +52,7 @@ yts_handler = CommandHandler('yts', yts_movies, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
-edit_tag_all  = CommandHandler('setall', set_all_members, pass_args=True)
+edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 

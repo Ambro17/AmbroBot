@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 DB = os.environ['DATABASE_URL']
 
+
 def tag_all(bot, update):
     """Reply to a message containing '@all' tagging all users so they can read the msg."""
     try:
@@ -19,11 +20,12 @@ def tag_all(bot, update):
                 users = cursor.fetchone()
                 update.message.reply_markdown(
                     text=users[0] if users else 'No users added to @all tag.',
-                    quote=True
+                    quote=True,
                 )
-    except Exception as  e:
+    except Exception as e:
         logger.exception("Error writing to db")
         logger.error(e)
+
 
 @log_time
 @admin_only
@@ -31,8 +33,9 @@ def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')
     if not msg:
-        logger.info("No users passed to set_all_members function."
-                    " Arguments received %s", kwargs)
+        logger.info("No users passed to set_all_members function. kwargs: %s",
+            kwargs,
+        )
         return
 
     user_entities = update.message.parse_entities(
@@ -41,15 +44,15 @@ def set_all_members(bot, update, **kwargs):
     updated = update_all_users(user_entities)
     if updated:
         bot.send_message(
-            chat_id=update.message.chat_id,
-            text='Users added to the @all tag'
+            chat_id=update.message.chat_id, text='Users added to the @all tag'
         )
     else:
         pass
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Algo pasó. Hablale a @BoedoCrow y pedile que vea los logs.'
+            text='Algo pasó. Hablale a @BoedoCrow y pedile que vea los logs.',
         )
+
 
 def update_all_users(users):
     """Tag users whether they have username or not.
@@ -99,6 +102,5 @@ def update_all_users(users):
     except Exception:
         logger.exception("Error writing to db")
         success = False
-
 
     return success

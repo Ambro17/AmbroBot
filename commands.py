@@ -29,13 +29,12 @@ logger = logging.getLogger(__name__)
 @log_time
 def partido(bot, update):
     soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')
-    partido = soup.find('div', {'class': 'widget-partido'}).find('div', {'class': 'cont'})
+    partido = soup.find('div', {'class': 'widget-partido'}).find(
+        'div', {'class': 'cont'}
+    )
     logo, *info = info_de_partido(partido)
     bot.send_photo(chat_id=update.message.chat_id, photo=logo)
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text='\n'.join(info)
-    )
+    bot.send_message(chat_id=update.message.chat_id, text='\n'.join(info))
 
 
 # ------------- DOLAR_HOY -----------------
@@ -49,16 +48,13 @@ def dolar_hoy(bot, update, chat_data):
     cotiz = get_cotizaciones(data)
     pretty_result = pretty_print_dolar(cotiz)
 
-    chat_data['context'] = {
-        'data': cotiz,
-        'command': 'dolarhoy'
-    }
+    chat_data['context'] = {'data': cotiz, 'command': 'dolarhoy'}
     keyboard = banco_keyboard()
     bot.send_message(
         update.message.chat_id,
         text=pretty_result,
         reply_markup=keyboard,
-        parse_mode='markdown'
+        parse_mode='markdown',
     )
 
 
@@ -70,6 +66,7 @@ def dolar_futuro(bot, update):
     soup = soupify_url('http://www.ambito.com/economia/mercados/indices/rofex/')
     rofex_table = soup.find("table", {"id": "rofextable"})
     NUMBER = re.compile(r'^\d+')
+
     def get_rofex():
         rofex = []
         # Get headers
@@ -105,7 +102,6 @@ def dolar_futuro(bot, update):
 
         return f"{mes[:3]}. '{año[-2:]}"
 
-
     def conditional_format(contrato, compra, venta):
         """Prepends a $ if str is a number"""
         contrato = compact_contrato(contrato)
@@ -114,15 +110,14 @@ def dolar_futuro(bot, update):
         return "{:8} | {:7} | {:7}".format(contrato, compra, venta)
 
     def prettify_rofex(rofex_vals):
-        return monospace('\n'.join(
-            conditional_format(a,b,c)
-            for a, b, c in rofex_vals
-        ))
+        return monospace(
+            '\n'.join(conditional_format(a, b, c) for a, b, c in rofex_vals)
+        )
 
     bot.send_message(
         chat_id=update.message.chat_id,
         text=prettify_rofex(get_rofex()),
-        parse_mode='markdown'
+        parse_mode='markdown',
     )
 
 
@@ -135,11 +130,7 @@ def posiciones(bot, update, **kwargs):
     tabla = soup.find('table', {'id': 'posiciones'})
     info = parse_posiciones(tabla, posiciones=kwargs.get('args'))
     pretty = prettify_table_posiciones(info)
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=pretty,
-        parse_mode='markdown'
-    )
+    bot.send_message(chat_id=update.message.chat_id, text=pretty, parse_mode='markdown')
 
 
 # ------------- FORMAT_CODE -----------------
@@ -150,9 +141,7 @@ def format_code(bot, update, **kwargs):
     code = kwargs.get('groupdict').get('code')
     if code:
         bot.send_message(
-            chat_id=update.message.chat_id,
-            text=monospace(code),
-            parse_mode='markdown'
+            chat_id=update.message.chat_id, text=monospace(code), parse_mode='markdown'
         )
 
 
@@ -175,11 +164,12 @@ def subte(bot, update):
 
     bot.send_message(
         chat_id=update.message.chat_id,
-        text=monospace('\n'.join(
-            format_estado_de_linea(info_de_linea)
-            for info_de_linea in estado_lineas
-        )),
-        parse_mode='markdown'
+        text=monospace(
+            '\n'.join(
+                format_estado_de_linea(info_de_linea) for info_de_linea in estado_lineas
+            )
+        ),
+        parse_mode='markdown',
     )
 
 
@@ -193,18 +183,12 @@ def cinearg(bot, update):
     soup = soupify_url(CINE_URL)
     cartelera = soup.find('div', {'class': 'contenidoRankingContainer'})
     listado = [
-        (rank, li.text, CINE_URL+li.a['href'])
-        for rank, li in
-        enumerate(cartelera.div.ol.find_all('li'), 1)]
-    top_5 = '\n'.join(
-        f'[{rank}. {title}]({link})' for rank, title, link
-        in listado[:5]
-    )
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=top_5,
-        parse_mode='markdown'
-    )
+        (rank, li.text, CINE_URL + li.a['href'])
+        for rank, li in enumerate(cartelera.div.ol.find_all('li'), 1)
+    ]
+    top_5 = '\n'.join(f'[{rank}. {title}]({link})' for rank, title, link in listado[:5])
+    bot.send_message(chat_id=update.message.chat_id, text=top_5, parse_mode='markdown')
+
 
 # ------------- BUSCAR_PELICULA -----------------
 @send_typing_action
@@ -215,7 +199,8 @@ def buscar_peli(bot, update, **kwargs):
     if not pelicula:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Necesito que me pases una pelicula. /pelicula <nombre>')
+            text='Necesito que me pases una pelicula. /pelicula <nombre>',
+        )
     else:
         try:
             pelicula = ' '.join(pelicula)
@@ -223,13 +208,14 @@ def buscar_peli(bot, update, **kwargs):
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text=movie_details,
-                parse_mode='markdown'
+                parse_mode='markdown',
             )
         except requests.exceptions.ConnectionError:
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text='Estoy descansando ahora, probá después de la siesta',
-                parse_mode='markdown')
+                parse_mode='markdown',
+            )
         # Add photo
 
 
@@ -238,9 +224,7 @@ def buscar_peli(bot, update, **kwargs):
 @run_async
 def default(bot, update):
     """If a user sends an unknown command, answer accordingly"""
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="No sé qué decirte..")
+    bot.send_message(chat_id=update.message.chat_id, text="No sé qué decirte..")
 
 
 # ------------- LINK_TICKET -----------------
@@ -251,8 +235,7 @@ def link_ticket(bot, update, **kwargs):
     ticket_id = kwargs.get('groupdict').get('ticket')
     if ticket_id:
         bot.send_message(
-            chat_id=update.message.chat_id,
-            text=os.environ['jira'].format(ticket_id)
+            chat_id=update.message.chat_id, text=os.environ['jira'].format(ticket_id)
         )
 
 
@@ -267,6 +250,7 @@ def prettify_yts_movie(movie):
         f"{movie['title']}\n{movie['rating']}\n"
         f"[Torrent]({movie['url']})\n{movie['size']}\n{movie['quality']}\n{movie['seeds']}"
     )
+
 
 def _get_yts_movie_info(movie):
     torrent = movie['torrents'][0]
@@ -285,5 +269,5 @@ def _get_yts_movie_info(movie):
 def rec(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
-        text="Tenes que acordarte de hacer {} a las 11 y esto {} a las 12"
+        text="Tenes que acordarte de hacer {} a las 11 y esto {} a las 12",
     )

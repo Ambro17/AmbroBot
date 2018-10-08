@@ -27,7 +27,7 @@ class Soupifier(object):
     """
 
     def __init__(self, minutes_to_live=5, timeout=2):
-        self.cache = TTLCache(maxsize=10, ttl=60*minutes_to_live)
+        self.cache = TTLCache(maxsize=10, ttl=60 * minutes_to_live)
         self.timeout = timeout
 
     def soupify(self, url):
@@ -40,9 +40,11 @@ class Soupifier(object):
             self.cache[url] = soupify_url(url, timeout=self.timeout)
             return self.cache[url]
 
+
 # To be used after profiling bot use
 soup = Soupifier()
 _soupify_url = soup.soupify
+
 
 def soupify_url(url, timeout=2):
     """Given a url returns a BeautifulSoup object"""
@@ -54,7 +56,6 @@ def soupify_url(url, timeout=2):
         raise ConnectionError(f'{url} did not respond.')
 
 
-
 # Helper functions for /posiciones
 def parse_posiciones(tabla, posiciones=None):
     # #, Equipo, pts y PJ
@@ -63,18 +64,20 @@ def parse_posiciones(tabla, posiciones=None):
     headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
     res = [
         [normalize(r.text) for r in row.find_all('td')[:LIMIT]]
-        for row in
-        tabla.tbody.find_all('tr')[:posiciones]]
+        for row in tabla.tbody.find_all('tr')[:posiciones]
+    ]
     res.insert(0, headers)
     return res
+
 
 # Helper function for /posiciones
 def prettify_table_posiciones(info):
     try:
-        return monospace('\n'.join(
-            '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for
-            team_stat in info
-        ))
+        return monospace(
+            '\n'.join(
+                '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for team_stat in info
+            )
+        )
     except Exception:
         logger.error(f"Error Prettying info {info}")
         return 'No te entiendo..'
@@ -110,7 +113,9 @@ def get_cotizaciones(response_soup):
     for table in response_soup:
         # Get cotizaciones
         for row_cotizacion in table.tbody.find_all('tr'):
-            banco, compra, venta = (item.get_text() for item in row_cotizacion.find_all('td'))
+            banco, compra, venta = (
+                item.get_text() for item in row_cotizacion.find_all('td')
+            )
             banco = banco.replace('Banco ', '')
             cotizaciones[banco]['compra'] = compra
             cotizaciones[banco]['venta'] = venta
@@ -127,15 +132,19 @@ def pretty_print_dolar(cotizaciones, limit=7):
                    ...
     ```
     """
-    return monospace('\n'.join(
-            "{:8} | {:7} | {:7}".format(normalize(banco, limit), valor['compra'], valor['venta'])
+    return monospace(
+        '\n'.join(
+            "{:8} | {:7} | {:7}".format(
+                normalize(banco, limit), valor['compra'], valor['venta']
+            )
             for banco, valor in cotizaciones.items()
-        ))
+        )
+    )
 
 
 # Helper func for partido
 def info_de_partido(partido):
     logo = partido.img.attrs['src']
     fecha = partido.find('div', {'class': 'temp'}).text
-    hora, tv, estadio, arbitro =[p.text for p in partido.find_all('p') if p.text]
+    hora, tv, estadio, arbitro = [p.text for p in partido.find_all('p') if p.text]
     return logo, fecha, hora, tv, estadio, arbitro
