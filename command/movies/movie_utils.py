@@ -44,13 +44,17 @@ def prettify_basic_movie_info(title, rating, overview, year):
 
 
 def get_yt_trailer(videos):
-    key = videos['results'][0]['key']
+    key = videos['results'][-1]['key']
     return f'https://www.youtube.com/watch?v={key}'
 
 
 def get_torrent_info(imdb_id):
     yts_api = 'https://yts.am/api/v2/list_movies.json'
-    r = requests.get(yts_api, params={"query_term": imdb_id})
+    try:
+        r = requests.get(yts_api, params={"query_term": imdb_id})
+    except requests.exceptions.ConnectionError:
+        logger.info("yts api no responde.")
+        return None
     if r.status_code == 200:
         torrent = r.json() # Dar url en lugar de hash.
         try:
