@@ -1,3 +1,8 @@
+import os
+
+import requests
+
+from command.movies.movie_utils import get_yt_trailer, get_torrent_info
 from utils.command_utils import pretty_print_dolar
 
 
@@ -11,3 +16,27 @@ def dolarhoy_callback(banco_data, banco):
         return pretty_print_dolar(requested_banco)
     elif banco == 'Todos':
         return pretty_print_dolar(banco_data)
+
+def peliculas_callback(movie, link_choice):
+    """Gives link_choice of movie id.
+
+    link_choice in ('IMDB', 'Magnet', 'Youtube', 'all')
+    """
+    params = {'api_key': os.environ['TMDB_KEY'], 'append_to_response': 'videos'}
+    r = requests.get(f"https://api.themoviedb.org/3/movie/{movie['movie']}", params=params)
+    data = r.json()
+    imdb_id = data['imdb_id']
+    if link_choice == 'IMDB':
+        answer = f"[IMDB](http://www.imdb.com/title/{imdb_id})"
+    elif link_choice == 'Youtube':
+        answer = f"[Trailer]({get_yt_trailer(data['videos'])})"
+    elif link_choice == 'Magnet':
+        url, seeds, size, quality = get_torrent_info(imdb_id)
+        answer = (
+            f"🏴‍☠️ [.Torrent File]({url})\n"
+            f"🌱 Seeds: {seeds}\n"
+            f"🗳 Size: {size}\n"
+            f"🖥 Quality: {quality}"
+        )
+    return answer
+
