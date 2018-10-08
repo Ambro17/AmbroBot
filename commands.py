@@ -205,6 +205,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
             chat_id=update.message.chat_id,
             text='Necesito que me pases una pelicula. /pelicula <nombre>',
         )
+        return
 
     try:
         pelicula_query = ' '.join(pelicula)
