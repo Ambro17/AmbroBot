@@ -33,9 +33,9 @@ def peliculas_callback(movie, link_choice):
     elif link_choice == 'Torrent':
         url, seeds, size, quality = get_torrent_info(imdb_id)
         answer = (
-            f"🏴‍☠️ [.Torrent File]({url})\n"
-            f"🌱 Seeds: {seeds}\n"
-            f"🗳 Size: {size}\n"
+            f"🏴‍☠️ [.Torrent File]({url})\n\n"
+            f"🌱 Seeds: {seeds}\n\n"
+            f"🗳 Size: {size}\n\n"
             f"🖥 Quality: {quality}"
         )
     return answer

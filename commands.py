@@ -218,7 +218,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
             'edit_original_text': False,
         }
 
-        movie_details = prettify_movie(movie)
+        movie_details = prettify_movie(movie)  # Add photo to basic output
         #movie_details = search_movie(pelicula)
         keyboard = pelis_keyboard()
         bot.send_message(
