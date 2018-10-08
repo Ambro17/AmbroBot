@@ -8,7 +8,7 @@ def banco_keyboard():
     buttons = [
         [
             Button('Galicia', callback_data="Galicia"),
-            Button('Nación', callback_data="Nacion"),
+            Button('Nación', callback_data="Nación"),
             Button('Santander', callback_data="Santander"),
             Button('Francés', callback_data="Frances"),
             Button('Todos', callback_data="Todos"),
