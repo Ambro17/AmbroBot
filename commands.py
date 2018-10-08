@@ -6,9 +6,9 @@ import os
 import requests
 from telegram.ext.dispatcher import run_async
 
-from command.movies.movie_utils import search_movie
+from command.movies.movie_utils import get_movie, prettify_movie
 from decorators import send_typing_action, log_time
-from keyboards.bancos_keyboard import banco_keyboard
+from keyboards.keyboards import banco_keyboard, pelis_keyboard
 from utils.command_utils import (
     monospace,
     soupify_url,
@@ -48,7 +48,11 @@ def dolar_hoy(bot, update, chat_data):
     cotiz = get_cotizaciones(data)
     pretty_result = pretty_print_dolar(cotiz)
 
-    chat_data['context'] = {'data': cotiz, 'command': 'dolarhoy'}
+    chat_data['context'] = {
+        'data': cotiz,
+        'command': 'dolarhoy',
+        'edit_original_text': True
+    }
     keyboard = banco_keyboard()
     bot.send_message(
         update.message.chat_id,
@@ -194,29 +198,42 @@ def cinearg(bot, update):
 @send_typing_action
 @run_async
 @log_time
-def buscar_peli(bot, update, **kwargs):
+def buscar_peli(bot, update, chat_data, **kwargs):
     pelicula = kwargs.get('args')
     if not pelicula:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Necesito que me pases una pelicula. /pelicula <nombre>',
         )
-    else:
-        try:
-            pelicula = ' '.join(pelicula)
-            movie_details = search_movie(pelicula)
-            bot.send_message(
-                chat_id=update.message.chat_id,
-                text=movie_details,
-                parse_mode='markdown',
-            )
-        except requests.exceptions.ConnectionError:
-            bot.send_message(
-                chat_id=update.message.chat_id,
-                text='Estoy descansando ahora, probá después de la siesta',
-                parse_mode='markdown',
-            )
-        # Add photo
+
+    try:
+        pelicula_query = ' '.join(pelicula)
+        movie = get_movie(pelicula_query)
+
+        # Give context to button handlers
+        chat_data['context'] = {
+            'data': dict(movie=movie['id'], title=movie['title']),
+            'command': 'pelicula',
+            'edit_original_text': False,
+        }
+
+        movie_details = prettify_movie(movie)
+        #movie_details = search_movie(pelicula)
+        keyboard = pelis_keyboard()
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=movie_details,
+            reply_markup=keyboard,
+            parse_mode='markdown',
+            disable_web_page_preview=True,
+        )
+    except requests.exceptions.ConnectionError:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Estoy descansando ahora, probá después de la siesta',
+            parse_mode='markdown',
+        )
+    # Add photo
 
 
 # ------------- DEFAULT -----------------
