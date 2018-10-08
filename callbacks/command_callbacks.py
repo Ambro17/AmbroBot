@@ -31,12 +31,17 @@ def peliculas_callback(movie, link_choice):
     elif link_choice == 'Youtube':
         answer = f"[Trailer]({get_yt_trailer(data['videos'])})"
     elif link_choice == 'Torrent':
-        url, seeds, size, quality = get_torrent_info(imdb_id)
-        answer = (
-            f"🏴‍☠️ [.Torrent File]({url})\n\n"
-            f"🌱 Seeds: {seeds}\n\n"
-            f"🗳 Size: {size}\n\n"
-            f"🖥 Quality: {quality}"
-        )
+        torrent = get_torrent_info(imdb_id)
+        if torrent:
+            url, seeds, size, quality = torrent
+            answer = (
+                f"🏴‍☠️ [.Torrent File]({url})\n\n"
+                f"🌱 Seeds: {seeds}\n\n"
+                f"🗳 Size: {size}\n\n"
+                f"🖥 Quality: {quality}"
+            )
+        else:
+            answer = "🚧 No torrent available for this movie."
+
     return answer
 
