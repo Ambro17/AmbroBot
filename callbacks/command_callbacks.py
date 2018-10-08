@@ -30,7 +30,7 @@ def peliculas_callback(movie, link_choice):
         answer = f"[IMDB](http://www.imdb.com/title/{imdb_id})"
     elif link_choice == 'Youtube':
         answer = f"[Trailer]({get_yt_trailer(data['videos'])})"
-    elif link_choice == 'Magnet':
+    elif link_choice == 'Torrent':
         url, seeds, size, quality = get_torrent_info(imdb_id)
         answer = (
             f"🏴‍☠️ [.Torrent File]({url})\n"

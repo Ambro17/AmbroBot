@@ -11,8 +11,6 @@ def handle_callbacks(bot, update, chat_data):
     # Get the handler based on the command
     context = chat_data.get('context')
     if not context:
-        answer = update.callback_query.data
-        user = update.effective_user.first_name
         message = f"Ups.. 😳 no pude encontrar lo que me pediste. " \
                   f"Podés probar invocando de nuevo el comando a ver si me sale 😊"
         bot.send_message(
