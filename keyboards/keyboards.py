@@ -21,7 +21,7 @@ def pelis_keyboard():
     buttons = [
         [
             Button('🎟️ IMDB', callback_data="IMDB"),
-            Button('▶️ Youtube', callback_data="Youtube"),
+            Button('🎬️ Youtube', callback_data="Youtube"),
             Button('💀 Torrent', callback_data="Torrent"),
         ]
     ]
