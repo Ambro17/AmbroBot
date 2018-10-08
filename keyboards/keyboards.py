@@ -15,3 +15,14 @@ def banco_keyboard():
         ]
     ]
     return InlineKeyboardMarkup(buttons)
+
+@lru_cache(10)
+def pelis_keyboard():
+    buttons = [
+        [
+            Button('🎟️ IMDB', callback_data="IMDB"),
+            Button('▶️ Youtube', callback_data="Youtube"),
+            Button('💀 Torrent', callback_data="Torrent"),
+        ]
+    ]
+    return InlineKeyboardMarkup(buttons)
