@@ -210,6 +210,12 @@ def buscar_peli(bot, update, chat_data, **kwargs):
     try:
         pelicula_query = ' '.join(pelicula)
         movie = get_movie(pelicula_query)
+        if not movie:
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text='No encontré info sobre %s' % pelicula_query,
+            )
+            return
 
         # Give context to button handlers
         chat_data['context'] = {
