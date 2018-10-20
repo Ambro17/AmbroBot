@@ -161,8 +161,16 @@ def error_handler(bot, update, error):
         raise error
     except Unauthorized:
         logger.info("User unauthorized")
-    except BadRequest:
-        logger.info(BadRequest.message)
+    except BadRequest as e:
+        msg = getattr(BadRequest, 'message', None)
+        if msg is None:
+            raise
+        if msg == 'Query_id_invalid':
+            logger.info("We took too long to answer.")
+        if msg == 'Message is not modified':
+            logger.info("Tried to edit a message but text hasn't changed."
+                        " Probably a button in inline keyboard was pressed but it didn't change the message")
+
     except TelegramError:
         logger.exception("A TelegramError occurred")
 
