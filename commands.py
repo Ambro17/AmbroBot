@@ -6,9 +6,10 @@ import os
 import requests
 from telegram.ext.dispatcher import run_async
 
+from command.hoypido.hoypido import get_comidas, prettify_food_offers
 from command.movies.movie_utils import get_movie, prettify_movie
 from decorators import send_typing_action, log_time
-from keyboards.keyboards import banco_keyboard, pelis_keyboard
+from keyboards.keyboards import banco_keyboard, pelis_keyboard, hoypido_keyboard
 from utils.command_utils import (
     monospace,
     soupify_url,
@@ -263,35 +264,24 @@ def link_ticket(bot, update, **kwargs):
         )
 
 
-# ------------- YTS -----------------
-def yts_movies(bot, update, chat_data):
-    params = dict(limit=10, minimum_rating=7, with_rt_ratings=True)
-    pass
+# ------------- HOYPIDO -----------------
+@send_typing_action
+@run_async
+def hoypido(bot, update, chat_data):
+    comidas = get_comidas()
+    pretty_comidas = prettify_food_offers(comidas)
 
+    chat_data['context'] = {
+        'data': comidas,
+        'command': 'hoypido',
+        'edit_original_text': True
+    }
 
-def prettify_yts_movie(movie):
-    return (
-        f"{movie['title']}\n{movie['rating']}\n"
-        f"[Torrent]({movie['url']})\n{movie['size']}\n{movie['quality']}\n{movie['seeds']}"
-    )
-
-
-def _get_yts_movie_info(movie):
-    torrent = movie['torrents'][0]
-    return dict(
-        title=movie['title_long'],
-        rating=movie['rating'],
-        imdb=movie['imdb_code'],
-        url=torrent['url'],
-        size=torrent['size'],
-        quality=torrent['quality'],
-        seeds=torrent['seeds'],
-    )
-
-
-# to be implemented
-def rec(bot, update):
+    keyboard = hoypido_keyboard()
     bot.send_message(
-        chat_id=update.message.chat_id,
-        text="Tenes que acordarte de hacer {} a las 11 y esto {} a las 12",
+        update.message.chat_id,
+        text=pretty_comidas,
+        reply_markup=keyboard,
+        parse_mode='markdown',
     )
+

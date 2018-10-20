@@ -1,9 +1,15 @@
 import logging
+from telegram.error import (
+    TelegramError,
+    Unauthorized,
+    BadRequest,
+)
 from collections import defaultdict
 
 import requests
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
+
 
 logger = logging.getLogger(__name__)
 
@@ -148,3 +154,15 @@ def info_de_partido(partido):
     fecha = partido.find('div', {'class': 'temp'}).text
     hora, tv, estadio, arbitro = [p.text for p in partido.find_all('p') if p.text]
     return logo, fecha, hora, tv, estadio, arbitro
+
+
+def error_handler(bot, update, error):
+    try:
+        raise error
+    except Unauthorized:
+        logger.info("User unauthorized")
+    except BadRequest:
+        logger.info(BadRequest.message)
+    except TelegramError:
+        logger.exception("A TelegramError occurred")
+

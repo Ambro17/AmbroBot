@@ -1,8 +1,6 @@
 import requests
 import logging
-from urllib.parse import quote_plus as encode_for_url
 
-from command.movies.torrents import magnet_to_torrent
 
 TMDB_KEY = '7f76943e1557e33276e0f595c2128f68'
 logger = logging.getLogger(__name__)

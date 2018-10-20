@@ -1,9 +1,10 @@
-from callbacks.command_callbacks import dolarhoy_callback, peliculas_callback
-from keyboards.keyboards import banco_keyboard, pelis_keyboard
+from callbacks.command_callbacks import dolarhoy_callback, peliculas_callback, hoypido_callback
+from keyboards.keyboards import banco_keyboard, pelis_keyboard, hoypido_keyboard
 
 command_callback = {
     'dolarhoy': dolarhoy_callback,
     'pelicula': peliculas_callback,
+    'hoypido': hoypido_callback,
 }
 
 
@@ -25,7 +26,6 @@ def handle_callbacks(bot, update, chat_data):
     # Get user selection
     answer = update.callback_query.data
 
-
     callback_handler = command_callback[context['command']]
 
     # Get the relevant info based on user choice
@@ -36,13 +36,12 @@ def handle_callbacks(bot, update, chat_data):
     # Rebuild the same keyboard
     if context['command'] == 'dolarhoy':
         keyboard = banco_keyboard()
-    else:
+    elif context['command'] == 'pelicula':
         keyboard = pelis_keyboard()
+    else:
+        keyboard = hoypido_keyboard()
 
-
-    original_text = update.callback_query.message.text
-
-    if context['edit_original_text']:
+    if context.get('edit_original_text'):
         update.callback_query.edit_message_text(
             text=handled_response, reply_markup=keyboard, parse_mode='markdown'
         )

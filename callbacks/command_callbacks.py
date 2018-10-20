@@ -2,6 +2,7 @@ import os
 
 import requests
 
+from command.hoypido.hoypido import prettify_food_offers
 from command.movies.movie_utils import get_yt_trailer, get_torrent_info
 from utils.command_utils import pretty_print_dolar
 
@@ -16,6 +17,7 @@ def dolarhoy_callback(banco_data, banco):
         return pretty_print_dolar(requested_banco)
     elif banco == 'Todos':
         return pretty_print_dolar(banco_data)
+
 
 def peliculas_callback(movie, link_choice):
     """Gives link_choice of movie id.
@@ -45,3 +47,7 @@ def peliculas_callback(movie, link_choice):
 
     return answer
 
+
+def hoypido_callback(week_menu, requested_day):
+    """Filter the menu for the requested day from the week_menu"""
+    return prettify_food_offers(week_menu, int(requested_day))
