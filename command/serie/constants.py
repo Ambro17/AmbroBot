@@ -20,3 +20,8 @@ MAGNET, TORRENT = 0, 1
 
 # Episode representation after parsing eztv web
 Episode = namedtuple('Episode', ['name', 'season', 'episode', 'magnet', 'torrent', 'size', 'released', 'seeds'])
+
+# eztv api error messages
+EZTV_API_ERROR = "EZTV api failed to respond with latest torrents. Try 'Load all episodes' option and look for latest episode."
+EZTV_NO_RESULTS = ("Eztv api did not return any result for the series❕\nPlease notice it's still in beta mode 🐣\n"
+                   "You can try loading all episodes and manually searching the latest.")

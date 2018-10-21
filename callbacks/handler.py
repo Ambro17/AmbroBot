@@ -1,7 +1,8 @@
 import logging
 
 from callbacks.command_callbacks import dolarhoy_callback, peliculas_callback, hoypido_callback
-from command.serie.constants import LOAD_EPISODES, LATEST_EPISODES, GO_BACK_TO_MAIN, SEASON_T, EPISODE_T
+from command.serie.constants import LOAD_EPISODES, LATEST_EPISODES, GO_BACK_TO_MAIN, SEASON_T, EPISODE_T, \
+    EZTV_API_ERROR, EZTV_NO_RESULTS
 from command.serie.utils import (
     get_torrents_by_id,
     prettify_serie,
@@ -90,16 +91,14 @@ def serie_callback_handler(bot, update, chat_data):
         torrents = get_torrents_by_id(imdb_id)
 
         if not torrents:
-            message = ("Eztv api did not return any result for the series. ❕\nPlease notice it's still in beta mode. 🐣\n"
-                       "You can try loading all episodes and manually searching the latest.")
             update.callback_query.edit_message_text(
-                text=message,
+                text=EZTV_NO_RESULTS,
                 reply_markup=keyboard,
             )
             return
 
         pretty_torrents = prettify_torrents(torrents)
-        response = pretty_torrents if pretty_torrents else 'eztv api failed to respond with latest torrents'
+        response = pretty_torrents if pretty_torrents else EZTV_API_ERROR
 
     elif answer == GO_BACK_TO_MAIN:
         # Remove season and episode context so we can start the search again if the user wants to download another episode.

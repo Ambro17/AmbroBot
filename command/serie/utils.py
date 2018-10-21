@@ -48,17 +48,23 @@ def get_torrents_by_id(imdb_id, limit=None):
 
 def _minify_torrents(torrents):
     """Returns a torrent name, url, seeds and size from json response"""
+    minified_torrents = []
     for torrent in torrents:
         try:
             MB = 1024 * 1024
             size_float = int(torrent['size_bytes']) / MB
             size = f"{size_float:.2f}"
-            yield torrent['title'], torrent['torrent_url'], torrent['seeds'], size
+            minified_torrents.append(
+                (torrent['title'], torrent['torrent_url'], torrent['seeds'], size)
+            )
         except Exception:
             logger.exception("Error parsing torrent from eztv api. <%s>", torrent)
             continue
 
+    return tuple(minified_torrents)
 
+
+@lru_cache(5)
 def prettify_torrents(torrents):
     return '\n'.join(
         prettify_torrent(*torrent) for torrent in torrents
@@ -190,6 +196,7 @@ def prettify_episodes(episodes, header=None):
 
     return episodes
 
+
 def prettify_episode(ep):
     """Episodes have name, season, episode, torrent, magnet, size, seeds and released attributes"""
     # Some episodes do not have a torrent download. But they do have a magnet link.
@@ -203,6 +210,5 @@ def prettify_episode(ep):
 
     return (
         f"{header}"
-        f"🌱 Seeds: {ep.seeds}\n"
-        f"🗳 Size: {ep.size}MB\n"
+        f"🌱 Seeds: {ep.seeds} | 🗳 Size: {ep.size or '-'}"
     )
