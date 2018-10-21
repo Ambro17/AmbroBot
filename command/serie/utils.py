@@ -14,6 +14,7 @@ from command.serie.constants import (
     RELEASED,
     SEEDS,
     Episode)
+from utils.command_utils import monospace
 
 logger = logging.getLogger(__name__)
 
@@ -191,8 +192,17 @@ def prettify_episodes(episodes, header=None):
 
 def prettify_episode(ep):
     """Episodes have name, season, episode, torrent, magnet, size, seeds and released attributes"""
+    # Some episodes do not have a torrent download. But they do have a magnet link.
+    # Since magnet links are not clickable on telegram, we leave them as a fallback.
+    if ep.torrent:
+        header = f"[{ep.name}]({ep.torrent})\n"
+    elif ep.magnet:
+        header = (f"Magnet: {monospace(ep.magnet)}")
+    else:
+        header = 'No torrent nor magnet available for this episode.'
+
     return (
-        f"[{ep.name}]({ep.torrent})\n"
+        f"{header}"
         f"🌱 Seeds: {ep.seeds}\n"
         f"🗳 Size: {ep.size}MB\n"
     )
