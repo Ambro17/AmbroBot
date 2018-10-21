@@ -11,7 +11,8 @@ from telegram.ext import (
     CallbackQueryHandler,
 )
 
-from callbacks.handler import handle_callbacks
+from callbacks.handler import handle_callbacks, serie_callback_handler
+from command.serie.constants import SERIE
 from commands import (
     dolar_hoy,
     partido,
@@ -24,7 +25,7 @@ from commands import (
     cinearg,
     buscar_peli,
     hoypido,
-)
+    serie)
 from command.tagger.all_tagger import tag_all, set_all_members
 from utils.command_utils import error_handler
 
@@ -36,6 +37,8 @@ logger = logging.getLogger(__name__)
 TICKET_REGEX = re.compile(r'((t|osp\-?)(?P<ticket>\d{5,6}))', re.IGNORECASE)
 # Text starting with ~, \c, \code or $ will be monospaced formatted
 CODE_PREFIX = re.compile(r'^(~|\\code|\$|\\c) (?P<code>[\s\S]+)')
+# Helper regex to redirect to /serie callbacks to serie_callback_handler.
+SERIE_REGEX = re.compile(SERIE)
 
 # Setup bot
 updater = Updater(os.environ['PYTEL'])
@@ -49,6 +52,7 @@ posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
 cartelera_handler = CommandHandler('cartelera', cinearg)
 hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)
+serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
@@ -56,6 +60,7 @@ edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 
+serie_callback_handler = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 #  Associate command with actions.
@@ -66,13 +71,16 @@ dispatcher.add_handler(posiciones_handler)
 dispatcher.add_handler(subte_handler)
 dispatcher.add_handler(cartelera_handler)
 dispatcher.add_handler(pelis)
-dispatcher.add_handler(callback_handler)
 dispatcher.add_handler(hoypido_handler)
+dispatcher.add_handler(serie_handler)
+dispatcher.add_handler(serie_callback_handler)
+dispatcher.add_handler(callback_handler)
 dispatcher.add_handler(code_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(generic_handler)
+
 dispatcher.add_error_handler(error_handler)
 
 updater.start_polling()
