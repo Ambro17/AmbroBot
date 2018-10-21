@@ -38,5 +38,5 @@ def prettify_food_offers(menu_por_dia, day=None):
         day = MONDAY if today in (SATURDAY, SUNDAY) else today
 
     food_offers = menu_por_dia[day]
-    header = [f"\t\t\tMenú del {day_names[day]}"]
-    return monospace('\n'.join(header + food_offers))
+    header = [f"\t\t\t\t\tMenú del {day_names[day]}"]
+    return monospace('\n'.join(header + food_offers + ['⚡️ by Yona']))
