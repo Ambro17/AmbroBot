@@ -52,18 +52,16 @@ def _minify_torrents(torrents):
             MB = 1024 * 1024
             size_float = int(torrent['size_bytes']) / MB
             size = f"{size_float:.2f}"
-            torrent = torrent['title'], torrent['torrent_url'], torrent['seeds'], size
+            yield torrent['title'], torrent['torrent_url'], torrent['seeds'], size
         except Exception:
             logger.exception("Error parsing torrent from eztv api. <%s>", torrent)
             continue
-        else:
-            yield torrent
 
 
 def prettify_torrents(torrents):
     return '\n'.join(
         prettify_torrent(*torrent) for torrent in torrents
-        if prettify_torrent(torrent)
+        if prettify_torrent(*torrent)
     )
 
 

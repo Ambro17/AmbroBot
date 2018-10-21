@@ -103,7 +103,6 @@ def serie_callback_handler(bot, update, chat_data):
 
     elif answer == GO_BACK_TO_MAIN:
         # Remove season and episode context so we can start the search again if the user wants to download another episode.
-        context.pop('seasons', None)
         context.pop('selected_season_episodes', None)
 
         # Resend series basic description
@@ -115,9 +114,12 @@ def serie_callback_handler(bot, update, chat_data):
 
     elif answer == LOAD_EPISODES:
         # Load all episodes parsing eztv web page
-        update.callback_query.answer(text='Loading episodes.. this may take a while')
         # They should be loaded by now but just in case.
-        seasons = chat_data['context'].get('seasons', get_all_seasons(context['data']['series_name']))
+        seasons = chat_data['context'].get('seasons')
+        if not seasons:
+            update.callback_query.answer(text='Loading episodes.. this may take a while')
+            seasons = chat_data['context']['seasons'] = get_all_seasons(context['data']['series_name'])
+
         response = 'Choose a season to see its episodes.'
         keyboard = serie_season_keyboard(seasons)
 

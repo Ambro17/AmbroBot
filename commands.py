@@ -375,7 +375,3 @@ def serie(bot, update, chat_data, **kwargs):
         parse_mode='markdown',
         disable_web_page_preview=True,
     )
-    logger.info("Retrieving all seasons to gain time")
-    all_seasons = get_all_seasons(name)
-    logger.info("All seasons data retrieved")
-    chat_data['context']['seasons'] = all_seasons
