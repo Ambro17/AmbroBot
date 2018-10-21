@@ -25,7 +25,15 @@ Outputs status of CABA subway lines.
 
 Outputs the most popular movies available at the cinemas
 
+```/hoypido```
+
+Outputs hoypido food offers of the week
+
 ```/pelicula <pelicula>```
 
 Outputs rating, description and imdb, yt and .torrent links to the requested movie.
+
+```/serie <serie>```
+
+Outputs all series episodes along with small description of the series.
 
