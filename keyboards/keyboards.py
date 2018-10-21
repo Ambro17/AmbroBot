@@ -10,6 +10,7 @@ from command.serie.constants import (
     EPISODE_T,
 )
 
+GO_BACK_BUTTON = [Button('« Back to Main', callback_data=GO_BACK_TO_MAIN)]
 
 @lru_cache(1)
 def banco_keyboard():
@@ -60,9 +61,7 @@ def serie_keyboard():
 
 
 def serie_go_back_keyboard():
-    return InlineKeyboardMarkup([[
-        Button('Go back', callback_data=GO_BACK_TO_MAIN)
-    ]])
+    return InlineKeyboardMarkup([GO_BACK_BUTTON])
 
 
 def serie_season_keyboard(seasons):
@@ -74,6 +73,7 @@ def serie_season_keyboard(seasons):
     columned_keyboard= [
         buttons[i:i+COLUMNS] for i in range(0, len(buttons), COLUMNS)
     ]
+    columned_keyboard.append(GO_BACK_BUTTON)
 
     return InlineKeyboardMarkup(columned_keyboard)
 
@@ -87,5 +87,14 @@ def serie_episodes_keyboards(episodes_dict):
     columned_keyboard= [
         buttons[i:i+COLUMNS] for i in range(0, len(buttons), COLUMNS)
     ]
+    columned_keyboard.append(GO_BACK_BUTTON)
 
     return InlineKeyboardMarkup(columned_keyboard)
+
+def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
