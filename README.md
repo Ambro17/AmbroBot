@@ -37,3 +37,8 @@ Outputs rating, description and imdb, yt and .torrent links to the requested mov
 
 Outputs all series episodes along with small description of the series.
 
+```/yts```
+
+Show latest movies added on yts.ag
+
+
