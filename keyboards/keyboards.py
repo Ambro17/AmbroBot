@@ -2,13 +2,14 @@ from functools import lru_cache
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
-from command.serie.constants import (
+from commands.serie.constants import (
     LATEST_EPISODES,
     LOAD_EPISODES,
     GO_BACK_TO_MAIN,
     SEASON_T,
     EPISODE_T,
 )
+from commands.yts.constants import NEXT_YTS, YTS_TORRENT, IMDB_LINK, YT_LINK
 
 GO_BACK_BUTTON = [Button('« Back to Main', callback_data=GO_BACK_TO_MAIN)]
 
@@ -90,6 +91,19 @@ def serie_episodes_keyboards(episodes_dict):
     columned_keyboard.append(GO_BACK_BUTTON)
 
     return InlineKeyboardMarkup(columned_keyboard)
+
+
+def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
+    buttons = [
+        [
+            Button('☠️ Torrent', callback_data=YTS_TORRENT),
+            Button('🎟️ IMDB', url=IMDB_LINK.format(imdb_id)),
+            Button('🎬️ Youtube', url=YT_LINK.format(yt_trailer))
+        ]
+    ] # Implement Back too
+    if show_next:
+        buttons.insert(0, [Button('Next', callback_data=NEXT_YTS)])
+    return InlineKeyboardMarkup(buttons)
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]

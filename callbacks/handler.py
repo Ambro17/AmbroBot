@@ -1,9 +1,16 @@
 import logging
 
 from callbacks.command_callbacks import dolarhoy_callback, peliculas_callback, hoypido_callback
-from command.serie.constants import LOAD_EPISODES, LATEST_EPISODES, GO_BACK_TO_MAIN, SEASON_T, EPISODE_T, \
-    EZTV_API_ERROR, EZTV_NO_RESULTS
-from command.serie.utils import (
+from commands.serie.constants import (
+    LOAD_EPISODES,
+    LATEST_EPISODES,
+    GO_BACK_TO_MAIN,
+    SEASON_T,
+    EPISODE_T,
+    EZTV_API_ERROR,
+    EZTV_NO_RESULTS
+)
+from commands.serie.utils import (
     get_torrents_by_id,
     prettify_serie,
     get_all_seasons,
@@ -23,7 +30,7 @@ command_callback = {
 
 
 def handle_callbacks(bot, update, chat_data):
-    # Get the handler based on the command
+    # Get the handler based on the commands
     context = chat_data.get('context')
     if not context:
         message = f"Ups.. 😳 no pude encontrar lo que me pediste.\n" \

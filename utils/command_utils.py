@@ -19,9 +19,9 @@ def monospace(text):
     return f'```\n{text}\n```'
 
 
-def normalize(text, limit=11):
+def normalize(text, limit=11, trim_end='.'):
     """Trim and append . if text is too long. Else return it unmodified"""
-    return f'{text[:limit]}.' if len(text) > limit else text
+    return f'{text[:limit]}{trim_end}' if len(text) > limit else text
 
 
 class Soupifier(object):
@@ -162,7 +162,7 @@ def error_handler(bot, update, error):
     except Unauthorized:
         logger.info("User unauthorized")
     except BadRequest as e:
-        msg = getattr(BadRequest, 'message', None)
+        msg = getattr(error, 'message', None)
         if msg is None:
             raise
         if msg == 'Query_id_invalid':

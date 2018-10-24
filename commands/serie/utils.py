@@ -5,7 +5,7 @@ from functools import lru_cache
 import requests
 from bs4 import BeautifulSoup
 
-from command.serie.constants import (
+from commands.serie.constants import (
     NAME,
     EPISODE_PATTERNS,
     MAGNET,
@@ -18,13 +18,19 @@ from utils.command_utils import monospace
 
 logger = logging.getLogger(__name__)
 
+def rating_stars(rating):
+    """Transforms int rating into stars with int"""
+    stars = int(rating // 2)
+    rating_stars = f"{'⭐'*stars} ~ {rating}"
+    return rating_stars
+
+
 @lru_cache(5)
 def prettify_serie(name, rating, overview, start_date):
     if start_date:
         name = f"{name} ({start_date})"
-    stars = int(rating // 2)
-    rating = f"{'⭐'*stars} ~ {rating}"
-    return '\n'.join((name, rating, overview))
+    stars = rating_stars(rating)
+    return '\n'.join((name, stars, overview))
 
 
 @lru_cache(20)

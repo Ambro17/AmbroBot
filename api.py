@@ -6,9 +6,9 @@ import os
 import requests
 from telegram.ext.dispatcher import run_async
 
-from command.hoypido.hoypido import get_comidas, prettify_food_offers
-from command.movies.movie_utils import get_movie, prettify_movie
-from command.serie.utils import prettify_serie, get_all_seasons
+from commands.hoypido.hoypido import get_comidas, prettify_food_offers
+from commands.movies.movie_utils import get_movie, prettify_movie
+from commands.serie.utils import prettify_serie
 from decorators import send_typing_action, log_time
 from keyboards.keyboards import banco_keyboard, pelis_keyboard, hoypido_keyboard, serie_keyboard
 from utils.command_utils import (
@@ -226,9 +226,9 @@ def buscar_peli(bot, update, chat_data, **kwargs):
             'edit_original_text': False,
         }
 
-        movie_details = prettify_movie(movie)  # Add photo to basic output
-        #movie_details = search_movie(pelicula)
+        movie_details, poster = prettify_movie(movie)
         keyboard = pelis_keyboard()
+        bot.send_photo(chat_id=update.message.chat_id, photo=poster)
         bot.send_message(
             chat_id=update.message.chat_id,
             text=movie_details,
@@ -249,7 +249,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
 @send_typing_action
 @run_async
 def default(bot, update):
-    """If a user sends an unknown command, answer accordingly"""
+    """If a user sends an unknown commands, answer accordingly"""
     bot.send_message(chat_id=update.message.chat_id, text="No sé qué decirte..")
 
 

@@ -2,8 +2,8 @@ import os
 
 import requests
 
-from command.hoypido.hoypido import prettify_food_offers
-from command.movies.movie_utils import get_yt_trailer, get_torrent_info
+from commands.hoypido.hoypido import prettify_food_offers
+from commands.movies.movie_utils import get_yt_trailer, get_torrent_info
 from utils.command_utils import pretty_print_dolar
 
 
