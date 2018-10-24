@@ -33,8 +33,9 @@ def handle_callback(bot, update, chat_data):
         # User wants to see info for next movie
         try:
             movie = movies[next_movie]
+            logger.info(f"Requested movie '{movie['title_long']}' ({next_movie}/{context['movie_count']})")
         except IndexError:
-            update.callback_query.answer(text='Thatś it! No more movies to peek', show_alert=True)
+            update.callback_query.answer(text="That's it! No more movies to peek", show_alert=True)
             logger.info(f"No more movies found. Movies count: {context['movie_count']}, Requested movie index: {next_movie}")
             update.callback_query.edit_message_reply_markup(reply_markup=yts_navigator_keyboard(show_next=False))
             return
