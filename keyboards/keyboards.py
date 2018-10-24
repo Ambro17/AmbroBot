@@ -32,7 +32,7 @@ def pelis_keyboard():
     buttons = [
         [
             Button('🎟️ IMDB', callback_data="IMDB"),
-            Button('🎬️ Youtube', callback_data="Youtube"),
+            Button('🎬️ Trailer', callback_data="Youtube"),
             Button('💀 Torrent', callback_data="Torrent"),
         ]
     ]
@@ -98,7 +98,7 @@ def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
         [
             Button('☠️ Torrent', callback_data=YTS_TORRENT),
             Button('🎟️ IMDB', url=IMDB_LINK.format(imdb_id)),
-            Button('🎬️ Youtube', url=YT_LINK.format(yt_trailer))
+            Button('🎬️ Trailer', url=YT_LINK.format(yt_trailer))
         ]
     ] # Implement Back too
     if show_next:
