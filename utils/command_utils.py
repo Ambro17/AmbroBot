@@ -3,7 +3,7 @@ from telegram.error import (
     TelegramError,
     Unauthorized,
     BadRequest,
-)
+    TimedOut)
 from collections import defaultdict
 
 import requests
@@ -171,6 +171,12 @@ def error_handler(bot, update, error):
             logger.info("Tried to edit a message but text hasn't changed."
                         " Probably a button in inline keyboard was pressed but it didn't change the message")
 
+    except TimedOut:
+        logger.info("Request timed out")
+        bot.send_message(chat_id=update.message.chat_id, text='The request timed out ⌛️')
+
     except TelegramError:
         logger.exception("A TelegramError occurred")
 
+    finally:
+        logger.info(f"Conflicting update: '{update.to_dict()}'")
