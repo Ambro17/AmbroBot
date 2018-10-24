@@ -1,9 +1,13 @@
 # Credits to @yromero
 
+import logging
 from datetime import datetime
+
 import requests
 
 from utils.command_utils import monospace
+
+logger = logging.getLogger(__name__)
 
 ONAPSIS_SALUDABLE = "https://api.hoypido.com/company/326/menus"
 ONAPSIS_PAGO = "https://api.hoypido.com/company/327/menus"
@@ -37,6 +41,12 @@ def prettify_food_offers(menu_por_dia, day=None):
     if day is None:
         day = MONDAY if today in (SATURDAY, SUNDAY) else today
 
-    food_offers = menu_por_dia[day]
-    header = [f"\t\t\t\t\tMenú del {day_names[day]}"]
+    try:
+        food_offers = menu_por_dia[day]
+    except KeyError:
+        # If you ask on tuesday at night, only wednesday food will be retrieved.
+        logger.info("Menu for today not available. Showing tomorrow's menu. %s", menu_por_dia)
+        food_offers = menu_por_dia[day+1]
+
+    header = [f"\t\t\t\t\tMenú del {day_names[day+1]}"]
     return monospace('\n'.join(header + food_offers + ['⚡️ by Yona']))
