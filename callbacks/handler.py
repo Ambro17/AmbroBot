@@ -59,8 +59,9 @@ def handle_callbacks(bot, update, chat_data):
         keyboard = banco_keyboard()
     elif context['command'] == 'pelicula':
         keyboard = pelis_keyboard()
-    else:
-        keyboard = hoypido_keyboard()
+    elif context['command'] == 'hoypido':
+        comidas = context['data']
+        keyboard = hoypido_keyboard(comidas)
 
     if context.get('edit_original_text'):
         update.callback_query.edit_message_text(

@@ -277,8 +277,7 @@ def hoypido(bot, update, chat_data):
         'command': 'hoypido',
         'edit_original_text': True
     }
-
-    keyboard = hoypido_keyboard()
+    keyboard = hoypido_keyboard(comidas)
     bot.send_message(
         update.message.chat_id,
         text=pretty_comidas,

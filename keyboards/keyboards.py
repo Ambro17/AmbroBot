@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
+from commands.hoypido.hoypido import day_names
 from commands.serie.constants import (
     LATEST_EPISODES,
     LOAD_EPISODES,
@@ -39,12 +40,11 @@ def pelis_keyboard():
     return InlineKeyboardMarkup(buttons)
 
 
-@lru_cache(1)
-def hoypido_keyboard():
+def hoypido_keyboard(comidas):
     weekday_buttons = [
         [
-            Button(day, callback_data=i)
-            for i, day in enumerate(('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'))
+            Button(day_names[day_int], callback_data=day_int)
+            for day_int in comidas.keys()
         ]
     ]
     return InlineKeyboardMarkup(weekday_buttons)
