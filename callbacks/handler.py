@@ -33,8 +33,10 @@ def handle_callbacks(bot, update, chat_data):
     # Get the handler based on the commands
     context = chat_data.get('context')
     if not context:
-        message = f"Ups.. 😳 no pude encontrar lo que me pediste.\n" \
-                  f"Podés probar invocando de nuevo el comando a ver si me sale 😊"
+        user = update.effective_user.first_name
+        message = (f"Perdón {user}, no pude traer la info que me pediste.\n"
+                   f"Probá invocando de nuevo el comando a ver si me sale 😊")
+        logger.info(f"Conflicting update: '{update.to_dict()}'. Chat data: {chat_data}")
         bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text=message,
@@ -78,8 +80,9 @@ def handle_callbacks(bot, update, chat_data):
 def serie_callback_handler(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
-        message = f"Ups.. 😳 no pude encontrar lo que me pediste.\n" \
-                  f"Podés probar invocando de nuevo el comando a ver si me sale 😊"
+        message = (f"Lpm, no pude responder a tu pedido.\n"
+                   f"Probá invocando de nuevo el comando a ver si me sale 😊")
+        logger.info(f"Conflicting update: '{update.to_dict()}'. Chat data: {chat_data}")
         bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text=message,
