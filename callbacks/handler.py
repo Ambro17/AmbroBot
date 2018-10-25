@@ -98,6 +98,7 @@ def serie_callback_handler(bot, update, chat_data):
         torrents = get_torrents_by_id(imdb_id)
 
         if not torrents:
+            logger.info(f"No torrents for {context['data']['series_name']}")
             update.callback_query.edit_message_text(
                 text=EZTV_NO_RESULTS,
                 reply_markup=keyboard,
@@ -124,7 +125,7 @@ def serie_callback_handler(bot, update, chat_data):
         seasons = chat_data['context'].get('seasons')
         if not seasons:
             update.callback_query.answer(text='Loading episodes.. this may take a while')
-            seasons = chat_data['context']['seasons'] = get_all_seasons(context['data']['series_name'])
+            seasons = chat_data['context']['seasons'] = get_all_seasons(context['data']['series_name'], context['data']['series_raw_name'])
 
         response = 'Choose a season to see its episodes.'
         keyboard = serie_season_keyboard(seasons)
@@ -135,7 +136,7 @@ def serie_callback_handler(bot, update, chat_data):
         season_episodes = chat_data['context']['seasons'][int(season_choice)]
         chat_data['context']['selected_season_episodes'] = season_episodes
         response = f'You chose season {season_choice}.'
-        logger.info(f"Season %s episodes %s", season_choice, tuple(season_episodes.keys()))
+        logger.info(f"Season %s episodes %s", season_choice, sorted(tuple(season_episodes.keys())))
         keyboard = serie_episodes_keyboards(season_episodes)
 
     elif answer.startswith(EPISODE_T.format('')):

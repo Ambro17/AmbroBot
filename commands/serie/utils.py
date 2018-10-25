@@ -86,8 +86,12 @@ def prettify_torrent(name, torrent_url, seeds, size):
 
 
 @lru_cache(20)
-def get_all_seasons(series_name):
+def get_all_seasons(series_name, raw_user_query):
     """Parses eztv search page in order to return all episodes of a given series.
+
+    Args:
+        series_name: Full series name as it is on tmdb
+        raw_user_query: The user query, with possible typos or the incomplete series_name
 
     Unlike get_latest_episodes handler function, this does not communicate directly
     with the eztv api because the api is in beta mode and has missing season and episode info
@@ -96,6 +100,7 @@ def get_all_seasons(series_name):
     that information consistency and completeness. Neither of those requirements
     are satisfied by the api. That's why we parse the web to get consistent results.
     Quite a paradox..
+
 
     Returns:
         {
@@ -146,7 +151,8 @@ def get_all_seasons(series_name):
 
         # Filter fake results that include series name but separated between other words.
         # For example, a query for The 100 also returns '*The* TV Show S07E00 Catfish Keeps it *100*' which we don't want
-        if not series_name.lower() in name.lower():
+        # We also use the raw_user_query because sometimes the complete name from tmdb is not the same name used on eztv.
+        if not series_name.lower() in name.lower() and not raw_user_query.lower() in name.lower():
             # The tradeoff is that we don't longer work for series with typos. But it's better than giving fake results.
             logger.info(f"Fake result '{name}' for query '{series_name}'")
             return None
@@ -173,7 +179,7 @@ def get_all_seasons(series_name):
         )
 
     # Parse episodes from web
-    series_query = series_name.replace(' ', '-')
+    series_query = raw_user_query.replace(' ', '-')
     r = requests.get("https://eztv.ag/search/{}".format(series_query))
     soup = BeautifulSoup(r.text, 'lxml')
     torrents = soup.find_all('tr', {'class': 'forum_header_border'})

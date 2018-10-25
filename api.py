@@ -299,8 +299,8 @@ def serie(bot, update, chat_data, **kwargs):
         return
 
     # Obtener id de imdb
-    serie = ' '.join(serie)
-    params = {'api_key': os.environ['TMDB_KEY'], 'query': serie}
+    serie_query = ' '.join(serie)
+    params = {'api_key': os.environ['TMDB_KEY'], 'query': serie_query}
     r = requests.get('https://api.themoviedb.org/3/search/tv', params=params)
     if r.status_code != 200:
         bot.send_message(
@@ -360,7 +360,11 @@ def serie(bot, update, chat_data, **kwargs):
 
     # Build context based on the imdb_id
     chat_data['context'] = {
-        'data': {'imdb_id': imdb_id, 'series_name': name, 'message_info': (name, rating, overview, start_date)},
+        'data': {
+            'imdb_id': imdb_id,
+            'series_name': name,
+            'series_raw_name': serie_query,
+            'message_info': (name, rating, overview, start_date)},
         'command': 'serie',
         'edit_original_text': True,
     }
