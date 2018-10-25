@@ -173,7 +173,7 @@ def error_handler(bot, update, error):
 
     except TimedOut:
         logger.info("Request timed out")
-        bot.send_message(chat_id=update.message.chat_id, text='The request timed out ⌛️')
+        bot.send_message(chat_id=update.effective_message.chat_id, text='The request timed out ⌛️')
 
     except TelegramError:
         logger.exception("A TelegramError occurred")

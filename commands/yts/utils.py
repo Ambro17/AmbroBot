@@ -1,5 +1,8 @@
 from collections import namedtuple
 
+from telegram import InputMediaPhoto
+from telegram.error import TimedOut
+
 from commands.serie.utils import rating_stars
 from utils.command_utils import normalize
 
@@ -61,3 +64,15 @@ def prettify_torrent(movie_name, torrent):
         f"🗳 Size: {torrent.size}\n"
         f"🖥 Quality: {torrent.quality}\n"
     )
+
+
+def get_photo(image_url):
+    """Build InputMediaPhoto from image url"""
+    try:
+        return InputMediaPhoto(image_url)
+    except TimedOut:
+        # Try again.
+        try:
+            return InputMediaPhoto(image_url)
+        except TimedOut:
+            return None

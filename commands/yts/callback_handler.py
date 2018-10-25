@@ -1,8 +1,9 @@
 import logging
 from telegram import InputMediaPhoto
+from telegram.error import TimedOut
 
 from commands.yts.constants import NEXT_YTS, YTS_TORRENT, YTS_FULL_DESC
-from commands.yts.utils import get_torrents, prettify_torrent, get_minimal_movie, prettify_yts_movie
+from commands.yts.utils import get_torrents, prettify_torrent, get_minimal_movie, prettify_yts_movie, get_photo
 from keyboards.keyboards import yts_navigator_keyboard
 
 logger = logging.getLogger(__name__)
@@ -54,11 +55,18 @@ def handle_callback(bot, update, chat_data):
         # Rebuild the same keyboard
         yts_navigator = yts_navigator_keyboard(imdb_id=imdb, yt_trailer=yt_trailer)
 
+        photo = get_photo(image)
+        if photo is None:
+            update.callback_query.answer(text='Request for photo timed out.', show_alert=True)
+            bot.send_message(chat_id=update.callback_query.message.chat_id, text='Request for new photo timed out. Try again.')
+            logger.info("Could not build InputMediaPhoto from url %s", image)
+            return
+
         # Edit message photo
         bot.edit_message_media(
             chat_id=update.callback_query.message.chat_id,
             message_id=update.callback_query.message.message_id,
-            media=InputMediaPhoto(image)
+            media=photo
         )
         # Edit message caption with new movie description
         update.callback_query.edit_message_caption(
