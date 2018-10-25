@@ -10,7 +10,7 @@ from commands.serie.constants import (
     SEASON_T,
     EPISODE_T,
 )
-from commands.yts.constants import NEXT_YTS, YTS_TORRENT, IMDB_LINK, YT_LINK
+from commands.yts.constants import NEXT_YTS, YTS_TORRENT, IMDB_LINK, YT_LINK, YTS_FULL_DESC
 
 GO_BACK_BUTTON = [Button('« Back to Main', callback_data=GO_BACK_TO_MAIN)]
 
@@ -96,14 +96,21 @@ def serie_episodes_keyboards(episodes_dict):
 def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
     buttons = [
         [
+            Button('📖 Read more', callback_data=YTS_FULL_DESC),
+        ],
+        [
             Button('☠️ Torrent', callback_data=YTS_TORRENT),
             Button('🎟️ IMDB', url=IMDB_LINK.format(imdb_id)),
             Button('🎬️ Trailer', url=YT_LINK.format(yt_trailer))
         ]
     ] # Implement Back too
     if show_next:
-        buttons.insert(0, [Button('Next', callback_data=NEXT_YTS)])
+        buttons[0].append(
+            Button('Next »', callback_data=NEXT_YTS)
+        )
+
     return InlineKeyboardMarkup(buttons)
+
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
     menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]

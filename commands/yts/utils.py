@@ -6,12 +6,16 @@ from utils.command_utils import normalize
 Torrent = namedtuple('Torrent', ['url', 'size', 'seeds', 'quality'])
 
 
-def get_minimal_movie(movie):
+def get_minimal_movie(movie, trim_description=True):
     """Return image, title, synopsis, and Torrents from a movie."""
     title = movie['title_long']
     imdb = movie['imdb_code']
     yt_trailer = movie['yt_trailer_code']
-    synopsis = normalize(movie['synopsis'], limit=150, trim_end='..')
+    if trim_description:
+        synopsis = normalize(movie['synopsis'], limit=150, trim_end='..')
+    else:
+        synopsis = movie['synopsis']
+
     rating = movie['rating']
     image = movie['large_cover_image']
     return title, synopsis, rating, imdb, yt_trailer, image
