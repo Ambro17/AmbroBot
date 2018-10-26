@@ -60,14 +60,17 @@ def sample_movie():
     }
 
 
-def test_get_photo_retry_works(mocker):
+def test_get_photo_retry_works(mocker, caplog):
+    caplog.set_level(logging.INFO)
     mocker.patch('commands.yts.utils.InputMediaPhoto', side_effect=[TimedOut, 'photo_url'])
     assert get_photo('url_img') == 'photo_url'
+    assert 'Retrying..' in caplog.text
 
-
-def test_get_photo_returns_none_on_timeout(mocker):
+def test_get_photo_returns_none_on_timeout(mocker, caplog):
+    caplog.set_level(logging.INFO)
     mocker.patch('commands.yts.utils.InputMediaPhoto', side_effect=TimedOut)
     assert get_photo('url_img') is None
+    assert 'Retry Failed.' in caplog.text
 
 
 def test_handle_callback_with_timeout_sends_message(mocker, sample_movie, caplog):

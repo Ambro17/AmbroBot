@@ -1,4 +1,5 @@
 from collections import namedtuple
+import logging
 
 from telegram import InputMediaPhoto
 from telegram.error import TimedOut
@@ -8,6 +9,7 @@ from utils.command_utils import normalize
 
 Torrent = namedtuple('Torrent', ['url', 'size', 'seeds', 'quality'])
 
+logger = logging.getLogger(__name__)
 
 def get_minimal_movie(movie, trim_description=True):
     """Return image, title, synopsis, and Torrents from a movie."""
@@ -71,8 +73,10 @@ def get_photo(image_url):
     try:
         return InputMediaPhoto(image_url)
     except TimedOut:
-        # Try again.
+        logger.info('Request for photo from %s timed out.', image_url)
+        logger.info('Retrying..')
         try:
             return InputMediaPhoto(image_url)
         except TimedOut:
+            logger.info('Retry Failed.')
             return None
