@@ -56,8 +56,8 @@ def handle_callback(bot, update, chat_data):
         yts_navigator = yts_navigator_keyboard(imdb_id=imdb, yt_trailer=yt_trailer)
 
         photo = get_photo(image)
+
         if photo is None:
-            update.callback_query.answer(text='Request for photo timed out.', show_alert=True)
             bot.send_message(chat_id=update.callback_query.message.chat_id, text='Request for new photo timed out. Try again.')
             logger.info("Could not build InputMediaPhoto from url %s", image)
             return
