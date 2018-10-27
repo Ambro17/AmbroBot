@@ -13,7 +13,9 @@ from telegram.ext import (
 
 from callbacks.handler import handle_callbacks, serie_callback_handler
 from commands.feriados.command import feriados
+from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
 from commands.serie.constants import SERIE
+from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from api import (
@@ -42,8 +44,10 @@ logger = logging.getLogger(__name__)
 TICKET_REGEX = re.compile(r'((t|osp\-?)(?P<ticket>\d{5,6}))', re.IGNORECASE)
 # Text starting with ~, \c, \code or $ will be monospaced formatted
 CODE_PREFIX = re.compile(r'^(~|\\code|\$|\\c) (?P<code>[\s\S]+)')
+
 # Helper regex to redirect to /serie callbacks to serie_callback_handler.
 SERIE_REGEX = re.compile(SERIE)
+# Helper regex to redirect to /yts callbacks to yts callback_handler.
 YTS_REGEX = re.compile(YTS)
 
 # Setup bot
@@ -63,6 +67,10 @@ serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=Tr
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
+save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
+get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
+delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
+show_snippets_handler = CommandHandler('snippets', show_snippets)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
@@ -88,6 +96,10 @@ dispatcher.add_handler(serie_callback_handler)
 dispatcher.add_handler(yts_callback_handler)
 dispatcher.add_handler(callback_handler)
 dispatcher.add_handler(code_handler)
+dispatcher.add_handler(save_snippet_handler)
+dispatcher.add_handler(get_snippet_handler)
+dispatcher.add_handler(show_snippets_handler)
+dispatcher.add_handler(delete_snippet_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)

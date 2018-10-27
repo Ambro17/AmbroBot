@@ -142,6 +142,7 @@ def posiciones(bot, update, **kwargs):
 # ------------- FORMAT_CODE -----------------
 @send_typing_action
 @run_async
+@log_time
 def format_code(bot, update, **kwargs):
     """Format text as code if it starts with $, ~, \c or \code."""
     code = kwargs.get('groupdict').get('code')
