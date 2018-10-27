@@ -10,29 +10,29 @@ from telegram.ext import (
     RegexHandler,
     CallbackQueryHandler,
 )
-
-from callbacks.handler import handle_callbacks, serie_callback_handler
-from commands.feriados.command import feriados
-from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
-from commands.serie.constants import SERIE
-from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
-from commands.yts.callback_handler import handle_callback
-from commands.yts.command import yts
 from api import (
     dolar_hoy,
     partido,
     dolar_futuro,
     default,
-    posiciones,
     link_ticket,
     subte,
     format_code,
     cinearg,
     buscar_peli,
     hoypido,
-    serie,
 )
+from callbacks.handler import handle_callbacks
+from commands.feriados.command import feriados
+from commands.posiciones.command import posiciones
+from commands.serie.callbacks_handler import serie_callback_handler
+from commands.serie.command import serie
+from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
+from commands.serie.constants import SERIE
+from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.tagger.all_tagger import tag_all, set_all_members
+from commands.yts.callback_handler import handle_callback
+from commands.yts.command import yts
 from commands.yts.constants import YTS
 from utils.command_utils import error_handler
 
@@ -76,7 +76,7 @@ edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 
-serie_callback_handler = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
+serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
@@ -92,7 +92,7 @@ dispatcher.add_handler(yts_handler)
 dispatcher.add_handler(hoypido_handler)
 dispatcher.add_handler(feriados_handler)
 dispatcher.add_handler(serie_handler)
-dispatcher.add_handler(serie_callback_handler)
+dispatcher.add_handler(serie_callback)
 dispatcher.add_handler(yts_callback_handler)
 dispatcher.add_handler(callback_handler)
 dispatcher.add_handler(code_handler)

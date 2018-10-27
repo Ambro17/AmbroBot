@@ -52,41 +52,14 @@ soup = Soupifier()
 _soupify_url = soup.soupify
 
 
-def soupify_url(url, timeout=2):
+def soupify_url(url, timeout=2, encoding='utf-8'):
     """Given a url returns a BeautifulSoup object"""
     r = requests.get(url, timeout=timeout)
-    r.encoding = 'utf-8'
+    r.encoding = encoding
     if r.status_code == 200:
         return BeautifulSoup(r.text, 'lxml')
     else:
         raise ConnectionError(f'{url} did not respond.')
-
-
-# Helper functions for /posiciones
-def parse_posiciones(tabla, posiciones=None):
-    # #, Equipo, pts y PJ
-    posiciones = int(posiciones[0]) if posiciones else 5
-    LIMIT = 4
-    headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
-    res = [
-        [normalize(r.text) for r in row.find_all('td')[:LIMIT]]
-        for row in tabla.tbody.find_all('tr')[:posiciones]
-    ]
-    res.insert(0, headers)
-    return res
-
-
-# Helper function for /posiciones
-def prettify_table_posiciones(info):
-    try:
-        return monospace(
-            '\n'.join(
-                '{:2} | {:12} | {:3} | {:3}'.format(*team_stat) for team_stat in info
-            )
-        )
-    except Exception:
-        logger.error(f"Error Prettying info {info}")
-        return 'No te entiendo..'
 
 
 # Helper func for /subte
@@ -167,9 +140,11 @@ def error_handler(bot, update, error):
             raise
         if msg == 'Query_id_invalid':
             logger.info("We took too long to answer.")
-        if msg == 'Message is not modified':
+        elif msg == 'Message is not modified':
             logger.info("Tried to edit a message but text hasn't changed."
                         " Probably a button in inline keyboard was pressed but it didn't change the message")
+        else:
+            logger.info("Bad Request exception: %s", msg)
 
     except TimedOut:
         logger.info("Request timed out")

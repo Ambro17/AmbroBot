@@ -1,8 +1,6 @@
 import logging
-from telegram import InputMediaPhoto
-from telegram.error import TimedOut
 
-from commands.yts.constants import NEXT_YTS, YTS_TORRENT, YTS_FULL_DESC
+from commands.yts.constants import NEXT_YTS, YTS_TORRENT, YTS_FULL_DESC, MEDIA_CAPTION_LIMIT
 from commands.yts.utils import get_torrents, prettify_torrent, get_minimal_movie, prettify_yts_movie, get_photo
 from keyboards.keyboards import yts_navigator_keyboard
 
@@ -70,7 +68,7 @@ def handle_callback(bot, update, chat_data):
         )
         # Edit message caption with new movie description
         update.callback_query.edit_message_caption(
-            caption=movie_desc,
+            caption=movie_desc,  # Avoid Media caption too long exception
             reply_markup=yts_navigator
         )
 
@@ -80,7 +78,7 @@ def handle_callback(bot, update, chat_data):
         title, synopsis, rating, imdb, yt_trailer, _ = get_minimal_movie(movie, trim_description=False)
         movie_desc = prettify_yts_movie(title, synopsis, rating)
         update.callback_query.edit_message_caption(
-            caption=movie_desc,
+            caption=movie_desc[:MEDIA_CAPTION_LIMIT],
             reply_markup=yts_navigator_keyboard(imdb_id=imdb, yt_trailer=yt_trailer)
         )
 

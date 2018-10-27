@@ -4,3 +4,4 @@ lxml
 python-telegram-bot
 cachetools
 psycopg2-binary
+subliminal

@@ -6,3 +6,5 @@ YTS_FULL_DESC = YTS + 'DESCRIPTION'
 
 IMDB_LINK = 'https://www.imdb.com/title/{}'
 YT_LINK = 'https://www.youtube.com/watch?v={}'
+
+MEDIA_CAPTION_LIMIT = 1024
