@@ -41,4 +41,6 @@ Outputs all series episodes along with small description of the series.
 
 Show latest movies added on yts.ag
 
+```/feriados```
 
+Show next feriados for Argentina
