@@ -12,6 +12,7 @@ from telegram.ext import (
 )
 
 from callbacks.handler import handle_callbacks, serie_callback_handler
+from commands.feriados.command import feriados
 from commands.serie.constants import SERIE
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
@@ -57,6 +58,7 @@ posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
 cartelera_handler = CommandHandler('cartelera', cinearg)
 hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)
+feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
@@ -80,6 +82,7 @@ dispatcher.add_handler(cartelera_handler)
 dispatcher.add_handler(pelis)
 dispatcher.add_handler(yts_handler)
 dispatcher.add_handler(hoypido_handler)
+dispatcher.add_handler(feriados_handler)
 dispatcher.add_handler(serie_handler)
 dispatcher.add_handler(serie_callback_handler)
 dispatcher.add_handler(yts_callback_handler)
