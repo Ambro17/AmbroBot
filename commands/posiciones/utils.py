@@ -4,6 +4,7 @@ from utils.command_utils import normalize, monospace
 
 logger = logging.getLogger(__name__)
 
+
 def parse_posiciones(tabla, posiciones=None):
     posiciones = int(posiciones[0]) if posiciones else 5
     LIMIT = 4

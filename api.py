@@ -207,7 +207,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
 
         # Give context to button handlers
         chat_data['context'] = {
-            'data': dict(movie=movie['id'], title=movie['title']),
+            'data': dict(movie_id=movie['id'], title=movie['title']),
             'command': 'pelicula',
             'edit_original_text': False,
         }

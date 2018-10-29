@@ -2,6 +2,7 @@ import requests
 import logging
 
 from commands.serie.utils import rating_stars
+from utils.constants import YT_LINK
 
 TMDB_KEY = '7f76943e1557e33276e0f595c2128f68'
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ def prettify_basic_movie_info(title, rating, overview, year, image):
 
 def get_yt_trailer(videos):
     key = videos['results'][-1]['key']
-    return f'https://www.youtube.com/watch?v={key}'
+    return YT_LINK.format(key)
 
 
 def get_torrent_info(imdb_id):
