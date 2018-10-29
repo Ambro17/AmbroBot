@@ -12,7 +12,11 @@ logger = logging.getLogger(__name__)
 @send_typing_action
 @run_async
 def yts(bot, update, chat_data):
-    r = requests.get('https://yts.am/api/v2/list_movies.json', params={'limit': 50})
+    try:
+        r = requests.get('https://yts.am/api/v2/list_movies.json', params={'limit': 50})
+    except requests.exceptions.ConnectionError:
+        update.message.reply_text("📡 La api de yts está caida. Intentá más tarde")
+        return
     if r.status_code != 200:
         logger.info(f"Yts api down. {r.status_code}")
         return None
