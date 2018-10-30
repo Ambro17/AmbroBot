@@ -32,7 +32,7 @@ def get_snippet(bot, update, **kwargs):
         key, saved_data = content
         bot.send_message(chat_id=update.message.chat_id, text=saved_data)
     else:
-        message = f"No hay nada guardado bajo '{key}'.\nProbá @saved_data para ver qué datos están guardados"
+        message = f"No hay nada guardado bajo '{key}'.\nProbá /snippets para ver qué datos están guardados"
         bot.send_message(chat_id=update.message.chat_id, text=message)
 
 

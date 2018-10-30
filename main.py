@@ -53,13 +53,13 @@ feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
+code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
-code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 
@@ -69,6 +69,7 @@ yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, 
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 #  Associate commands with actions.
+dispatcher.add_handler(start_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(dolar_futuro_handler)
