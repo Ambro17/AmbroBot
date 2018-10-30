@@ -24,6 +24,7 @@ from commands.serie.command import serie
 from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
 from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
+from commands.start.command import start
 from commands.subte.command import subte
 from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
@@ -42,6 +43,7 @@ updater = Updater(os.environ['PYTEL'])
 dispatcher = updater.dispatcher
 
 # Add commands handlers
+start_handler = CommandHandler('start', start)
 partido_handler = CommandHandler('partido', partido)
 dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)
 dolar_futuro_handler = CommandHandler('fdolar', dolar_futuro)
@@ -69,6 +71,7 @@ yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, 
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 #  Associate commands with actions.
+dispatcher.add_handler(start_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(dolar_futuro_handler)
