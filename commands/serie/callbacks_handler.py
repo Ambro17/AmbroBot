@@ -57,7 +57,7 @@ def serie_callback_handler(bot, update, chat_data):
             )
             return
 
-        pretty_torrents = prettify_torrents(torrents)
+        pretty_torrents = prettify_torrents(torrents)  # Todo, only show a few and show load more button.
         response = pretty_torrents if pretty_torrents else EZTV_API_ERROR
 
     elif answer == GO_BACK_TO_MAIN:

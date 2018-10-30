@@ -1,6 +1,5 @@
 import os
 import logging
-import re
 
 from telegram.ext import (
     CommandHandler,
@@ -10,45 +9,33 @@ from telegram.ext import (
     RegexHandler,
     CallbackQueryHandler,
 )
-from api import (
-    dolar_hoy,
-    partido,
-    dolar_futuro,
-    default,
-    link_ticket,
-    subte,
-    format_code,
-    cinearg,
-    buscar_peli,
-    hoypido,
-)
 from callbacks.handler import handle_callbacks
+from commands.cartelera.command import cinearg
+from commands.dolar.command import dolar_hoy
+from commands.dolar_futuro.command import dolar_futuro
 from commands.feriados.command import feriados
+from commands.hoypido.command import hoypido
+from commands.misc.commands import format_code, link_ticket, default
+from commands.partido.command import partido
+from commands.pelicula.command import buscar_peli
 from commands.posiciones.command import posiciones
 from commands.serie.callbacks_handler import serie_callback_handler
 from commands.serie.command import serie
 from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
-from commands.serie.constants import SERIE
+from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
+from commands.subte.command import subte
 from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
-from commands.yts.constants import YTS
+from commands.yts.constants import YTS_REGEX
 from utils.command_utils import error_handler
+from utils.constants import CODE_PREFIX, TICKET_REGEX
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 logger = logging.getLogger(__name__)
-
-TICKET_REGEX = re.compile(r'((t|osp\-?)(?P<ticket>\d{5,6}))', re.IGNORECASE)
-# Text starting with ~, \c, \code or $ will be monospaced formatted
-CODE_PREFIX = re.compile(r'^(~|\\code|\$|\\c) (?P<code>[\s\S]+)')
-
-# Helper regex to redirect to /serie callbacks to serie_callback_handler.
-SERIE_REGEX = re.compile(SERIE)
-# Helper regex to redirect to /yts callbacks to yts callback_handler.
-YTS_REGEX = re.compile(YTS)
 
 # Setup bot
 updater = Updater(os.environ['PYTEL'])
@@ -66,16 +53,17 @@ feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
-code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
+code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 
+# Add callback query handlers
 serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)

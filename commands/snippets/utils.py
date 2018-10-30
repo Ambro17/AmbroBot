@@ -2,7 +2,7 @@ import logging
 import os
 import psycopg2
 
-from decorators import log_time
+from utils.decorators import log_time
 
 logger = logging.getLogger(__name__)
 DB = os.environ['DATABASE_URL']

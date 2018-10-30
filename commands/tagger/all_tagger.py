@@ -4,7 +4,7 @@ import os
 import psycopg2
 from telegram import MessageEntity
 
-from decorators import admin_only, log_time
+from utils.decorators import admin_only, log_time
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ import requests
 from telegram.ext import run_async
 
 from commands.serie.utils import prettify_serie
-from decorators import send_typing_action, log_time
+from utils.decorators import send_typing_action, log_time
 from keyboards.keyboards import serie_keyboard
 
 logger = logging.getLogger(__name__)

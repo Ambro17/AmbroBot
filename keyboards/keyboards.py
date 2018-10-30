@@ -2,7 +2,7 @@ from functools import lru_cache
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
-from commands.hoypido.hoypido import day_names
+from commands.hoypido.utils import day_names
 from commands.serie.constants import (
     LATEST_EPISODES,
     LOAD_EPISODES,
@@ -101,7 +101,7 @@ def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
         [
             Button('☠️ Torrent', callback_data=YTS_TORRENT),
             Button('🎟️ IMDB', url=IMDB_LINK.format(imdb_id)),
-            Button('🎬️ Trailer', url=YT_LINK.format(yt_trailer))
+            Button('🎬️ Trailer', url=YT_LINK.format(yt_trailer))  # Todo: only add if yt_trailer is not None
         ]
     ] # Implement Back too
     if show_next:

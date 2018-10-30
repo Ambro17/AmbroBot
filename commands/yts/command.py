@@ -4,7 +4,7 @@ import requests
 from telegram.ext import run_async
 
 from commands.yts.utils import get_minimal_movie, prettify_yts_movie
-from decorators import send_typing_action
+from utils.decorators import send_typing_action
 from keyboards.keyboards import yts_navigator_keyboard
 
 logger = logging.getLogger(__name__)

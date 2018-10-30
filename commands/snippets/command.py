@@ -1,7 +1,7 @@
 from telegram.ext import run_async
 
 from commands.snippets.utils import lookup_content, save_to_db, select_all, remove_snippet
-from decorators import send_typing_action, log_time, admin_only
+from utils.decorators import send_typing_action, log_time, admin_only
 
 
 @send_typing_action

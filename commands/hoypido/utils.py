@@ -24,6 +24,7 @@ day_names = {
     SUNDAY: 'Domingo',
 }
 
+
 def get_comidas():
     menu_por_dia = {}
     response = requests.get(ONAPSIS_SALUDABLE, timeout=2)
