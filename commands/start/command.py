@@ -3,8 +3,8 @@ def start(bot, update):
         "Hola, soy Cuervot!\n"
         "Sé hacer un par de cosas:\n\n"
 
-        "/dolar - Cotización del dolar\n"
-        "/fdolar - Cotizacion dolar futuro\n"
+        "/dolar - Cotización del dólar\n"
+        "/rofex - Cotizacion dólar futuro\n"
         "/subte - Estado de subtes CABA\n"
         "/pelicula - Buscar detalle de pelicula\n"
         "/hoypido - Ver menú de hoypido\n"
