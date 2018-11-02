@@ -13,11 +13,12 @@ def save_snippet(bot, update, **kwargs):
 
     if None in (key, content):
         message = 'No respetaste el formato. Intentá de nuevo'
-    elif save_to_db(key, content):
-        message = f'Info guardada ✅.\nPodés leerla escribiendo `@get {key}`'
     else:
-        message = ('Algo salió mal y no pude guardar tu pregunta.\n'
-                   'Podés intentar más tarde o aceptar que en el mundo reina el caos.')
+        sucess, error_message = save_to_db(key, content)
+        if sucess:
+            message = f'Info guardada ✅.\nPodés leerla escribiendo `@get {key}`'
+        else:
+            message = error_message.format(key)
 
     bot.send_message(chat_id=update.message.chat_id, text=message, parse_mode='markdown')
 
