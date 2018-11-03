@@ -19,7 +19,8 @@ def serie(bot, update, chat_data, **kwargs):
     if not serie_input:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Te faltó pasarme el nombre de la serie. /serie <serie>',
+            text='Te faltó pasarme el nombre de la serie. `/serie <serie>`',
+            parse_mode='markdown'
         )
         return
 

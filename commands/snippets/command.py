@@ -44,8 +44,8 @@ def show_snippets(bot, update):
     answers = select_all()
     if answers:
         keys = [f'🔑  {key}' for id, key, content in answers]
-        reminder = ['Para ver algunos de los snippet de arriba » `@get <snippet_key>`']
-        update.message.reply_text(text='\n\n'.join(keys + reminder), parse_mode='markdown')
+        reminder = ['Para ver algunos de los snippet de arriba » @get <snippet_key>']
+        update.message.reply_text(text='\n\n'.join(keys + reminder))
     else:
         update.message.reply_text('No hay ningún snippet guardado!\nPodés empezar usando `#key snippet_to_save`',
                                   parse_mode='markdown')

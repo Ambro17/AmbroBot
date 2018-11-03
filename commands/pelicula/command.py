@@ -14,7 +14,8 @@ def buscar_peli(bot, update, chat_data, **kwargs):
     if not pelicula:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Necesito que me pases una pelicula. /pelicula <nombre>',
+            text='Necesito que me pases una pelicula. `/pelicula <nombre>`',
+            parse_mode='markdown'
         )
         return
 
