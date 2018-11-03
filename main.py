@@ -19,6 +19,9 @@ from commands.misc.commands import format_code, link_ticket, default
 from commands.partido.command import partido
 from commands.pelicula.command import buscar_peli
 from commands.posiciones.command import posiciones
+from commands.remindme.callbacks import reminder_callback
+from commands.remindme.command import remind_me
+from commands.remindme.constants import REMINDERS_REGEX
 from commands.serie.callbacks_handler import serie_callback_handler
 from commands.serie.command import serie
 from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
@@ -60,6 +63,7 @@ save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=Tru
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
+remind_me_handler = CommandHandler('remind', remind_me, pass_args=True, pass_chat_data=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
@@ -68,6 +72,8 @@ generic_handler = MessageHandler(Filters.command, default)
 # Add callback query handlers
 serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)
+reminders_callback_handler = CallbackQueryHandler(reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True,
+                                                  pass_job_queue=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 #  Associate commands with actions.
@@ -83,18 +89,22 @@ dispatcher.add_handler(yts_handler)
 dispatcher.add_handler(hoypido_handler)
 dispatcher.add_handler(feriados_handler)
 dispatcher.add_handler(serie_handler)
-dispatcher.add_handler(serie_callback)
-dispatcher.add_handler(yts_callback_handler)
-dispatcher.add_handler(callback_handler)
 dispatcher.add_handler(code_handler)
 dispatcher.add_handler(save_snippet_handler)
 dispatcher.add_handler(get_snippet_handler)
 dispatcher.add_handler(show_snippets_handler)
 dispatcher.add_handler(delete_snippet_handler)
+dispatcher.add_handler(remind_me_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(generic_handler)
+
+# Add callback handlers
+dispatcher.add_handler(serie_callback)
+dispatcher.add_handler(yts_callback_handler)
+dispatcher.add_handler(reminders_callback_handler)
+dispatcher.add_handler(callback_handler)
 
 dispatcher.add_error_handler(error_handler)
 

@@ -8,6 +8,8 @@ LOAD_EPISODES = SERIE + 'LOAD_EPISODES'
 GO_BACK_TO_MAIN = SERIE + 'GO_TO_MAIN_RESULT'
 SEASON_T = SERIE + 'SEASON_{}'
 EPISODE_T = SERIE + 'EPISODE_{}'
+SERIE_REGEX = re.compile(SERIE)
+
 
 # Regex to find season and episode data
 SEASON_REGEX = re.compile(r'S(\d{1,})E(\d{1,})')  # S01E15
@@ -26,4 +28,3 @@ EZTV_API_ERROR = "EZTV api failed to respond with latest torrents. Try 'Load all
 EZTV_NO_RESULTS = ("Eztv api did not return any result for the series❕\nPlease notice it's still in beta mode 🐣\n"
                    "You can try loading all episodes and manually searching the latest.")
 
-SERIE_REGEX = re.compile(SERIE)
