@@ -13,3 +13,5 @@ REMINDERS_REGEX = re.compile(REMINDERS)
 GUESS_FROM_INPUT = REMIND_BASE + 'GUESS_FROM_INPUT'
 
 TIME_ICONS = ['⏰', '🔊', '🔈', '🔉', '📣', '📢', '❕', '🎉', '🎊', '⏱']
+
+GMT_BUENOS_AIRES = -3
