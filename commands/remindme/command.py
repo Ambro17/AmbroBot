@@ -14,7 +14,8 @@ def remind_me(bot, update, chat_data, args):
 
     # Save what the bot should remind the user
     chat_data['to_remind'] = ' '.join(args)
-    chat_data['user'] = tag_user(update.message.from_user)
+    chat_data['user'] = _tag_user(update.message.from_user)
+
     # Offer when the user wants to be reminded (5 minutes, 2 hours)
     time_options = time_options_keyboard()
     update.message.reply_text(
@@ -23,7 +24,7 @@ def remind_me(bot, update, chat_data, args):
     )
 
 
-def tag_user(user):
+def _tag_user(user):
     if user.username:
         return f'@{user.username}'
     else:

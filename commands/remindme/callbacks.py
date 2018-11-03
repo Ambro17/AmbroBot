@@ -3,6 +3,7 @@ import random
 from datetime import datetime, timedelta, timezone
 
 from commands.remindme.constants import TIME_ICONS, GMT_BUENOS_AIRES
+from commands.remindme.utils import get_delay
 
 logger = logging.getLogger(__name__)
 
@@ -13,17 +14,17 @@ def reminder_callback(bot, update, chat_data, job_queue):
         'text': chat_data['to_remind'],
         'user': chat_data['user']
     }
-    delay_requested = int(update.callback_query.data)
+    requested_delay = int(get_delay(update.callback_query.data))
     update.callback_query.answer(text='')
 
     # Set up the job
-    logger.info("Setup new job. context: %s", job_context)
-    job_queue.run_once(send_text, delay_requested,
+    logger.info("Setup new job. Context: %s, Chat Data: %s", job_context, chat_data)
+    job_queue.run_once(send_notification, requested_delay,
                        context=job_context)  # Feature: manage added jobs in db to survive bot shutdown
 
     # Manage hours to show in Bs As local time.
     buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
-    remind_date = datetime.now(buenos_aires_offset) + timedelta(seconds=delay_requested)
+    remind_date = datetime.now(buenos_aires_offset) + timedelta(seconds=requested_delay)
 
     # Send reply with the hour of the reminder
     update.callback_query.message.edit_text(
@@ -32,7 +33,7 @@ def reminder_callback(bot, update, chat_data, job_queue):
     )
 
 
-def send_text(bot, job):
+def send_notification(bot, job):
     random_time_emoji = random.choice(TIME_ICONS)
     bot.send_message(
         chat_id=job.context['chat_id'],

@@ -55,11 +55,12 @@ _soupify_url = soup.soupify
 def soupify_url(url, timeout=2, encoding='utf-8'):
     """Given a url returns a BeautifulSoup object"""
     r = requests.get(url, timeout=timeout)
+    r.raise_for_status()
     r.encoding = encoding
     if r.status_code == 200:
         return BeautifulSoup(r.text, 'lxml')
     else:
-        raise ConnectionError(f'{url} did not respond.')
+        raise ConnectionError(f'{url} returned error status %s - ', r.status_code, r.reason)
 
 
 def error_handler(bot, update, error):
