@@ -34,7 +34,7 @@ def pelis_keyboard():
         [
             Button('🎟️ IMDB', callback_data="IMDB"),
             Button('🎬️ Trailer', callback_data="Youtube"),
-            Button('💀 Torrent', callback_data="Torrent"),
+            Button('🍿 Torrent', callback_data="Torrent"),
         ]
     ]
     return InlineKeyboardMarkup(buttons)
@@ -99,7 +99,7 @@ def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
             Button('📖 Read more', callback_data=YTS_FULL_DESC),
         ],
         [
-            Button('☠️ Torrent', callback_data=YTS_TORRENT),
+            Button('🍿 Torrent', callback_data=YTS_TORRENT),
             Button('🎟️ IMDB', url=IMDB_LINK.format(imdb_id)),
             Button('🎬️ Trailer', url=YT_LINK.format(yt_trailer))  # Todo: only add if yt_trailer is not None
         ]
