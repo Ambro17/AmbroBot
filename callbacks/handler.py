@@ -2,8 +2,9 @@ import logging
 
 from commands.dolar.callback import dolarhoy_callback
 from commands.hoypido.callback import hoypido_callback
+from commands.hoypido.keyboard import hoypido_keyboard
 from commands.pelicula.callback import peliculas_callback
-from keyboards.keyboards import banco_keyboard, pelis_keyboard, hoypido_keyboard
+from keyboards.keyboards import banco_keyboard, pelis_keyboard
 
 logger = logging.getLogger(__name__)
 

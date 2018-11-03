@@ -1,8 +1,8 @@
 from telegram.ext import run_async
 
+from commands.hoypido.keyboard import hoypido_keyboard
 from commands.hoypido.utils import get_comidas, prettify_food_offers
 from utils.decorators import send_typing_action, log_time
-from keyboards.keyboards import hoypido_keyboard
 
 
 @send_typing_action

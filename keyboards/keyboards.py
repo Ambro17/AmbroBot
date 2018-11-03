@@ -40,16 +40,6 @@ def pelis_keyboard():
     return InlineKeyboardMarkup(buttons)
 
 
-def hoypido_keyboard(comidas):
-    weekday_buttons = [
-        [
-            Button(day_names[day_int], callback_data=day_int)
-            for day_int in comidas.keys()
-        ]
-    ]
-    return InlineKeyboardMarkup(weekday_buttons)
-
-
 @lru_cache(1)
 def serie_keyboard():
     buttons = [
