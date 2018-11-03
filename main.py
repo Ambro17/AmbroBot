@@ -22,7 +22,7 @@ from commands.posiciones.command import posiciones
 from commands.remindme.callbacks import reminder_callback
 from commands.remindme.command import remind_me
 from commands.remindme.constants import REMINDERS_REGEX
-from commands.serie.callbacks_handler import serie_callback_handler
+from commands.serie.callbacks import serie_callback_handler
 from commands.serie.command import serie
 from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
 from commands.serie.constants import SERIE_REGEX

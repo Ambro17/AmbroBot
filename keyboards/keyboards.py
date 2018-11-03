@@ -12,8 +12,6 @@ from commands.serie.constants import (
 )
 from commands.yts.constants import NEXT_YTS, YTS_TORRENT, IMDB_LINK, YT_LINK, YTS_FULL_DESC
 
-GO_BACK_BUTTON = [Button('« Back to Main', callback_data=GO_BACK_TO_MAIN)]
-
 @lru_cache(1)
 def banco_keyboard():
     buttons = [
@@ -38,49 +36,6 @@ def pelis_keyboard():
         ]
     ]
     return InlineKeyboardMarkup(buttons)
-
-
-@lru_cache(1)
-def serie_keyboard():
-    buttons = [
-        [
-            Button('Latest episodes', callback_data=LATEST_EPISODES),
-            Button('Load all episodes', callback_data=LOAD_EPISODES)
-        ]
-    ]
-    return InlineKeyboardMarkup(buttons)
-
-
-def serie_go_back_keyboard():
-    return InlineKeyboardMarkup([GO_BACK_BUTTON])
-
-
-def serie_season_keyboard(seasons):
-    COLUMNS = 2
-    buttons = [
-        Button(f'Season {season}', callback_data=SEASON_T.format(season))
-        for season, episodes in sorted(seasons.items())
-    ]
-    columned_keyboard= [
-        buttons[i:i+COLUMNS] for i in range(0, len(buttons), COLUMNS)
-    ]
-    columned_keyboard.append(GO_BACK_BUTTON)
-
-    return InlineKeyboardMarkup(columned_keyboard)
-
-
-def serie_episodes_keyboards(episodes_dict):
-    COLUMNS = 5
-    buttons = [
-        Button(f'Ep {ep_number}', callback_data=EPISODE_T.format(ep_number))
-        for ep_number, episode in sorted(episodes_dict.items())
-    ]
-    columned_keyboard= [
-        buttons[i:i+COLUMNS] for i in range(0, len(buttons), COLUMNS)
-    ]
-    columned_keyboard.append(GO_BACK_BUTTON)
-
-    return InlineKeyboardMarkup(columned_keyboard)
 
 
 def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):

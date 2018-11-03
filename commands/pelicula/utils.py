@@ -30,8 +30,9 @@ def get_basic_info(movie):
     rating = movie['vote_average']
     overview = movie['overview']
     year = movie['release_date'].split('-')[0]  # "2016-07-27" -> 2016
-    image = f"http://image.tmdb.org/t/p/original{movie['backdrop_path']}"
-    return title, rating, overview, year, image
+    image_link = movie['backdrop_path']
+    poster = f"http://image.tmdb.org/t/p/original{image_link}" if image_link else None
+    return title, rating, overview, year, poster
 
 
 def prettify_basic_movie_info(title, rating, overview, year, image):

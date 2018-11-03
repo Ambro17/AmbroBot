@@ -14,7 +14,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
     if not pelicula:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Necesito que me pases una pelicula. `/pelicula <nombre>`',
+            text='Necesito que me pases una pelicula. `/pelicula <nombre>`',  # Todo: Add deeplink with example
             parse_mode='markdown'
         )
         return
@@ -38,7 +38,8 @@ def buscar_peli(bot, update, chat_data, **kwargs):
 
         movie_details, poster = prettify_movie(movie)
         keyboard = pelis_keyboard()
-        bot.send_photo(chat_id=update.message.chat_id, photo=poster)
+        if poster:
+            bot.send_photo(chat_id=update.message.chat_id, photo=poster)
         bot.send_message(
             chat_id=update.message.chat_id,
             text=movie_details,

@@ -4,9 +4,9 @@ import os
 import requests
 from telegram.ext import run_async
 
+from commands.serie.keyboard import serie_main_keyboard
 from commands.serie.utils import prettify_serie
 from utils.decorators import send_typing_action, log_time
-from keyboards.keyboards import serie_keyboard
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def serie(bot, update, chat_data, **kwargs):
     if r.status_code != 200:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"No encontré información en imdb sobre '{serie}'. Está bien escrito el nombre?",
+            text=f"No encontré información en imdb sobre '{serie_query}'. Está bien escrito el nombre?",
         )
         return
 
@@ -40,7 +40,7 @@ def serie(bot, update, chat_data, **kwargs):
     except (KeyError, IndexError):
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"No encontré resultados en imdb sobre '{serie}'",
+            text=f"No encontré resultados en imdb sobre '{serie_query}'",
         )
         return
 
@@ -96,7 +96,7 @@ def serie(bot, update, chat_data, **kwargs):
     }
 
     # Now that i have the imdb_id, show buttons to retrieve extra info.
-    keyboard = serie_keyboard()
+    keyboard = serie_main_keyboard()
     bot.edit_message_reply_markup(
         chat_id=bot_reply.chat_id,
         message_id=bot_reply.message_id,

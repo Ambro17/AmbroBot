@@ -1,6 +1,7 @@
 import logging
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from functools import lru_cache
+from operator import attrgetter
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,7 +14,9 @@ from commands.serie.constants import (
     SIZE,
     RELEASED,
     SEEDS,
-    Episode)
+    Episode,
+    EZTVEpisode
+)
 from utils.command_utils import monospace
 
 logger = logging.getLogger(__name__)
@@ -34,8 +37,11 @@ def prettify_serie(name, rating, overview, start_date):
 
 
 @lru_cache(20)
-def get_torrents_by_id(imdb_id, limit=None):
-    """Request torrents from api and return a minified torrent representation."""
+def request_eztv_torrents_by_imdb_id(imdb_id, limit=None):
+    """Request torrents from api and return a minified torrent representation.
+
+    A torrent is a tuple of (title, url, seeds, size)
+    """
     try:
         r = requests.get('https://eztv.ag/api/get-torrents', params={'imdb_id': imdb_id, 'limit': limit})
         torrents = sorted(
@@ -49,36 +55,63 @@ def get_torrents_by_id(imdb_id, limit=None):
         logger.exception("Error requesting torrents for %s", imdb_id)
         return None
 
-    return _minify_torrents(torrents)
+    return parse_torrents(torrents)
 
 
-def _minify_torrents(torrents):
+def _read_season_episode_from_title(title):
+    for pattern in EPISODE_PATTERNS:
+        match = pattern.search(title)
+        if match:
+            season, episode = match.groups()
+            return season, episode
+    else:
+        return 0, 0
+
+
+def parse_torrents(torrents):
     """Returns a torrent name, url, seeds and size from json response"""
-    minified_torrents = []
+    parsed_torrents = []
     for torrent in torrents:
         try:
             MB = 1024 * 1024
             size_float = int(torrent['size_bytes']) / MB
             size = f"{size_float:.2f}"
-            minified_torrents.append(
-                (torrent['title'], torrent['torrent_url'], torrent['seeds'], size)
+            title = torrent['title']
+            season, episode = _read_season_episode_from_title(title)
+            parsed_torrents.append(
+                EZTVEpisode(
+                    name=title,
+                    season=season,
+                    episode=episode,
+                    torrent=torrent['torrent_url'],
+                    seeds=torrent['seeds'],
+                    size=size
+                )
             )
         except Exception:
             logger.exception("Error parsing torrent from eztv api. <%s>", torrent)
             continue
 
-    return tuple(minified_torrents)
+    # Order torrents to from latest to oldest
+    ordered_torrents = sorted(
+        parsed_torrents,
+        key=attrgetter('season', 'episode'),
+        reverse=True
+    )
+    # Make it hashable so lru_cache can remember it and avoid reloading.
+    ordered_torrents = tuple(ordered_torrents)
+
+    return ordered_torrents
 
 
 @lru_cache(5)
-def prettify_torrents(torrents):
+def prettify_torrents(torrents, limit=5):
     return '\n'.join(
-        prettify_torrent(*torrent) for torrent in torrents
-        if prettify_torrent(*torrent)
+        prettify_torrent(*torrent) for torrent in torrents[:limit]
     )
 
 
-def prettify_torrent(name, torrent_url, seeds, size):
+def prettify_torrent(name, season, episode, torrent_url, seeds, size):
     return (
         f"🏴‍☠️ [{name}]({torrent_url})\n"
         f"🌱 Seeds: {seeds} | 🗳 Size: {size}MB\n"
