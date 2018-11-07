@@ -1,15 +1,16 @@
+import os
+
 import requests
 import logging
 
 from commands.serie.utils import rating_stars
 from utils.constants import YT_LINK
 
-TMDB_KEY = '7f76943e1557e33276e0f595c2128f68'
 logger = logging.getLogger(__name__)
 
 
 def get_movie(pelicula_query):
-    params = {'api_key': TMDB_KEY, 'query': pelicula_query, 'language': 'es-AR'}
+    params = {'api_key': os.environ['TMDB_KEY'], 'query': pelicula_query, 'language': 'es-AR'}
     r = requests.get('https://api.themoviedb.org/3/search/movie', params=params)
     if r.status_code == 200:
         try:
