@@ -1,0 +1,2 @@
+MEETING = r'MEETING_'
+DAY_T = MEETING + '{}'

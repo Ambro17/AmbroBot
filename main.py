@@ -15,6 +15,7 @@ from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import dolar_futuro
 from commands.feriados.command import feriados
 from commands.hoypido.command import hoypido
+from commands.meeting.command import save_meeting
 from commands.misc.commands import format_code, link_ticket, default
 from commands.partido.command import partido
 from commands.pelicula.command import buscar_peli
@@ -39,7 +40,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Setup bot
-updater = Updater(os.environ['PYTEL'])
+updater = Updater(os.environ['PYTEL_TEST'])
 dispatcher = updater.dispatcher
 
 # Add commands handlers
@@ -55,6 +56,10 @@ feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
+remind_me_handler = CommandHandler('remind', remind_me, pass_args=True, pass_chat_data=True)
+meeting_handler = CommandHandler('meeting', save_meeting, pass_args=True)
+
+tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
@@ -62,7 +67,6 @@ delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdi
 show_snippets_handler = CommandHandler('snippets', show_snippets)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
-tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
 generic_handler = MessageHandler(Filters.command, default)
 
 # Add callback query handlers
@@ -91,6 +95,8 @@ dispatcher.add_handler(save_snippet_handler)
 dispatcher.add_handler(get_snippet_handler)
 dispatcher.add_handler(show_snippets_handler)
 dispatcher.add_handler(delete_snippet_handler)
+dispatcher.add_handler(remind_me_handler)
+dispatcher.add_handler(meeting_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)

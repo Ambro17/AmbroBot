@@ -50,3 +50,16 @@ def admin_only(func):
             logger.info("User %s not authorized to perform action.", user)
 
     return restricted_func
+
+
+def group(func):
+    # Ignore action if it doesn't happen on allowed group
+    @wraps(func)
+    def restricted_func(bot, update, **kwargs):
+        user = update.effective_user.username
+        if user == os.environ['admin']:
+            func(bot, update, **kwargs)
+        else:
+            logger.info("User %s not authorized to perform action.", user)
+
+    return restricted_func
