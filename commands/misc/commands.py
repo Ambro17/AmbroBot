@@ -7,9 +7,9 @@ from utils.constants import COMANDO_DESCONOCIDO
 from utils.decorators import send_typing_action, log_time
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def format_code(bot, update, **kwargs):
     """Format text as code if it starts with $, ~, \c or \code."""
     code = kwargs.get('groupdict').get('code')

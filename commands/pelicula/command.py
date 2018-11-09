@@ -6,9 +6,9 @@ from utils.decorators import send_typing_action, log_time
 from keyboards.keyboards import pelis_keyboard
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def buscar_peli(bot, update, chat_data, **kwargs):
     pelicula = kwargs.get('args')
     if not pelicula:

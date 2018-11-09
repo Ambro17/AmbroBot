@@ -5,9 +5,9 @@ from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def posiciones(bot, update, **kwargs):
     soup = soupify_url('http://www.promiedos.com.ar/primera', encoding='ISO-8859-1')
     tabla = soup.find('table', {'id': 'posiciones'})

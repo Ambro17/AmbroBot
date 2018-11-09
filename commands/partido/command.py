@@ -5,9 +5,9 @@ from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def partido(bot, update):
     try:
         soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')

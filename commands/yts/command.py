@@ -4,11 +4,13 @@ import requests
 from telegram.ext import run_async
 
 from commands.yts.utils import get_minimal_movie, prettify_yts_movie
-from utils.decorators import send_typing_action
+from utils.decorators import send_typing_action, log_time
 from keyboards.keyboards import yts_navigator_keyboard
 
 logger = logging.getLogger(__name__)
 
+
+@log_time
 @send_typing_action
 @run_async
 def yts(bot, update, chat_data):

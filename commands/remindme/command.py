@@ -4,9 +4,9 @@ from commands.remindme.keyboards import time_options_keyboard
 from utils.decorators import send_typing_action, log_time
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def remind_me(bot, update, chat_data, args):
     if not args:
         update.message.reply_text('Me tenés que dar algo que recordar! `/remind comprar frutas`', parse_mode='markdown')

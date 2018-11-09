@@ -7,9 +7,9 @@ from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url, monospace
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
     soup = soupify_url('https://www.metrovias.com.ar/')

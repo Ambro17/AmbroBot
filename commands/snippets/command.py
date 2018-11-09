@@ -4,9 +4,9 @@ from commands.snippets.utils import lookup_content, save_to_db, select_all, remo
 from utils.decorators import send_typing_action, log_time, admin_only
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def save_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = kwargs['groupdict'].get('content')
@@ -23,9 +23,9 @@ def save_snippet(bot, update, **kwargs):
     bot.send_message(chat_id=update.message.chat_id, text=message, parse_mode='markdown')
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def get_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = lookup_content(key)
@@ -37,9 +37,9 @@ def get_snippet(bot, update, **kwargs):
         bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
-@run_async
 @log_time
 @send_typing_action
+@run_async
 def show_snippets(bot, update):
     answers = select_all()
     if answers:

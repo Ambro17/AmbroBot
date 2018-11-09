@@ -5,9 +5,9 @@ from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url, monospace
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def rofex(bot, update):
     """Print dolar futuro contracts."""
     contratos = prettify_rofex(get_rofex())
