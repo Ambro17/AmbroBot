@@ -9,16 +9,19 @@ from commands.serie.constants import (
     LATEST_EPISODES,
     LOAD_EPISODES,
     LOAD_MORE_LATEST)
-
+from utils.constants import IMDB_TT_LINK
 
 GO_BACK_BUTTON_ROW = [Button('« Back to Main', callback_data=GO_BACK_TO_MAIN)]
 
 @lru_cache(1)
-def serie_main_keyboard():
+def serie_main_keyboard(imdb_id):
     buttons = [
         [
             Button('Latest episodes', callback_data=LATEST_EPISODES),
             Button('Load all episodes', callback_data=LOAD_EPISODES)
+        ],
+        [
+            Button('🎟️ IMDB', url=IMDB_TT_LINK.format(imdb_id)),
         ]
     ]
     return InlineKeyboardMarkup(buttons)

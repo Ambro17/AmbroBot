@@ -44,10 +44,7 @@ def request_eztv_torrents_by_imdb_id(imdb_id, limit=None):
     """
     try:
         r = requests.get('https://eztv.ag/api/get-torrents', params={'imdb_id': imdb_id, 'limit': limit})
-        torrents = sorted(
-            r.json()['torrents'],
-            key=lambda d: (d['season'], d['episode'])
-        )
+        torrents = r.json()['torrents']
     except KeyError:
         logger.info("No torrents in eztv api for this serie. Response %s", r.json())
         return None
@@ -107,14 +104,14 @@ def parse_torrents(torrents):
 @lru_cache(5)
 def prettify_torrents(torrents, limit=5):
     return '\n'.join(
-        prettify_torrent(*torrent) for torrent in torrents[:limit]
+        prettify_torrent(torrent) for torrent in torrents[:limit]
     )
 
 
-def prettify_torrent(name, season, episode, torrent_url, seeds, size):
+def prettify_torrent(torrent):
     return (
-        f"🏴‍☠️ [{name}]({torrent_url})\n"
-        f"🌱 Seeds: {seeds} | 🗳 Size: {size}MB\n"
+        f"[{torrent.name}]({torrent.torrent})\n"
+        f"🌱 Seeds: {torrent.seeds} | 🗳 Size: {torrent.size}MB\n"
     )
 
 

@@ -75,7 +75,7 @@ def serie_callback_handler(bot, update, chat_data):
         # Resend series basic description
         message = context['data']['message_info']
         response = prettify_serie(*message)
-        keyboard = serie_main_keyboard()
+        keyboard = serie_main_keyboard(context['data']['imdb_id'])
         # tothink: Maybe implement relative go back. chat_data context should be more intelligent to support that.
         # temp key on chat_data (active_season) that resets after each episode go back?
 

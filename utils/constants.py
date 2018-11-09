@@ -1,6 +1,7 @@
 import re
 
 IMDB_LINK = 'https://www.imdb.com/title/{}'
+IMDB_TT_LINK = 'https://www.imdb.com/title/tt{}'
 YT_LINK = 'https://www.youtube.com/watch?v={}'
 
 COMANDO_DESCONOCIDO = [

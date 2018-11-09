@@ -11,9 +11,9 @@ from utils.decorators import send_typing_action, log_time
 logger = logging.getLogger(__name__)
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def serie(bot, update, chat_data, **kwargs):
     serie_input = kwargs.get('args')
     if not serie_input:
@@ -96,7 +96,7 @@ def serie(bot, update, chat_data, **kwargs):
     }
 
     # Now that i have the imdb_id, show buttons to retrieve extra info.
-    keyboard = serie_main_keyboard()
+    keyboard = serie_main_keyboard(imdb_id)
     bot.edit_message_reply_markup(
         chat_id=bot_reply.chat_id,
         message_id=bot_reply.message_id,
