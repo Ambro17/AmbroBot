@@ -22,6 +22,7 @@ from commands.posiciones.command import posiciones
 from commands.remindme.callbacks import reminder_callback
 from commands.remindme.command import remind_me
 from commands.remindme.constants import REMINDERS_REGEX
+from commands.retro.handler import add_retro_item, show_retro_details, expire_retro_command
 from commands.serie.callbacks import serie_callback_handler
 from commands.serie.command import serie
 from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
@@ -84,6 +85,9 @@ dispatcher.add_handler(dolar_futuro_handler)
 dispatcher.add_handler(posiciones_handler)
 dispatcher.add_handler(subte_handler)
 dispatcher.add_handler(cartelera_handler)
+dispatcher.add_handler(add_retro_item)
+dispatcher.add_handler(show_retro_details)
+dispatcher.add_handler(expire_retro_command)
 dispatcher.add_handler(pelis)
 dispatcher.add_handler(yts_handler)
 dispatcher.add_handler(hoypido_handler)

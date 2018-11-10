@@ -1,5 +1,6 @@
 import logging
 import time
+import json
 
 from functools import wraps
 
@@ -16,7 +17,7 @@ def send_action(action):
         @wraps(func)
         def command_func(bot, update, **kwargs):
             bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
-            func(bot, update, **kwargs)
+            return func(bot, update, **kwargs)
 
         return command_func
 
@@ -45,8 +46,23 @@ def admin_only(func):
     def restricted_func(bot, update, **kwargs):
         user = update.effective_user.username
         if user == os.environ['admin']:
-            func(bot, update, **kwargs)
+            return func(bot, update, **kwargs)
         else:
+            update.message.reply_text('🚫 No estás autorizado a usar este comando')
             logger.info("User %s not authorized to perform action.", user)
 
     return restricted_func
+
+
+def private(func):
+    @wraps(func)
+    def private_func(bot, update, **kwargs):
+        user_id = update.effective_user.id
+        auth_users = os.environ['RETRO_USERS']
+        if user_id in json.loads(auth_users):
+            return func(bot, update, **kwargs)
+        else:
+            update.message.reply_text('🚫 No estás autorizado a usar este comando')
+            logger.info("User %s not authorized to perform action.", update.effective_user)
+
+    return private_func
