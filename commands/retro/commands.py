@@ -22,12 +22,14 @@ def retro_add(bot, update, args):
     retro_item = ' '.join(args)
     user = update.effective_user.first_name
     buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
-    save_retro_item(retro_item, user, d.now(buenos_aires_offset))
+    date = d.now(buenos_aires_offset)
+    save_retro_item(retro_item, user, date)
     update.message.reply_text(
         '✅ Listo. Tu mensaje fue guardado para la retro.\n'
         'Para recordarlo en la retro escribí `/retroitems`',
         parse_mode='markdown'
     )
+    logger.info("Retro event added: %s %s %s", user, retro_item, date)
 
 
 @log_time
@@ -39,13 +41,18 @@ def show_retro_items(bot, update):
     if items:
         update.message.reply_text(
             '\n'.join(
-                f"{item.user} | {item.text.capitalize()} | {item.datetime.strftime('%A %d/%m %H:%M').capitalize()}"
+                f"{item.user} | {item.text.capitalize()} | {_localize_time(item.datetime)}"
                 for item in items
             )
         )
     else:
         update.message.reply_text('📋 No hay ningún retroitem guardado todavía')
 
+
+def _localize_time(date):
+    # Turns UTC time into buenos aires time.
+    date = date + timedelta(hours=GMT_BUENOS_AIRES)
+    return date.strftime('%A %d/%m %H:%M').capitalize()
 
 @log_time
 @admin_only
