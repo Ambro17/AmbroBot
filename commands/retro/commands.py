@@ -1,15 +1,13 @@
 import logging
-import locale
-from datetime import datetime as d
+from datetime import datetime as d, timezone, timedelta
 
 from telegram.ext import run_async
 
+from commands.remindme.constants import GMT_BUENOS_AIRES
 from commands.retro.models import RetroItem, Session
 from utils.decorators import send_typing_action, log_time, private, admin_only
 
 logger = logging.getLogger(__name__)
-
-locale.setlocale(locale.LC_TIME, "es_AR.utf8")
 
 
 @log_time
@@ -23,7 +21,8 @@ def retro_add(bot, update, args):
         return
     retro_item = ' '.join(args)
     user = update.effective_user.first_name
-    save_retro_item(retro_item, user, d.now())
+    buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
+    save_retro_item(retro_item, user, d.now(buenos_aires_offset))
     update.message.reply_text(
         '✅ Listo. Tu mensaje fue guardado para la retro.\n'
         'Para recordarlo en la retro escribí `/retroitems`',
