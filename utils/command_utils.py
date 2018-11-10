@@ -3,12 +3,11 @@ from telegram.error import (
     TelegramError,
     Unauthorized,
     BadRequest,
-    TimedOut)
-from collections import defaultdict
+    TimedOut
+)
 
 import requests
 from bs4 import BeautifulSoup
-from cachetools import TTLCache
 
 
 logger = logging.getLogger(__name__)
@@ -22,34 +21,6 @@ def monospace(text):
 def normalize(text, limit=11, trim_end='.'):
     """Trim and append . if text is too long. Else return it unmodified"""
     return f'{text[:limit]}{trim_end}' if len(text) > limit else text
-
-
-class Soupifier(object):
-    """Implements a cache with expiration for the given urls.
-
-    Each url is a key of the cache dict. Its value is the soupified url.
-    During n minutes, the value will be remembered, after that it will be
-    removed and the request will happen again
-    """
-
-    def __init__(self, minutes_to_live=5, timeout=2):
-        self.cache = TTLCache(maxsize=10, ttl=60 * minutes_to_live)
-        self.timeout = timeout
-
-    def soupify(self, url):
-        try:
-            soup = self.cache[url]
-            logger.info("Cached value for %s", url)
-            return soup
-        except KeyError:
-            logger.info("Caché for %s expired. Updating.", url)
-            self.cache[url] = soupify_url(url, timeout=self.timeout)
-            return self.cache[url]
-
-
-# To be used after profiling bot use
-soup = Soupifier()
-_soupify_url = soup.soupify
 
 
 def soupify_url(url, timeout=2, encoding='utf-8'):
