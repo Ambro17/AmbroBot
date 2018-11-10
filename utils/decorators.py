@@ -49,7 +49,7 @@ def admin_only(func):
             return func(bot, update, **kwargs)
         else:
             update.message.reply_text('🚫 No estás autorizado a usar este comando')
-            logger.info("User %s not authorized to perform action.", user)
+            logger.info("User %s not authorized to perform action.", update.effective_user)
 
     return restricted_func
 
