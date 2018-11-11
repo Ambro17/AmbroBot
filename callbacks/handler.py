@@ -3,14 +3,12 @@ import logging
 from commands.dolar.callback import dolarhoy_callback
 from commands.hoypido.callback import hoypido_callback
 from commands.hoypido.keyboard import hoypido_keyboard
-from commands.pelicula.callback import peliculas_callback
-from keyboards.keyboards import banco_keyboard, pelis_keyboard
+from keyboards.keyboards import banco_keyboard
 
 logger = logging.getLogger(__name__)
 
 command_callback = {
     'dolarhoy': dolarhoy_callback,
-    'pelicula': peliculas_callback,
     'hoypido': hoypido_callback,
 }
 
@@ -45,8 +43,6 @@ def handle_callbacks(bot, update, chat_data):
     # Rebuild the same keyboard
     if context['command'] == 'dolarhoy':
         keyboard = banco_keyboard()
-    elif context['command'] == 'pelicula':
-        keyboard = pelis_keyboard()
     elif context['command'] == 'hoypido':
         comidas = context['data']
         keyboard = hoypido_keyboard(comidas)

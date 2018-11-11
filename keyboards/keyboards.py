@@ -2,15 +2,8 @@ from functools import lru_cache
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
-from commands.hoypido.utils import day_names
-from commands.serie.constants import (
-    LATEST_EPISODES,
-    LOAD_EPISODES,
-    GO_BACK_TO_MAIN,
-    SEASON_T,
-    EPISODE_T,
-)
 from commands.yts.constants import NEXT_YTS, YTS_TORRENT, IMDB_LINK, YT_LINK, YTS_FULL_DESC
+
 
 @lru_cache(1)
 def banco_keyboard():
@@ -21,18 +14,6 @@ def banco_keyboard():
             Button('Santander', callback_data="Santander"),
             Button('Francés', callback_data="Frances"),
             Button('Todos', callback_data="Todos"),
-        ]
-    ]
-    return InlineKeyboardMarkup(buttons)
-
-
-@lru_cache(1)
-def pelis_keyboard():
-    buttons = [
-        [
-            Button('🎟️ IMDB', callback_data="IMDB"),
-            Button('🎬️ Trailer', callback_data="Youtube"),
-            Button('🍿 Torrent', callback_data="Torrent"),
         ]
     ]
     return InlineKeyboardMarkup(buttons)

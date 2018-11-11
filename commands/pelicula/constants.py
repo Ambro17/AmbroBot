@@ -1,0 +1,12 @@
+import re
+
+PELICULA = r'PELICULA_'
+
+IMDB = PELICULA + 'IMDB'
+YOUTUBE = PELICULA + 'YOUTUBE'
+TORRENT = PELICULA + 'TORRENT'
+SINOPSIS = PELICULA + 'SINOPSIS'
+
+PELICULA_REGEX = re.compile(PELICULA)
+
+NO_TRAILER_MESSAGE = '💤 No hay trailer para esta pelicula'

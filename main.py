@@ -17,7 +17,9 @@ from commands.feriados.command import feriados
 from commands.hoypido.command import hoypido
 from commands.misc.commands import format_code, link_ticket, default
 from commands.partido.command import partido
+from commands.pelicula.callback import pelicula_callback
 from commands.pelicula.command import buscar_peli
+from commands.pelicula.constants import PELICULA_REGEX
 from commands.posiciones.command import posiciones
 from commands.remindme.callbacks import reminder_callback
 from commands.remindme.command import remind_me
@@ -73,6 +75,7 @@ generic_handler = MessageHandler(Filters.command, default)
 # Add callback query handlers
 serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)
+peliculas_callback = CallbackQueryHandler(pelicula_callback, pattern=PELICULA_REGEX, pass_chat_data=True)
 reminders_callback_handler = CallbackQueryHandler(reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True,
                                                   pass_job_queue=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
@@ -108,6 +111,7 @@ dispatcher.add_handler(generic_handler)
 dispatcher.add_handler(serie_callback)
 dispatcher.add_handler(yts_callback_handler)
 dispatcher.add_handler(reminders_callback_handler)
+dispatcher.add_handler(peliculas_callback)
 dispatcher.add_handler(callback_handler)
 
 dispatcher.add_error_handler(error_handler)
