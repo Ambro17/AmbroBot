@@ -15,9 +15,9 @@ NO_TRAILER_MESSAGE = '💤 No hay trailer para esta pelicula'
 
 SUBS_DIR = os_join(dirname(abspath(__file__)), 'subs')
 
-LOADING_GIF = 'CgADBAADrqAAAqEeZAcen_ivYBXU8AI'
-cool = 'CgADBAADBgAD0xUtUIax4e74LDOjAg'
+LOADING_GIF = 'CgADBAADrqAAAqEeZAfb4Ot0k2Z7bAI'
+cool = 'CgADBAAD46AAAuIaZAeIFKhwDWqvUQI'
 acumulapunto = 'CgADBAAD46AAAuIaZAdTT7zJlgxNDQI'
-green_loading = 'CgADBAAD-aAAAnUaZAc-Q7x3aeH_IgI'
+green_loading = 'CgADBAAD-aAAAnUaZAfjftup41BQdAI'
 
 LOADING_GIFS = [LOADING_GIF, cool, acumulapunto, green_loading]
