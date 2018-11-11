@@ -4,3 +4,4 @@ lxml
 python-telegram-bot
 psycopg2-binary
 sqlalchemy
+subliminal
