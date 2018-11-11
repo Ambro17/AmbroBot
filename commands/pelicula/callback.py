@@ -1,11 +1,16 @@
 import os
 import logging
+import random
 
 import requests
 
-from commands.pelicula.constants import IMDB, YOUTUBE, TORRENT, SINOPSIS, NO_TRAILER_MESSAGE
+from commands.pelicula.constants import (
+    IMDB, YOUTUBE, TORRENT, SINOPSIS, NO_TRAILER_MESSAGE, SUBTITLES, LOADING_GIFS
+)
 from commands.pelicula.keyboard import pelis_keyboard
-from commands.pelicula.utils import get_yts_torrent_info, get_yt_trailer, prettify_basic_movie_info
+from commands.pelicula.utils import (
+    get_yts_torrent_info, get_yt_trailer, prettify_basic_movie_info, search_movie_subtitle,
+    send_subtitle)
 from utils.constants import IMDB_LINK
 
 logger = logging.getLogger(__name__)
@@ -28,23 +33,26 @@ def pelicula_callback(bot, update, chat_data):
 
     answer = update.callback_query.data
     logger.info('User choice: %s', answer)
-    response = handle_answer(context['data'], answer)
-    message, image = prettify_basic_movie_info(context['data']['movie_basic'], with_overview=False)
-    updated_message = '\n'.join((message, response))
+    response = handle_answer(bot, update, context['data'], answer)
+    if response:
+        update.callback_query.answer(text='')
+        message, image = prettify_basic_movie_info(context['data']['movie_basic'], with_overview=False)
+        updated_message = '\n'.join((message, response))
 
-    update.callback_query.answer(text='')
-    update.callback_query.message.edit_text(
-        text=updated_message,
-        reply_markup=pelis_keyboard(include_desc=True),
-        parse_mode='markdown',
-        quote=False
-    )
+        update.callback_query.message.edit_text(
+            text=updated_message,
+            reply_markup=pelis_keyboard(include_desc=True),
+            parse_mode='markdown',
+            quote=False
+        )
+    else:
+        logger.info("Handled response: %s. Answer: %s, context: %s", response, answer, context['data'])
 
 
-def handle_answer(data, link_choice):
+def handle_answer(bot, update, data, link_choice):
     """Gives link_choice of movie id.
 
-    link_choice in ('IMDB', 'Magnet', 'Youtube', 'all')
+    link_choice in ('IMDB', 'Magnet', 'Youtube', 'Subtitles')
     """
     params = {'api_key': os.environ['TMDB_KEY'], 'append_to_response': 'videos'}
     r = requests.get(f"https://api.themoviedb.org/3/movie/{data['movie']['id']}", params=params)
@@ -61,6 +69,24 @@ def handle_answer(data, link_choice):
     elif link_choice == YOUTUBE:
         trailer = get_yt_trailer(movie_data['videos'])
         answer = f"[Trailer]({trailer})" if trailer else NO_TRAILER_MESSAGE
+
+    elif link_choice == SUBTITLES:
+        gif = random.choice(LOADING_GIFS)
+        logger.info("Gif elegido: %s", gif)
+        update.callback_query.answer(text='')
+        loading_message = bot.send_animation(
+            chat_id=update.callback_query.message.chat_id,
+            animation=gif,
+            caption='Buscando subtitulos..',
+            quote=False
+        )
+
+        title = data['movie']['title']
+        orig_title = data['movie'].get('original_title', title)
+        sub = search_movie_subtitle(orig_title)
+        # Send the subtitle or the error message
+        send_subtitle(bot, update, sub, loading_message, title)
+        answer = None
 
     elif link_choice == TORRENT:
         torrent = get_yts_torrent_info(imdb_id)
