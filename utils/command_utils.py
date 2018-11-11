@@ -1,4 +1,6 @@
 import logging
+
+from requests import ReadTimeout
 from telegram.error import (
     TelegramError,
     Unauthorized,
@@ -25,7 +27,12 @@ def normalize(text, limit=11, trim_end='.'):
 
 def soupify_url(url, timeout=2, encoding='utf-8'):
     """Given a url returns a BeautifulSoup object"""
-    r = requests.get(url, timeout=timeout)
+    try:
+        r = requests.get(url, timeout=timeout)
+    except ReadTimeout:
+        logger.info("[soupify_url] Request for %s timed out.", url)
+        raise
+
     r.raise_for_status()
     r.encoding = encoding
     if r.status_code == 200:

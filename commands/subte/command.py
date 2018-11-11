@@ -1,10 +1,14 @@
 import re
+import logging
 
+from requests.exceptions import ReadTimeout
 from telegram.ext import run_async
 
 from commands.subte.utils import format_estado_de_linea
 from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url, monospace
+
+logger = logging.getLogger(__name__)
 
 
 @log_time
@@ -12,7 +16,15 @@ from utils.command_utils import soupify_url, monospace
 @run_async
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
-    soup = soupify_url('https://www.metrovias.com.ar/')
+    try:
+        soup = soupify_url('https://www.metrovias.com.ar')
+    except ReadTimeout:
+        logger.info('Error in metrovias url request')
+        update.message.reply_text(
+            '⚠️ Metrovias no responde. Intentá más tarde'
+        )
+        return
+
     subtes = soup.find('table', {'class': 'table'})
     REGEX = re.compile(r'Línea *([A-Z]){1} +(.*)', re.IGNORECASE)
     estado_lineas = []
