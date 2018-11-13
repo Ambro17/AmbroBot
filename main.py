@@ -80,7 +80,7 @@ reminders_callback_handler = CallbackQueryHandler(reminder_callback, pattern=REM
                                                   pass_job_queue=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
-#  Associate commands with actions.
+#  Associate commands with action.
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
