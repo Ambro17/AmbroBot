@@ -98,8 +98,8 @@ def read_coef_matrix_and_choose_method(bot, update, chat_data):
 
     a_matrix = chat_data['matrix']
     update.message.reply_text(
-        'El sistema de ecuaciones lineales es el siguiente:\n'
-        'Elegí el método de resolución o apreta /cancel si ves algo mal.',
+        'Elegí el método de resolución o apreta /cancel si ves algo mal.\n'
+        'El sistema de ecuaciones lineales es el siguiente:',
         reply_markup=equations_matrix_markup(a_matrix, b_matrix)
     )
     return SOLVE_METHOD
@@ -118,8 +118,8 @@ def solve_method(bot, update, chat_data):
     update.callback_query.answer(text='')
     update.callback_query.message.reply_text(
         f'Elegiste el metodo `{method}`.\n'
-        'Elegí el vector inicial, la cantidad de decimales y la cota de error.\n'
-        'El formato es: `0 0 0; 3; 0.001`',
+        'Elegí el vector inicial, la cota de error y la cantidad de decimales.\n'
+        'El formato es: `0 0 0; 0.001; 4`',
         parse_mode='markdown'
     )
 
@@ -132,7 +132,7 @@ def read_method_parameters(bot, update, chat_data):
         update.message.reply_text('No ingresaste bien la data. Asegurate de separar por ; (punto y coma)')
         return METHOD_PARAMETERS
 
-    v_inicial, cant_decimales, cota = [p.strip() for p in params]
+    v_inicial, cota, cant_decimales = [p.strip() for p in params]
     chat_data['v_inicial'] = v_inicial
     chat_data['cant_decimales'] = cant_decimales
     chat_data['cota'] = cota
@@ -154,22 +154,42 @@ def calculate(bot, update, chat_data):
         return cancel(bot, update)
 
     a_matrix = chat_data['matrix']
-    b_matrix = chat_data['matrix_b']
-    cota_de_error = chat_data['cota']
-    decimals = chat_data['cant_decimales']
+    b_matrix = list(map(int, chat_data['matrix_b']))
+    v_inicial = list(map(int, chat_data['v_inicial'].split(' ')))  # '0 0 0' to [0, 0, 0]
+    cota_de_error = float(chat_data['cota'])
+    decimals = int(chat_data['cant_decimales'])
     method = chat_data['chosen_method']
 
-    result, details = aproximate(method, a_matrix, b_matrix, cota_de_error, decimals)
+    result, details = aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals)
     chat_data['result'] = result
     chat_data['result_details'] = details
 
     update.callback_query.answer(text='')
     update.callback_query.message.reply_text(
-        f"El resultado de la aproximación via {chat_data['chosen_method']} es `{result}`",
+        f"El resultado de la aproximación via {chat_data['chosen_method']} es:\n`{result}`",
         parse_mode='markdown',
         reply_markup=see_details_or_aproximate_by_other()
     )
     return DETAILS
+
+
+def _input_to_list(input_string):
+    return list(map(int, input_string.split(' ')))
+
+
+def prettify_details(result_steps, limit):
+    # Prettify np.arrays into markdown pretty
+    return '\n'.join(
+        "{} | {:3} | {:3} | {:3}".format(
+            _minify_array(array), norm_1, norm_2, norm_inf # Minify array to n decimals too
+        )
+        for array, norm_1, norm_2, norm_inf in result_steps
+    )
+
+
+def _minify_array(array):
+    width = 5
+    return ' '.join([f'{elem:{width}}' for elem in array])
 
 
 def details(bot, update, chat_data):
@@ -177,8 +197,9 @@ def details(bot, update, chat_data):
     update.callback_query.answer(text='')
     if answer == DETALLE:
         result_steps = chat_data['result_details']
+        details = prettify_details(result_steps, chat_data['cant_decimales'])
         update.callback_query.message.reply_text(
-            monospace(result_steps),
+            monospace(details),
             parse_mode='markdown'
         )
     elif answer == OTHER_METHOD:

@@ -1,6 +1,13 @@
+import logging
 import numpy as np
 
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
+
+from commands.aproximacion.gauss_seidel import solve_by_gauss_seidel
+from commands.aproximacion.jacobi import solve_by_jacobi
+
+logger = logging.getLogger(__name__)
+
 
 READ_MATRIX, SHOW_MATRIX, B_MATRIX, SOLVE_METHOD = range(4)
 
@@ -94,8 +101,16 @@ def aproximar_o_cancelar():
     return InlineKeyboardMarkup(buttons)
 
 
-def aproximate(method, a_matrix, b_matrix, cota_de_error, decimals):
-    return 1, 'el detalle'
+def aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals):
+    methods = {
+        JACOBI: solve_by_jacobi,
+        GAUSS_SEIDEL: solve_by_gauss_seidel
+    }
+    apromixation_method = methods[method]
+    logger.info('Invocando a metodo %s con args: A: %s, B: %s, cota: %s, v_inicial: %s' %
+                (apromixation_method, a_matrix, b_matrix, cota_de_error, v_inicial))
+    res, details = apromixation_method(a_matrix, b_matrix, cota_de_error, v_inicial)
+    return res, details
 
 
 opposite_method = {
