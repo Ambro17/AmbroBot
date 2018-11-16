@@ -19,7 +19,14 @@ logger = logging.getLogger(__name__)
 
 def _parse_matrix(text):
     rows = text.split('\n')
-    matrix = [list(map(int, r.split(' '))) for r in rows]
+    try:
+        matrix = [list(map(int, r.split(' '))) for r in rows]
+    except (TypeError, ValueError):
+        logger.info("El valor %s no contiene algo casteable a int.", text)
+        return None
+    if len(matrix[0]) != len(matrix):
+        # If it has more columns than rows
+        return None
     return matrix
 
 
@@ -42,7 +49,6 @@ def _is_diagonal_dominant(matrix):
 
 def _is_square(matrix):
     return len(matrix) == len(matrix[0])
-
 
 
 def aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals):

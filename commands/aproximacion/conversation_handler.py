@@ -26,7 +26,7 @@ READ_MATRIX_A, READ_MATRIX_B, SOLVE_METHOD, METHOD_PARAMETERS, APROXIMAR, DETAIL
 
 msup_conversation = ConversationHandler(
     entry_points=[
-        CommandHandler('ap', ingresar_matriz)
+        CommandHandler('aproximar', ingresar_matriz)
     ],
     states={
         READ_MATRIX_A: [MessageHandler(Filters.text, read_matriz, pass_chat_data=True)],

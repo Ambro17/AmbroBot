@@ -37,6 +37,11 @@ def ingresar_matriz(bot, update):
 # First state
 def read_matriz(bot, update, chat_data):
     matrix = _parse_matrix(update.message.text)
+    if not matrix:
+        update.message.reply_text(
+            text=f'🚫 La matriz ingresada no respeta el formato.\nIntentá de nuevo',
+        )
+        return READ_MATRIX_A
     is_square_matrix = _is_square(matrix)
     is_diag_dominant = _is_diagonal_dominant(matrix)
     if not is_diag_dominant:
@@ -140,13 +145,19 @@ def solve_method_by_text(bot, update, chat_data, groups):
 def read_method_parameters(bot, update, chat_data):
     params = update.message.text.split(';')
     if len(params) != 3:
-        update.message.reply_text('No ingresaste bien la data. Asegurate de separar por ; (punto y coma)')
+        update.message.reply_text('🚫 No ingresaste bien la data. Asegurate de separar por ; (punto y coma)')
         return METHOD_PARAMETERS
 
     v_inicial, cota, cant_decimales = [p.strip() for p in params]
     chat_data['v_inicial'] = v_inicial
-    chat_data['cant_decimales'] = int(cant_decimales)
-    chat_data['cota'] = float(cota)
+
+    try:
+        chat_data['cant_decimales'] = int(cant_decimales)
+        chat_data['cota'] = float(cota)
+    except (TypeError, ValueError):
+        update.message.reply_text('🚫 Error al interpretar la información. Ingresaste números?')
+        return METHOD_PARAMETERS
+
     logger.info(f"V_0: {v_inicial}, decimales: {cant_decimales}, cota de error: {cota}")
 
     update.message.reply_text(
