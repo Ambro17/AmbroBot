@@ -107,16 +107,16 @@ dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
 
-# Add Conversation handler
-dispatcher.add_handler(msup_conversation)
-
 
 # Add callback handlers
 dispatcher.add_handler(serie_callback)
 dispatcher.add_handler(yts_callback_handler)
 dispatcher.add_handler(reminders_callback_handler)
 dispatcher.add_handler(peliculas_callback)
+# Add Conversation handler
+dispatcher.add_handler(msup_conversation)
 dispatcher.add_handler(callback_handler)
+
 
 dispatcher.add_handler(generic_handler)
 dispatcher.add_error_handler(error_handler)

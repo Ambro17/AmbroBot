@@ -20,8 +20,6 @@ from commands.aproximacion.state_handlers import (
 )
 from commands.aproximacion.utils import number_callback
 
-JACOBI = 'Jacobi'
-GAUSS_SEIDEL = 'Gauss Seidel'
 
 READ_MATRIX_A, READ_MATRIX_B, SOLVE_METHOD, METHOD_PARAMETERS, APROXIMAR, DETAILS = range(6)
 

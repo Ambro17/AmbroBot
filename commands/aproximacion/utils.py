@@ -2,13 +2,11 @@ import csv
 import logging
 
 import numpy as np
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
+from commands.aproximacion.constants import JACOBI, GAUSS_SEIDEL
 from commands.aproximacion.gauss_seidel import solve_by_gauss_seidel
 from commands.aproximacion.jacobi import solve_by_jacobi
 
-JACOBI = 'Jacobi'
-GAUSS_SEIDEL = 'Gauss Seidel'
 
 methods = {
     JACOBI: solve_by_jacobi,
@@ -19,33 +17,10 @@ methods = {
 logger = logging.getLogger(__name__)
 
 
-EXAMPLE_NOT_DDOM = "1 2 3\n4 5 6\n7 8 9"
-EXAMPLE_DDOM_ROW = "5 3 1\n2 6 0\n1 2 4"
-EXAMPLE_DDOM_COL = "5 3 3\n2 6 0\n1 2 4"
-
-DETALLE = 'Detalle'
-OTHER_METHOD = 'Otro'
-EXPORT_CSV = 'Exportar'
-SALIR = 'Salir'
-
-
 def _parse_matrix(text):
     rows = text.split('\n')
     matrix = [list(map(int, r.split(' '))) for r in rows]
     return matrix
-
-
-def show_matrix_markup(matrix):
-    COLUMNS = len(matrix[0])
-    buttons = [
-        Button(f'{num}', callback_data='a')
-        for row in matrix
-        for num in row
-    ]
-    columned_keyboard = [
-        buttons[i:i + COLUMNS] for i in range(0, len(buttons), COLUMNS)
-    ]
-    return InlineKeyboardMarkup(columned_keyboard)
 
 
 def number_callback(bot, update, *args, **kwargs):
@@ -69,40 +44,6 @@ def _is_square(matrix):
     return len(matrix) == len(matrix[0])
 
 
-def equations_matrix_markup(a_matrix, b_matrix):
-    COLUMNS = len(a_matrix[0])
-    A_buttons = [
-        Button(f'{num}', callback_data='a')
-        for row in a_matrix
-        for num in row
-    ]
-    columned_keyboard = [
-        A_buttons[i:i + COLUMNS] for i in range(0, len(A_buttons), COLUMNS)
-    ]
-    # add b coef with a space
-    for row, b_value in zip(columned_keyboard, b_matrix):
-        row.append(Button('=', callback_data='empty'))
-        row.append(Button(f'{b_value}', callback_data='b_value'))
-
-    # Append resolution methods
-    jacobi = Button('🤓 Jacobi', callback_data=JACOBI)
-    gauss_seidel = Button('🔢 Gauss Seidel', callback_data=GAUSS_SEIDEL)
-    method_selector = [jacobi, gauss_seidel]
-
-    columned_keyboard.append(method_selector)
-
-    return InlineKeyboardMarkup(columned_keyboard)
-
-
-def aproximar_o_cancelar():
-    buttons = [
-        [
-            Button('✅ Calcular', callback_data='Calcular'),
-            Button('🚫 Cancelar', callback_data='/cancel')
-        ]
-    ]
-    return InlineKeyboardMarkup(buttons)
-
 
 def aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals):
     apromixation_method = methods[method]
@@ -116,22 +57,6 @@ opposite_method = {
     JACOBI: GAUSS_SEIDEL,
     GAUSS_SEIDEL: JACOBI,
 }
-
-
-def see_details_or_aproximate_by_other():
-    buttons = [
-        [
-            Button('🔍 Detalle', callback_data=DETALLE),
-            Button('🖇 Exportar', callback_data=EXPORT_CSV)
-        ],
-        [
-            Button('🔁 Cambiar Método ', callback_data=OTHER_METHOD),
-        ],
-        [
-            Button('🚪 Salir', callback_data=SALIR)
-        ]
-    ]
-    return InlineKeyboardMarkup(buttons)
 
 
 def prettify_details(result_steps, limit):

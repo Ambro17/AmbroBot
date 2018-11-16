@@ -3,10 +3,18 @@ import logging
 import numpy as np
 from telegram.ext import ConversationHandler
 
-from commands.aproximacion.utils import EXAMPLE_NOT_DDOM, _parse_matrix, _is_square, _is_diagonal_dominant, \
-    show_matrix_markup, equations_matrix_markup, JACOBI, GAUSS_SEIDEL, aproximar_o_cancelar, aproximate, \
-    see_details_or_aproximate_by_other, DETALLE, OTHER_METHOD, EXPORT_CSV, prettify_details, opposite_method, \
+from commands.aproximacion.constants import JACOBI, GAUSS_SEIDEL, DETALLE, OTHER_METHOD, EXPORT_CSV, EXAMPLE_DDOM_ROW
+from commands.aproximacion.keyboard import show_matrix_markup, equations_matrix_markup, aproximar_o_cancelar, \
+    see_details_or_aproximate_by_other
+from commands.aproximacion.utils import (
+    _parse_matrix,
+    _is_square,
+    _is_diagonal_dominant,
+    aproximate,
+    prettify_details,
+    opposite_method,
     dump_results_to_csv
+)
 from utils.command_utils import monospace
 from utils.decorators import send_typing_action
 
@@ -20,7 +28,7 @@ logger = logging.getLogger(__name__)
 def ingresar_matriz(bot, update):
     update.message.reply_text(
         'Ingresar matriz A. El formato es:\n' +
-        monospace(EXAMPLE_NOT_DDOM),
+        monospace(EXAMPLE_DDOM_ROW),
         parse_mode='markdown'
     )
     return READ_MATRIX_A

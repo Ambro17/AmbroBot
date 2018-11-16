@@ -1,0 +1,14 @@
+import re
+
+APROXIMACION = r'APROXIMACION'
+JACOBI = 'Jacobi'
+GAUSS_SEIDEL = 'Gauss Seidel'
+
+DETALLE = 'Detalle'
+OTHER_METHOD = 'Otro'
+EXPORT_CSV = 'Exportar'
+SALIR = 'Salir'
+
+EXAMPLE_NOT_DDOM = "1 2 3\n4 5 6\n7 8 9"
+EXAMPLE_DDOM_ROW = "5 3 1\n2 6 0\n1 2 4"
+EXAMPLE_DDOM_COL = "5 3 3\n2 6 0\n1 2 4"
