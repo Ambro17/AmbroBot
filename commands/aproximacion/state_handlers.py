@@ -62,8 +62,9 @@ def read_matriz(bot, update, chat_data):
         text=f'✅ La matriz ingresada es diagonalmente dominante:',
         reply_markup=show_matrix_markup(matrix)
     )
+    ejemplo = ' '.join([str(num) for num in range(1, len(matrix)+1)])
     update.message.reply_text(
-        text='Ahora Ingresa la matriz de coeficientes (B). Ejemplo `1 2 3`',
+        text=f'Ahora Ingresa la matriz de términos independientes (B).\nEjemplo {ejemplo}',
         parse_mode='markdown'
     )
     return READ_MATRIX_B
@@ -182,8 +183,13 @@ def calculate(bot, update, chat_data):
     cota_de_error = chat_data['cota']
     decimals = chat_data['cant_decimales']
     method = chat_data['chosen_method']
-
-    result, details = aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals)
+    try:
+        result, details = aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals)
+    except Exception as e:
+        logger.exception('Ocurrió un error en el cálculo')
+        update.callback_query.message.reply_text(
+            'Hubo un error en el ingreso de datos. Intentalo nuevamente.')
+        return ConversationHandler.END
     chat_data['result'] = result
     chat_data['result_details'] = details
 

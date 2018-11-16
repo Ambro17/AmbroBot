@@ -80,8 +80,8 @@ def norm_1(array):
 def norm_2(array):
     return np.linalg.norm(array, ord=None)
 
-"""
 
+"""
 A = np.array([
     [5.0, -1.0, 3.0],
     [1.0, 6.0, -4],
@@ -89,15 +89,15 @@ A = np.array([
 ])
 b = np.array([3.0, 7.0, 1.0])
 A = np.array([
-    [9.0, 3.0],
-    [2.0, 7.0]
+    [3.0, 1.0],
+    [0.0, 4.0]
 ])
 
 b = np.array([1.0, 2.0])
 
-#sol, res = solve_by_jacobi(A, b, error_bound=0.0001)
+sol, res = solve_by_jacobi(A, b, error_bound=0.0001)
 
 np.set_printoptions(precision=10)
-#pprint(res)
-#print("Solución (r): %s" % sol)
+
+print("Solución (r): %s" % sol)
 """

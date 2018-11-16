@@ -15,5 +15,6 @@ def start(bot, update):
         "/partido - Próximo partido de San Lorenzo\n"
         "/posiciones - Tabla de posiciones Argenntina\n"
         "/cartelera - Peliculas más populares en cartelera\n"
+        "/aproximar - Calcular la solución del sistema de ecuaciones lineales\n"
     )
     update.message.reply_text(message, parse_mode='markdown')
