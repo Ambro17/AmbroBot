@@ -1,32 +1,35 @@
+import csv
 import logging
-import numpy as np
 
+import numpy as np
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
 from commands.aproximacion.gauss_seidel import solve_by_gauss_seidel
 from commands.aproximacion.jacobi import solve_by_jacobi
 
+JACOBI = 'Jacobi'
+GAUSS_SEIDEL = 'Gauss Seidel'
+
+methods = {
+    JACOBI: solve_by_jacobi,
+    GAUSS_SEIDEL: solve_by_gauss_seidel
+}
+
+
 logger = logging.getLogger(__name__)
 
-
-READ_MATRIX, SHOW_MATRIX, B_MATRIX, SOLVE_METHOD = range(4)
 
 EXAMPLE_NOT_DDOM = "1 2 3\n4 5 6\n7 8 9"
 EXAMPLE_DDOM_ROW = "5 3 1\n2 6 0\n1 2 4"
 EXAMPLE_DDOM_COL = "5 3 3\n2 6 0\n1 2 4"
 
-JACOBI = 'Jacobi'
-GAUSS_SEIDEL = 'Gauss Seidel'
-
 DETALLE = 'Detalle'
 OTHER_METHOD = 'Otro'
+EXPORT_CSV = 'Exportar'
 SALIR = 'Salir'
 
 
 def _parse_matrix(text):
-    # assert nxn and diagonal.
-    # assert nxn
-    text = EXAMPLE_DDOM_ROW
     rows = text.split('\n')
     matrix = [list(map(int, r.split(' '))) for r in rows]
     return matrix
@@ -102,10 +105,6 @@ def aproximar_o_cancelar():
 
 
 def aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals):
-    methods = {
-        JACOBI: solve_by_jacobi,
-        GAUSS_SEIDEL: solve_by_gauss_seidel
-    }
     apromixation_method = methods[method]
     logger.info('Invocando a metodo %s con args: A: %s, B: %s, cota: %s, v_inicial: %s' %
                 (apromixation_method, a_matrix, b_matrix, cota_de_error, v_inicial))
@@ -123,10 +122,46 @@ def see_details_or_aproximate_by_other():
     buttons = [
         [
             Button('🔍 Detalle', callback_data=DETALLE),
-            Button('🔁 Probar otro método', callback_data=OTHER_METHOD)
+            Button('🖇 Exportar', callback_data=EXPORT_CSV)
+        ],
+        [
+            Button('🔁 Cambiar Método ', callback_data=OTHER_METHOD),
         ],
         [
             Button('🚪 Salir', callback_data=SALIR)
         ]
     ]
     return InlineKeyboardMarkup(buttons)
+
+
+def prettify_details(result_steps, limit):
+    # Prettify np.arrays into markdown pretty
+    return '\n'.join(
+        f"#{i:<2} | {_minify_array(results[0], limit)}"
+        for i, results in enumerate(result_steps)
+    )
+
+
+def _minify_array(array, limit):
+    return tuple([f'{elem:.{limit}f}' for elem in list(array)])
+
+
+def dump_results_to_csv(final_result, result_steps, decimal_precision, error_minimo):
+    FILE_PATH = 'aproximation_result.csv'
+    solution_len = len(final_result)
+
+    with open(FILE_PATH, mode='w') as f:
+        csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        coordinates = [f'X_{i}' for i in range(solution_len)]
+        csv_writer.writerow(['i'] + coordinates + ['Norma 1', 'Norma 2', 'Norma 3', 'Criterio de Paro'])
+
+        for i, step in enumerate(result_steps):
+            array_elems = [round(number, decimal_precision) for number in step[0]]
+            normas = [round(norma, decimal_precision) if norma != '-' else '-'
+                      for norma in step[1:]
+                      ]
+            row = [i] + array_elems + normas + [error_minimo]
+            csv_writer.writerow(row)
+
+    return FILE_PATH

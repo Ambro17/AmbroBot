@@ -10,6 +10,7 @@ from telegram.ext import (
     CallbackQueryHandler,
 )
 from callbacks.handler import handle_callbacks
+from commands.aproximacion.conversation_handler import msup_conversation
 from commands.cartelera.command import cinearg
 from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
@@ -105,7 +106,10 @@ dispatcher.add_handler(remind_me_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
-dispatcher.add_handler(generic_handler)
+
+# Add Conversation handler
+dispatcher.add_handler(msup_conversation)
+
 
 # Add callback handlers
 dispatcher.add_handler(serie_callback)
@@ -114,6 +118,7 @@ dispatcher.add_handler(reminders_callback_handler)
 dispatcher.add_handler(peliculas_callback)
 dispatcher.add_handler(callback_handler)
 
+dispatcher.add_handler(generic_handler)
 dispatcher.add_error_handler(error_handler)
 
 updater.start_polling()
