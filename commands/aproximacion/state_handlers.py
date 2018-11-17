@@ -187,11 +187,22 @@ def calculate(bot, update, chat_data):
     method = chat_data['chosen_method']
     try:
         result, details = aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals)
-    except Exception as e:
-        logger.exception('Ocurrió un error en el cálculo')
-        update.callback_query.message.reply_text(
-            'Hubo un error en el ingreso de datos. Intentalo nuevamente.')
+
+    except ValueError:
+        logger.exception('No se pudo calcular la inversa de la matriz')
+        update.callback_query.message.reply_text('Error calculando la inversa de la matriz. Abortando..')
         return ConversationHandler.END
+
+    except FloatingPointError:
+        logger.exception('Imposible dividir por cero')
+        update.callback_query.message.reply_text('No se puede dividir por 0. Operación abortada.')
+        return ConversationHandler.END
+
+    except Exception:
+        logger.exception('Excepcion inesperada')
+        update.callback_query.message.reply_text('Ocurrió un error en el cálculo. Abortando..')
+        return ConversationHandler.END
+
     chat_data['result'] = result
     chat_data['result_details'] = details
 

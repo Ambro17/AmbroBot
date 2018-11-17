@@ -5,7 +5,6 @@ Implements the jacobi iterative method to solve the A.x=B equation.
 Heavily inspired on:
     https://www.quantstart.com/articles/Jacobi-Method-in-Python-and-NumPy
 """
-from pprint import pprint
 
 import numpy as np
 
@@ -37,6 +36,7 @@ def solve_by_jacobi(A, B, error_bound=0.001, x=None):
         error_bound (float): Minimum acceptable error to the real answer. Once error is less than error_bound, stop calculating.
         x (list[int]): Initial vector guess (Optional)
     """
+    np.seterr(all='raise')
 
     # Creates an initial guess if needed
     if x is None:

@@ -5,10 +5,10 @@ Implements the jacobi iterative method to solve the A.x=B equation.
 Heavily inspired on:
     https://www.quantstart.com/articles/Jacobi-Method-in-Python-and-NumPy
 """
-from pprint import pprint
 
 import numpy as np
 from numpy.linalg import LinAlgError
+
 
 
 def solve_by_gauss_seidel(A, B, error_bound=0.001, x=None):
@@ -33,6 +33,8 @@ def solve_by_gauss_seidel(A, B, error_bound=0.001, x=None):
     is the same as taking each element on (B - U.x) matrix and divide it
     by the inverse of Lᵢⱼ element of the matrix.
     """
+    np.seterr(all='raise')
+
     # Creates an initial guess if needed
     if x is None:
         x = np.zeros(len(A[0]))
