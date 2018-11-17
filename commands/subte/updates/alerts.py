@@ -25,6 +25,7 @@ def check_update():
     for alert in alerts:
         alert_id = alert['id']
         nombre_linea = LINEA.match(alert_id).group(1) if LINEA.match(alert_id) else 'X'
+
         info = alert['alert']
         translations = info['header_text']['translation']
         spanish_desc = next((translation
@@ -59,5 +60,5 @@ def subte_updates_cron(bot, job):
         pretty_update = prettify_updates(status_updates)
         bot.send_message(chat_id='@subtescaba', text=pretty_update)
         context['last_update'] = status_updates
-
-    logger.info("Subte status has not changed. Avoid posting new reply")
+    else:
+        logger.info("Subte status has not changed. Avoid posting new reply. %s", status_updates)
