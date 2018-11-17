@@ -203,10 +203,12 @@ def calculate(bot, update, chat_data):
         update.callback_query.message.reply_text('Ocurrió un error en el cálculo. Abortando..')
         return ConversationHandler.END
 
+    finally:
+        update.callback_query.answer(text='')
+
     chat_data['result'] = result
     chat_data['result_details'] = details
 
-    update.callback_query.answer(text='')
     np.set_printoptions(precision=decimals)
     update.callback_query.message.reply_text(
         f"El resultado de la aproximación via `{chat_data['chosen_method']}` es:\n`{result}`",
