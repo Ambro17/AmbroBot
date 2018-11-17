@@ -10,12 +10,12 @@ def pelis_keyboard(include_desc=False):
     buttons = [
         [
             Button('🎟️ IMDB', callback_data=IMDB),
-            Button('🎬️ Trailer', callback_data=YOUTUBE)
+            Button('🎬️ Trailer', callback_data=YOUTUBE),
         ],
         [
             Button('🍿 Descargar', callback_data=TORRENT),
             Button('💬 Subs', callback_data=SUBTITLES),
-        ]
+        ],
     ]
     if include_desc:
         sinospsis_row = [Button('📖️ Sinopsis', callback_data=SINOPSIS)]

@@ -11,6 +11,6 @@ def hoypido_keyboard(comidas):
         ],
         [
             Button('🥕 Ir a Hoypido', url='https://www.hoypido.com/menu/onapsis.saludable')
-        ]
+        ],
     ]
     return InlineKeyboardMarkup(weekday_buttons)

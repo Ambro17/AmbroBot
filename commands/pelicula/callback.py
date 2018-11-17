@@ -5,12 +5,22 @@ import random
 import requests
 
 from commands.pelicula.constants import (
-    IMDB, YOUTUBE, TORRENT, SINOPSIS, NO_TRAILER_MESSAGE, SUBTITLES, LOADING_GIFS
+    IMDB,
+    YOUTUBE,
+    TORRENT,
+    SINOPSIS,
+    NO_TRAILER_MESSAGE,
+    SUBTITLES,
+    LOADING_GIFS,
 )
 from commands.pelicula.keyboard import pelis_keyboard
 from commands.pelicula.utils import (
-    get_yts_torrent_info, get_yt_trailer, prettify_basic_movie_info, search_movie_subtitle,
-    send_subtitle)
+    get_yts_torrent_info,
+    get_yt_trailer,
+    prettify_basic_movie_info,
+    search_movie_subtitle,
+    send_subtitle,
+)
 from utils.constants import IMDB_LINK
 
 logger = logging.getLogger(__name__)
@@ -20,12 +30,14 @@ def pelicula_callback(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
         user = update.effective_user.first_name
-        message = (f"Perdón {user}, no pude traer la info que me pediste.\n"
-                   f"Probá invocando de nuevo el comando a ver si me sale 😊")
+        message = (
+            f"Perdón {user}, no pude traer la info que me pediste.\n"
+            f"Probá invocando de nuevo el comando a ver si me sale 😊"
+        )
         bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text=message,
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         # Notify telegram we have answered
         update.callback_query.answer(text='')
@@ -36,17 +48,24 @@ def pelicula_callback(bot, update, chat_data):
     response = handle_answer(bot, update, context['data'], answer)
     if response:
         update.callback_query.answer(text='')
-        message, image = prettify_basic_movie_info(context['data']['movie_basic'], with_overview=False)
+        message, image = prettify_basic_movie_info(
+            context['data']['movie_basic'], with_overview=False
+        )
         updated_message = '\n'.join((message, response))
 
         update.callback_query.message.edit_text(
             text=updated_message,
             reply_markup=pelis_keyboard(include_desc=True),
             parse_mode='markdown',
-            quote=False
+            quote=False,
         )
     else:
-        logger.info("Handled response: %s. Answer: %s, context: %s", response, answer, context['data'])
+        logger.info(
+            "Handled response: %s. Answer: %s, context: %s",
+            response,
+            answer,
+            context['data'],
+        )
 
 
 def handle_answer(bot, update, data, link_choice):
@@ -78,7 +97,7 @@ def handle_answer(bot, update, data, link_choice):
             chat_id=update.callback_query.message.chat_id,
             animation=gif,
             caption='Buscando subtitulos..',
-            quote=False
+            quote=False,
         )
 
         title = data['movie']['title']

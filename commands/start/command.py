@@ -2,7 +2,6 @@ def start(bot, update):
     message = (
         "Hola, soy Cuervot!\n"
         "Sé hacer un par de cosas:\n\n"
-
         "/dolar - Cotización del dólar\n"
         "/rofex - Cotizacion dólar futuro\n"
         "/subte - Estado de subtes CABA\n"

@@ -10,8 +10,10 @@ def get_feriados(soup):
 
     return feriados
 
+
 def get_name(mes):
     return mes.h2.text.lower()
+
 
 def feriados_del_mes(mes):
     """
@@ -40,9 +42,7 @@ def feriados_del_mes(mes):
     for fer_desc in fer_div.find_all('p'):
         tipo_de_feriado = fer_desc.span.extract()  # No laborable, inamovible o trasladable
         feriados.update(
-            feriados_from_string(
-                fer_desc.text.strip(), tipo_de_feriado.text.strip()
-            )
+            feriados_from_string(fer_desc.text.strip(), tipo_de_feriado.text.strip())
         )
     return feriados
 
@@ -68,22 +68,17 @@ def feriados_from_string(date, tipo_feriado):
     dates, description = date.split('.', 1)
     days = [int(d) for d in DAYS_REGEX.findall(dates)]
 
-    return {
-        day: (description.strip(), tipo_feriado)
-        for day in days
-    }
+    return {day: (description.strip(), tipo_feriado) for day in days}
 
 
 def prettify_feriados(feriados, from_month=None):
     """Receives a feriado dict and pretty prints the future feriados."""
     if from_month:
-        feriados = {k:v for k, v in feriados.items() if k >= from_month}
+        feriados = {k: v for k, v in feriados.items() if k >= from_month}
     res = ''
     for month_num, days in feriados.items():
         month_name = month_names[month_num]
-        all_days = '\n'.join(
-            f"{dia}. {evento[0]}" for dia, evento in days.items()
-        )
+        all_days = '\n'.join(f"{dia}. {evento[0]}" for dia, evento in days.items())
         res += f"{month_name.capitalize()}\n{all_days}\n\n"
 
     return res

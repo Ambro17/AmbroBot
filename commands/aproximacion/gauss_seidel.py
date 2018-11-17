@@ -10,7 +10,6 @@ import numpy as np
 from numpy.linalg import LinAlgError
 
 
-
 def solve_by_gauss_seidel(A, B, error_bound=0.001, x=None):
     """Solves the equation Ax=b via the Gauss Seidel iterative method.
 
@@ -85,6 +84,8 @@ def norm_1(array):
 
 def norm_2(array):
     return np.linalg.norm(array, ord=None)
+
+
 """
 
 A = np.array([

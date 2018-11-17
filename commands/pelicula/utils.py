@@ -14,11 +14,17 @@ from utils.constants import YT_LINK
 
 logger = logging.getLogger(__name__)
 
-Pelicula = namedtuple('Pelicula', ['title', 'original_title', 'rating', 'overview', 'year', 'image'])
+Pelicula = namedtuple(
+    'Pelicula', ['title', 'original_title', 'rating', 'overview', 'year', 'image']
+)
 
 
 def request_movie(pelicula_query):
-    params = {'api_key': os.environ['TMDB_KEY'], 'query': pelicula_query, 'language': 'es-AR'}
+    params = {
+        'api_key': os.environ['TMDB_KEY'],
+        'query': pelicula_query,
+        'language': 'es-AR',
+    }
     r = requests.get('https://api.themoviedb.org/3/search/movie', params=params)
     if r.status_code == 200:
         try:
@@ -47,7 +53,6 @@ def prettify_basic_movie_info(peli, with_overview=True):
                f"{stars}\n\n"
                f"{overview}"
            ), peli.image
-
 
 def _title_header(peli):
     if peli.original_title:
@@ -112,7 +117,9 @@ def send_subtitle(bot, update, sub, loading_message, title):
     if sub is None:
         logger.info("No subtitle found for the movie")
         bot.delete_message(chat_id=chat_id, message_id=loading_message.message_id)
-        update.effective_message.reply_text(f'No encontré subs para `{title}`', parse_mode='markdown')
+        update.effective_message.reply_text(
+            f'No encontré subs para `{title}`', parse_mode='markdown'
+        )
 
     bot.delete_message(chat_id=chat_id, message_id=loading_message.message_id)
     logger.info("Deleted loading message")

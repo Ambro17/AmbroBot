@@ -30,13 +30,15 @@ logger = logging.getLogger(__name__)
 def serie_callback_handler(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
-        message = (f"Lpm, no pude responder a tu pedido.\n"
-                   f"Probá invocando de nuevo el comando a ver si me sale 😊")
+        message = (
+            f"Lpm, no pude responder a tu pedido.\n"
+            f"Probá invocando de nuevo el comando a ver si me sale 😊"
+        )
         logger.info(f"Conflicting update: '{update.to_dict()}'. Chat data: {chat_data}")
         bot.send_message(
             chat_id=update.callback_query.message.chat_id,
             text=message,
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         # Notify telegram we have answered
         update.callback_query.answer(text='')
@@ -53,8 +55,7 @@ def serie_callback_handler(bot, update, chat_data):
         if not torrents:
             logger.info(f"No torrents for {context['data']['series_name']}")
             update.callback_query.edit_message_text(
-                text=EZTV_NO_RESULTS,
-                reply_markup=serie_go_back_keyboard(),
+                text=EZTV_NO_RESULTS, reply_markup=serie_go_back_keyboard()
             )
             return
 
@@ -84,15 +85,21 @@ def serie_callback_handler(bot, update, chat_data):
         # They should be loaded by now but just in case.
         seasons = chat_data['context'].get('seasons')
         if not seasons:
-            update.callback_query.answer(text='Loading episodes.. this may take a while')
-            seasons = chat_data['context']['seasons'] = get_all_seasons(context['data']['series_name'], context['data']['series_raw_name'])
+            update.callback_query.answer(
+                text='Loading episodes.. this may take a while'
+            )
+            seasons = chat_data['context']['seasons'] = get_all_seasons(
+                context['data']['series_name'], context['data']['series_raw_name']
+            )
 
         response = 'Choose a season to see its episodes.'
         keyboard = serie_season_keyboard(seasons)
 
     elif answer.startswith(SEASON_T.format('')):
         season_choice = answer.split('_')[-1]
-        update.callback_query.answer(text=f'Loading episodes from season {season_choice}')
+        update.callback_query.answer(
+            text=f'Loading episodes from season {season_choice}'
+        )
         season_episodes = chat_data['context']['seasons'][int(season_choice)]
         chat_data['context']['selected_season_episodes'] = season_episodes
         response = f'Season {season_choice}, choose an episode'
@@ -119,4 +126,7 @@ def serie_callback_handler(bot, update, chat_data):
             text=response, reply_markup=keyboard, parse_mode='markdown'
         )
     else:
-        logger.info("Selected option '%s' would leave text as it is. Ignoring to avoid exception. '%s' " % (answer, response))
+        logger.info(
+            "Selected option '%s' would leave text as it is. Ignoring to avoid exception. '%s' "
+            % (answer, response)
+        )

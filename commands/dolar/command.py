@@ -19,7 +19,7 @@ def dolar_hoy(bot, update, chat_data):
     chat_data['context'] = {
         'data': cotiz,
         'command': 'dolarhoy',
-        'edit_original_text': True
+        'edit_original_text': True,
     }
     keyboard = banco_keyboard()
     bot.send_message(

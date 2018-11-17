@@ -16,7 +16,10 @@ def save_to_db(key, content):
     try:
         with psycopg2.connect(DB) as conn:
             with conn.cursor() as curs:
-                curs.execute("INSERT INTO bot_memory (key, content) VALUES (%s, %s);", (key, content))
+                curs.execute(
+                    "INSERT INTO bot_memory (key, content) VALUES (%s, %s);",
+                    (key, content),
+                )
                 logger.info(f"Content successfully added to db with key '{key}'")
                 conn.commit()
                 success = (True, None)
@@ -41,7 +44,9 @@ def lookup_content(key):
     try:
         with psycopg2.connect(DB) as conn:
             with conn.cursor() as curs:
-                curs.execute('SELECT key, content from bot_memory WHERE key=%s;', (key,))
+                curs.execute(
+                    'SELECT key, content from bot_memory WHERE key=%s;', (key,)
+                )
                 content = curs.fetchone()
                 logger.info("Content retrieved under key %s", key)
                 conn.commit()

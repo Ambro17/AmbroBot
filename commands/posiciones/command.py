@@ -14,4 +14,3 @@ def posiciones(bot, update, **kwargs):
     info = parse_posiciones(tabla, posiciones=kwargs.get('args'))
     pretty = prettify_table_posiciones(info)
     bot.send_message(chat_id=update.message.chat_id, text=pretty, parse_mode='markdown')
-

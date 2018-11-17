@@ -1,6 +1,11 @@
 from telegram.ext import run_async
 
-from commands.snippets.utils import lookup_content, save_to_db, select_all, remove_snippet
+from commands.snippets.utils import (
+    lookup_content,
+    save_to_db,
+    select_all,
+    remove_snippet,
+)
 from utils.decorators import send_typing_action, log_time, admin_only
 
 
@@ -20,7 +25,9 @@ def save_snippet(bot, update, **kwargs):
         else:
             message = error_message.format(key)
 
-    bot.send_message(chat_id=update.message.chat_id, text=message, parse_mode='markdown')
+    bot.send_message(
+        chat_id=update.message.chat_id, text=message, parse_mode='markdown'
+    )
 
 
 @log_time
@@ -47,8 +54,10 @@ def show_snippets(bot, update):
         reminder = ['Para ver algunos de los snippet de arriba » @get <snippet_key>']
         update.message.reply_text(text='\n\n'.join(keys + reminder))
     else:
-        update.message.reply_text('No hay ningún snippet guardado!\nPodés empezar usando `#key snippet_to_save`',
-                                  parse_mode='markdown')
+        update.message.reply_text(
+            'No hay ningún snippet guardado!\nPodés empezar usando `#key snippet_to_save`',
+            parse_mode='markdown',
+        )
 
 
 @run_async

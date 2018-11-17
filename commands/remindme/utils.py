@@ -8,11 +8,15 @@ def remind_time(time):
     """
     return REMIND_TIME.format(time)
 
+
 def get_delay(delay_string):
     """Do the inverse operation than _remind_time"""
     try:
         return delay_string.split('_')[1]
     except IndexError:
-        raise ValueError("Delay string has a wrong format. "
-                         "Expected: REMINDERS_<int> but"
-                         "Received: %s", delay_string)
+        raise ValueError(
+            "Delay string has a wrong format. "
+            "Expected: REMINDERS_<int> but"
+            "Received: %s",
+            delay_string,
+        )

@@ -15,7 +15,7 @@ def hoypido(bot, update, chat_data):
     chat_data['context'] = {
         'data': comidas,
         'command': 'hoypido',
-        'edit_original_text': True
+        'edit_original_text': True,
     }
     keyboard = hoypido_keyboard(comidas)
     bot.send_message(

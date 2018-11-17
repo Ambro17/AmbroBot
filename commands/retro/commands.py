@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 @private
 def retro_add(bot, update, args):
     if not args:
-        update.message.reply_text('Tenes que agregar algo al retro bucket. `/retro mas recursos`',
-                                  parse_mode='markdown')
+        update.message.reply_text(
+            'Tenes que agregar algo al retro bucket. `/retro mas recursos`',
+            parse_mode='markdown',
+        )
         return
     retro_item = ' '.join(args)
     user = update.effective_user.first_name
@@ -27,7 +29,7 @@ def retro_add(bot, update, args):
     update.message.reply_text(
         '✅ Listo. Tu mensaje fue guardado para la retro.\n'
         'Para recordarlo en la retro escribí `/retroitems`',
-        parse_mode='markdown'
+        parse_mode='markdown',
     )
     logger.info("Retro event added: %s %s %s", user, retro_item, date)
 
@@ -54,6 +56,7 @@ def _localize_time(date):
     date = date + timedelta(hours=GMT_BUENOS_AIRES)
     return date.strftime('%A %d/%m %H:%M').capitalize()
 
+
 @log_time
 @admin_only
 def expire_retro(bot, update):
@@ -61,9 +64,7 @@ def expire_retro(bot, update):
     for item in session.query(RetroItem):
         item.expired = True
     session.commit()
-    update.message.reply_text(
-        '✅ Listo. El registro de retroitems fue reseteado.'
-    )
+    update.message.reply_text('✅ Listo. El registro de retroitems fue reseteado.')
 
 
 @log_time

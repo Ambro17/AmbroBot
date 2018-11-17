@@ -20,9 +20,7 @@ def subte(bot, update):
         soup = soupify_url('https://www.metrovias.com.ar')
     except ReadTimeout:
         logger.info('Error in metrovias url request')
-        update.message.reply_text(
-            '⚠️ Metrovias no responde. Intentá más tarde'
-        )
+        update.message.reply_text('⚠️ Metrovias no responde. Intentá más tarde')
         return
 
     subtes = soup.find('table', {'class': 'table'})

@@ -22,5 +22,8 @@ class RetroItem(Base):
 
     def __repr__(self):
         return "<Item(user='%s', text='%s', datetime='%s', expired=%s)>" % (
-            self.user, self.text, self.datetime, self.expired
+            self.user,
+            self.text,
+            self.datetime,
+            self.expired,
         )

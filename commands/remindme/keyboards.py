@@ -16,12 +16,12 @@ def time_options_keyboard():
             Button('1 Hour', callback_data=remind_time(HOUR)),
             Button('2 Hours', callback_data=remind_time(2 * HOUR)),
             Button('4 Hours', callback_data=remind_time(4 * HOUR)),
-            Button('8 Hours', callback_data=remind_time(8 * HOUR))
+            Button('8 Hours', callback_data=remind_time(8 * HOUR)),
         ],
         [
             Button('12 hours', callback_data=remind_time(12 * HOUR)),
             Button('24 hours', callback_data=remind_time(24 * HOUR)),
-        ]
+        ],
     ]
     # Add Button('Guess from input', callback_data=GUESS_FROM_INPUT)
     return InlineKeyboardMarkup(buttons)

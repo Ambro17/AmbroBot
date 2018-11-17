@@ -15,11 +15,12 @@ from commands.serie.constants import (
     RELEASED,
     SEEDS,
     Episode,
-    EZTVEpisode
+    EZTVEpisode,
 )
 from utils.command_utils import monospace
 
 logger = logging.getLogger(__name__)
+
 
 def rating_stars(rating):
     """Transforms int rating into stars with int"""
@@ -43,7 +44,10 @@ def request_eztv_torrents_by_imdb_id(imdb_id, limit=None):
     A torrent is a tuple of (title, url, seeds, size)
     """
     try:
-        r = requests.get('https://eztv.ag/api/get-torrents', params={'imdb_id': imdb_id, 'limit': limit})
+        r = requests.get(
+            'https://eztv.ag/api/get-torrents',
+            params={'imdb_id': imdb_id, 'limit': limit},
+        )
         torrents = r.json()['torrents']
     except KeyError:
         logger.info("No torrents in eztv api for this serie. Response %s", r.json())
@@ -82,7 +86,7 @@ def parse_torrents(torrents):
                     episode=episode,
                     torrent=torrent['torrent_url'],
                     seeds=torrent['seeds'],
-                    size=size
+                    size=size,
                 )
             )
         except Exception:
@@ -91,9 +95,7 @@ def parse_torrents(torrents):
 
     # Order torrents to from latest to oldest
     ordered_torrents = sorted(
-        parsed_torrents,
-        key=attrgetter('season', 'episode'),
-        reverse=True
+        parsed_torrents, key=attrgetter('season', 'episode'), reverse=True
     )
     # Make it hashable so lru_cache can remember it and avoid reloading.
     ordered_torrents = tuple(ordered_torrents)
@@ -103,9 +105,7 @@ def parse_torrents(torrents):
 
 @lru_cache(5)
 def prettify_torrents(torrents, limit=5):
-    return '\n'.join(
-        prettify_torrent(torrent) for torrent in torrents[:limit]
-    )
+    return '\n'.join(prettify_torrent(torrent) for torrent in torrents[:limit])
 
 
 def prettify_torrent(torrent):
@@ -182,7 +182,10 @@ def get_all_seasons(series_name, raw_user_query):
         # Filter fake results that include series name but separated between other words.
         # For example, a query for The 100 also returns '*The* TV Show S07E00 Catfish Keeps it *100*' which we don't want
         # We also use the raw_user_query because sometimes the complete name from tmdb is not the same name used on eztv.
-        if not series_name.lower() in name.lower() and not raw_user_query.lower() in name.lower():
+        if (
+                not series_name.lower() in name.lower()
+                and not raw_user_query.lower() in name.lower()
+        ):
             # The tradeoff is that we don't longer work for series with typos. But it's better than giving fake results.
             logger.info(f"Fake result '{name}' for query '{series_name}'")
             return None
@@ -225,14 +228,16 @@ def get_all_seasons(series_name, raw_user_query):
         # Attach the episode under the season key, under the episode key, in a list of torrents of that episode
         series_episodes[season][episode].append(episode_info)
 
-    logger.info("'%s' series episodes retrieved. Seasons: %s", series_name, series_episodes.keys())
+    logger.info(
+        "'%s' series episodes retrieved. Seasons: %s",
+        series_name,
+        series_episodes.keys(),
+    )
     return series_episodes
 
 
 def prettify_episodes(episodes, header=None):
-    episodes = '\n\n'.join(
-        prettify_episode(ep) for ep in episodes
-    )
+    episodes = '\n\n'.join(prettify_episode(ep) for ep in episodes)
     if header:
         episodes = '\n'.join((header, episodes))
 
@@ -246,11 +251,8 @@ def prettify_episode(ep):
     if ep.torrent:
         header = f"[{ep.name}]({ep.torrent})\n"
     elif ep.magnet:
-        header = (f"Magnet: {monospace(ep.magnet)}")
+        header = f"Magnet: {monospace(ep.magnet)}"
     else:
         header = 'No torrent nor magnet available for this episode.'
 
-    return (
-        f"{header}"
-        f"🌱 Seeds: {ep.seeds} | 🗳 Size: {ep.size or '-'}"
-    )
+    return f"{header}" f"🌱 Seeds: {ep.seeds} | 🗳 Size: {ep.size or '-'}"

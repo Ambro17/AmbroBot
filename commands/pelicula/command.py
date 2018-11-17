@@ -2,7 +2,11 @@ import requests
 from telegram.ext import run_async
 
 from commands.pelicula.keyboard import pelis_keyboard
-from commands.pelicula.utils import request_movie, get_basic_info, prettify_basic_movie_info
+from commands.pelicula.utils import (
+    request_movie,
+    get_basic_info,
+    prettify_basic_movie_info,
+)
 from utils.decorators import send_typing_action, log_time
 
 
@@ -15,7 +19,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Necesito que me pases una pelicula. `/pelicula <nombre>`',  # Todo: Add deeplink with example
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -46,7 +50,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
             reply_markup=pelis_keyboard(),
             parse_mode='markdown',
             disable_web_page_preview=True,
-            quote=False
+            quote=False,
         )
     except requests.exceptions.ConnectionError:
         bot.send_message(

@@ -34,4 +34,6 @@ def link_ticket(bot, update, **kwargs):
 @run_async
 def default(bot, update):
     """If a user sends an unknown command, answer accordingly"""
-    bot.send_message(chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO))
+    bot.send_message(
+        chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO)
+    )

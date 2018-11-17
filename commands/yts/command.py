@@ -25,7 +25,9 @@ def yts(bot, update, chat_data):
     try:
         movies = r.json()['data']['movies']
     except KeyError:
-        logger.info(f'Response has no moives {r.url} {r.status_code} {r.reason} {r.json()}')
+        logger.info(
+            f'Response has no moives {r.url} {r.status_code} {r.reason} {r.json()}'
+        )
         return None
 
     # Build context based on the imdb_id
@@ -43,5 +45,5 @@ def yts(bot, update, chat_data):
         chat_id=update.message.chat_id,
         photo=image,
         caption=movie_desc,
-        reply_markup=yts_navigator
+        reply_markup=yts_navigator,
     )

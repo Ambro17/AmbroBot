@@ -10,7 +10,11 @@ LINEA = re.compile(r'Alert_Linea([A-Z]{1})')
 
 
 def check_update():
-    params = {'client_id': os.environ['CABA_CLI_ID'], 'client_secret': os.environ['CABA_SECRET'], 'json': 1}
+    params = {
+        'client_id': os.environ['CABA_CLI_ID'],
+        'client_secret': os.environ['CABA_SECRET'],
+        'json': 1,
+    }
     url = 'https://apitransporte.buenosaires.gob.ar/subtes/serviceAlerts'
     r = requests.get(url, params=params)
 
@@ -42,10 +46,7 @@ def check_update():
 
 
 def prettify_updates(updates):
-    return '\n'.join(
-        f'{linea} | ⚠️ {status}'
-        for linea, status in updates
-    )
+    return '\n'.join(f'{linea} | ⚠️ {status}' for linea, status in updates)
 
 
 def subte_updates_cron(bot, job):
@@ -61,4 +62,6 @@ def subte_updates_cron(bot, job):
         bot.send_message(chat_id='@subtescaba', text=pretty_update)
         context['last_update'] = status_updates
     else:
-        logger.info("Subte status has not changed. Avoid posting new reply. %s", status_updates)
+        logger.info(
+            "Subte status has not changed. Avoid posting new reply. %s", status_updates
+        )

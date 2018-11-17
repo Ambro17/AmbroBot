@@ -29,7 +29,9 @@ def get_comidas():
     menu_por_dia = {}
     response = requests.get(ONAPSIS_SALUDABLE, timeout=2)
     for day_offer in response.json():
-        food_offers = sorted([food_offer["name"] for food_offer in day_offer['options']])
+        food_offers = sorted(
+            [food_offer["name"] for food_offer in day_offer['options']]
+        )
         date = datetime.strptime(day_offer["active_date"], "%Y-%m-%dT%H:%M:%S")
         menu_por_dia[date.weekday()] = food_offers
 
@@ -46,7 +48,9 @@ def prettify_food_offers(menu_por_dia, day=None):
         food_offers = menu_por_dia[day]
     except KeyError:
         # If you ask on tuesday at night, only wednesday food will be retrieved.
-        logger.info("Menu for today not available. Showing tomorrow's menu. %s", menu_por_dia)
+        logger.info(
+            "Menu for today not available. Showing tomorrow's menu. %s", menu_por_dia
+        )
         day = day + 1
         food_offers = menu_por_dia[day]
 

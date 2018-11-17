@@ -1,6 +1,13 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
-from commands.aproximacion.constants import JACOBI, GAUSS_SEIDEL, DETALLE, EXPORT_CSV, OTHER_METHOD, SALIR
+from commands.aproximacion.constants import (
+    JACOBI,
+    GAUSS_SEIDEL,
+    DETALLE,
+    EXPORT_CSV,
+    OTHER_METHOD,
+    SALIR,
+)
 
 
 def equations_matrix_markup(a_matrix, b_matrix):
@@ -11,7 +18,7 @@ def equations_matrix_markup(a_matrix, b_matrix):
         for num in row
     ]
     columned_keyboard = [
-        A_buttons[i:i + COLUMNS] for i in range(0, len(A_buttons), COLUMNS)
+        A_buttons[i: i + COLUMNS] for i in range(0, len(A_buttons), COLUMNS)
     ]
     # add b coef with a space
     for row, b_value in zip(columned_keyboard, b_matrix):
@@ -32,14 +39,10 @@ def see_details_or_aproximate_by_other():
     buttons = [
         [
             Button('🔍 Detalle', callback_data=DETALLE),
-            Button('🖇 Exportar', callback_data=EXPORT_CSV)
+            Button('🖇 Exportar', callback_data=EXPORT_CSV),
         ],
-        [
-            Button('🔁 Cambiar Método ', callback_data=OTHER_METHOD),
-        ],
-        [
-            Button('🚪 Salir', callback_data=SALIR)
-        ]
+        [Button('🔁 Cambiar Método ', callback_data=OTHER_METHOD)],
+        [Button('🚪 Salir', callback_data=SALIR)],
     ]
     return InlineKeyboardMarkup(buttons)
 
@@ -52,7 +55,7 @@ def show_matrix_markup(matrix):
         for num in row
     ]
     columned_keyboard = [
-        buttons[i:i + COLUMNS] for i in range(0, len(buttons), COLUMNS)
+        buttons[i: i + COLUMNS] for i in range(0, len(buttons), COLUMNS)
     ]
     return InlineKeyboardMarkup(columned_keyboard)
 
@@ -61,7 +64,7 @@ def aproximar_o_cancelar():
     buttons = [
         [
             Button('✅ Calcular', callback_data='Calcular'),
-            Button('🚫 Cancelar', callback_data='/cancel')
+            Button('🚫 Cancelar', callback_data='/cancel'),
         ]
     ]
     return InlineKeyboardMarkup(buttons)

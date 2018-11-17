@@ -20,7 +20,7 @@ def serie(bot, update, chat_data, **kwargs):
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Te faltó pasarme el nombre de la serie. `/serie <serie>`',
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -56,20 +56,22 @@ def serie(bot, update, chat_data, **kwargs):
     # We reply here with basic info because further info may take a while to process.
     bot.send_photo(update.message.chat_id, image)
     bot_reply = bot.send_message(
-        chat_id=update.message.chat_id,
-        text=response,
-        parse_mode='markdown'
+        chat_id=update.message.chat_id, text=response, parse_mode='markdown'
     )
 
     # Retrieve imdb_id for further requests on button callbacks
     params.pop('query')
-    r_id = requests.get(f'https://api.themoviedb.org/3/tv/{serie_id}/external_ids', params=params)
+    r_id = requests.get(
+        f'https://api.themoviedb.org/3/tv/{serie_id}/external_ids', params=params
+    )
     if r_id.status_code != 200:
-        logger.info(f"Request for imdb id was not succesfull. {r_id.reason} {r_id.status_code} {r_id.url}")
+        logger.info(
+            f"Request for imdb id was not succesfull. {r_id.reason} {r_id.status_code} {r_id.url}"
+        )
         bot.send_message(
             chat_id=update.message.chat_id,
             text='La api de imdb se puso la gorra 👮',
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -80,7 +82,7 @@ def serie(bot, update, chat_data, **kwargs):
         bot.send_message(
             chat_id=update.message.chat_id,
             text='No encontré el id de imdb de esta pelicula',
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -90,7 +92,8 @@ def serie(bot, update, chat_data, **kwargs):
             'imdb_id': imdb_id,
             'series_name': name,
             'series_raw_name': serie_query,
-            'message_info': (name, rating, overview, start_date)},
+            'message_info': (name, rating, overview, start_date),
+        },
         'command': 'serie',
         'edit_original_text': True,
     }

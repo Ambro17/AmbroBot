@@ -53,15 +53,17 @@ def _is_square(matrix):
 
 def aproximate(method, a_matrix, b_matrix, cota_de_error, v_inicial, decimals):
     apromixation_method = methods[method]
-    logger.info('Invocando a metodo %s con args: A: %s, B: %s, cota: %s, v_inicial: %s' %
-                (apromixation_method, a_matrix, b_matrix, cota_de_error, v_inicial))
+    logger.info(
+        'Invocando a metodo %s con args: A: %s, B: %s, cota: %s, v_inicial: %s'
+        % (apromixation_method, a_matrix, b_matrix, cota_de_error, v_inicial)
+    )
     res, details = apromixation_method(a_matrix, b_matrix, cota_de_error, v_inicial)
     return res, details
 
 
 opposite_method = {
     JACOBI: GAUSS_SEIDEL,
-    GAUSS_SEIDEL: JACOBI,
+    GAUSS_SEIDEL: JACOBI
 }
 
 
@@ -82,16 +84,21 @@ def dump_results_to_csv(final_result, result_steps, decimal_precision, error_min
     solution_len = len(final_result)
 
     with open(FILE_PATH, mode='w') as f:
-        csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csv_writer = csv.writer(
+            f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL
+        )
 
         coordinates = [f'X_{i}' for i in range(solution_len)]
-        csv_writer.writerow(['i'] + coordinates + ['Norma 1', 'Norma 2', 'Norma 3', 'Criterio de Paro'])
+        csv_writer.writerow(
+            ['i'] + coordinates + ['Norma 1', 'Norma 2', 'Norma 3', 'Criterio de Paro']
+        )
 
         for i, step in enumerate(result_steps):
             array_elems = [round(number, decimal_precision) for number in step[0]]
-            normas = [round(norma, decimal_precision) if norma != '-' else '-'
-                      for norma in step[1:]
-                      ]
+            normas = [
+                round(norma, decimal_precision) if norma != '-' else '-'
+                for norma in step[1:]
+            ]
             row = [i] + array_elems + normas + [error_minimo]
             csv_writer.writerow(row)
 

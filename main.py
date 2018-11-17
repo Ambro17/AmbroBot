@@ -1,8 +1,9 @@
 import os
 import logging
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +31,19 @@ from commands.posiciones.command import posiciones
 from commands.remindme.callbacks import reminder_callback
 from commands.remindme.command import remind_me
 from commands.remindme.constants import REMINDERS_REGEX
-from commands.retro.handler import add_retro_item, show_retro_details, expire_retro_command
+from commands.retro.handler import (
+    add_retro_item,
+    show_retro_details,
+    expire_retro_command,
+)
 from commands.serie.callbacks import serie_callback_handler
 from commands.serie.command import serie
-from commands.snippets.command import save_snippet, get_snippet, show_snippets, delete_snippet
+from commands.snippets.command import (
+    save_snippet,
+    get_snippet,
+    show_snippets,
+    delete_snippet,
+)
 from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.start.command import start
@@ -62,13 +72,16 @@ hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)
 feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
+pelis = CommandHandler('película', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
-remind_me_handler = CommandHandler('remind', remind_me, pass_args=True, pass_chat_data=True)
+remind_me_handler = CommandHandler(
+    'remind', remind_me, pass_args=True, pass_chat_data=True
+)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
@@ -78,8 +91,9 @@ generic_handler = MessageHandler(Filters.command, default)
 serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)
 yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)
 peliculas_callback = CallbackQueryHandler(pelicula_callback, pattern=PELICULA_REGEX, pass_chat_data=True)
-reminders_callback_handler = CallbackQueryHandler(reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True,
-                                                  pass_job_queue=True)
+reminders_callback_handler = CallbackQueryHandler(
+    reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True, pass_job_queue=True
+)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 # Add repeating jobs

@@ -22,11 +22,18 @@ NAME, SIZE, RELEASED, SEEDS = 0, 2, 3, 4
 MAGNET, TORRENT = 0, 1
 
 # Episode representation after parsing eztv web
-Episode = namedtuple('Episode', ['name', 'season', 'episode', 'magnet', 'torrent', 'size', 'released', 'seeds'])
+Episode = namedtuple(
+    'Episode',
+    ['name', 'season', 'episode', 'magnet', 'torrent', 'size', 'released', 'seeds'],
+)
 # Episode representation from eztv api
-EZTVEpisode = namedtuple('EZTVpisode', ['name', 'season', 'episode', 'torrent', 'size', 'seeds'])
+EZTVEpisode = namedtuple(
+    'EZTVpisode', ['name', 'season', 'episode', 'torrent', 'size', 'seeds']
+)
 
 # eztv api error messages
 EZTV_API_ERROR = "EZTV api failed to respond with latest torrents. Try 'Load all episodes' option and look for latest episode."
-EZTV_NO_RESULTS = ("Eztv api is in beta mode and doesn't have all the series❕\n"
-                   "You can try loading all episodes and manually searching the latest.")
+EZTV_NO_RESULTS = (
+    "Eztv api is in beta mode and doesn't have all the series❕\n"
+    "You can try loading all episodes and manually searching the latest."
+)
