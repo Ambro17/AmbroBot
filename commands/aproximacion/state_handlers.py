@@ -64,7 +64,7 @@ def read_matriz(bot, update, chat_data):
     )
     ejemplo = ' '.join([str(num) for num in range(1, len(matrix)+1)])
     update.message.reply_text(
-        text=f'Ahora Ingresa la matriz de términos independientes (B).\nEjemplo {ejemplo}',
+        text=f'Ahora Ingresa la matriz de términos independientes (B).\nEjemplo `{ejemplo}`',
         parse_mode='markdown'
     )
     return READ_MATRIX_B
@@ -175,7 +175,9 @@ def read_method_parameters(bot, update, chat_data):
 # Fifth State
 def calculate(bot, update, chat_data):
     if update.callback_query.data == '/cancel':
-        return cancel(bot, update)
+        update.callback_query.answer(text='')
+        update.effective_message.reply_text('👮🏾‍♀️ Operación cancelada')
+        return ConversationHandler.END
 
     a_matrix = chat_data['matrix']
     b_matrix = list(map(int, chat_data['matrix_b']))
@@ -231,7 +233,7 @@ def details(bot, update, chat_data):
 
 
 def cancel(bot, update):
-    update.message.reply_text('👮🏾‍♀️ Operación cancelada')
+    update.effective_message.reply_text('👮🏾‍♀️ Operación cancelada')
     return ConversationHandler.END
 
 
