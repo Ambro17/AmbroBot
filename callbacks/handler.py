@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import logging
 
 from commands.dolar.callback import dolarhoy_callback

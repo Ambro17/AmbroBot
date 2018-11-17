@@ -33,12 +33,13 @@ from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.start.command import start
 from commands.subte.command import subte
+from commands.subte.updates.alerts import subte_updates_cron
 from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from commands.yts.constants import YTS_REGEX
 from utils.command_utils import error_handler
-from utils.constants import CODE_PREFIX, TICKET_REGEX
+from utils.constants import CODE_PREFIX, TICKET_REGEX, MINUTE
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -80,6 +81,10 @@ peliculas_callback = CallbackQueryHandler(pelicula_callback, pattern=PELICULA_RE
 reminders_callback_handler = CallbackQueryHandler(reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True,
                                                   pass_job_queue=True)
 callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
+
+# Add repeating jobs
+cron_tasks = updater.job_queue
+cron_tasks.run_repeating(subte_updates_cron, interval=10 * MINUTE, first=0, context={})
 
 #  Associate commands with action.
 dispatcher.add_handler(start_handler)
