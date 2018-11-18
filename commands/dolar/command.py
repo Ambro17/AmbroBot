@@ -6,9 +6,9 @@ from keyboards.keyboards import banco_keyboard
 from utils.command_utils import soupify_url
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def dolar_hoy(bot, update, chat_data):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
@@ -19,7 +19,7 @@ def dolar_hoy(bot, update, chat_data):
     chat_data['context'] = {
         'data': cotiz,
         'command': 'dolarhoy',
-        'edit_original_text': True
+        'edit_original_text': True,
     }
     keyboard = banco_keyboard()
     bot.send_message(

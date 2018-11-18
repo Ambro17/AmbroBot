@@ -1,15 +1,30 @@
+import os
+from collections import namedtuple
+
 import requests
 import logging
 
+from babelfish import Language
+from subliminal import download_best_subtitles, save_subtitles, Movie
+from subliminal.subtitle import get_subtitle_path
+
+from commands.pelicula.constants import SUBS_DIR
 from commands.serie.utils import rating_stars
 from utils.constants import YT_LINK
 
-TMDB_KEY = '7f76943e1557e33276e0f595c2128f68'
 logger = logging.getLogger(__name__)
 
+Pelicula = namedtuple(
+    'Pelicula', ['title', 'original_title', 'rating', 'overview', 'year', 'image']
+)
 
-def get_movie(pelicula_query):
-    params = {'api_key': TMDB_KEY, 'query': pelicula_query, 'language': 'es-AR'}
+
+def request_movie(pelicula_query):
+    params = {
+        'api_key': os.environ['TMDB_KEY'],
+        'query': pelicula_query,
+        'language': 'es-AR',
+    }
     r = requests.get('https://api.themoviedb.org/3/search/movie', params=params)
     if r.status_code == 200:
         try:
@@ -18,33 +33,40 @@ def get_movie(pelicula_query):
             return None
 
 
-def prettify_movie(movie_dict):
-    movie_info = get_basic_info(movie_dict)
-    message, image = prettify_basic_movie_info(*movie_info)
-
-    return message, image
-
-
 def get_basic_info(movie):
     title = movie['title']
+    original_title = movie.get('original_title')
     rating = movie['vote_average']
     overview = movie['overview']
     year = movie['release_date'].split('-')[0]  # "2016-07-27" -> 2016
-    image = f"http://image.tmdb.org/t/p/original{movie['backdrop_path']}"
-    return title, rating, overview, year, image
+    image_link = movie['backdrop_path']
+    poster = f"http://image.tmdb.org/t/p/original{image_link}" if image_link else None
+    return Pelicula(title, original_title, rating, overview, year, poster)
 
 
-def prettify_basic_movie_info(title, rating, overview, year, image):
-    stars = rating_stars(rating)
+def prettify_basic_movie_info(peli, with_overview=True):
+    stars = rating_stars(peli.rating)
+    overview = peli.overview if with_overview else ''
+    title = _title_header(peli)
     return (
-               f"{title} ({year})\n"
+               f"{title}"
                f"{stars}\n\n"
-               f"{overview}\n\n"
-           ), image
+               f"{overview}"
+           ), peli.image
+
+def _title_header(peli):
+    if peli.original_title:
+        return f"{peli.title} ({peli.original_title}) ~ {peli.year}\n"
+    else:
+        return f"{peli.title} ({peli.year})\n"
 
 
 def get_yt_trailer(videos):
-    key = videos['results'][-1]['key']
+    try:
+        key = videos['results'][-1]['key']
+    except (KeyError, IndexError):
+        return None
+
     return YT_LINK.format(key)
 
 
@@ -66,5 +88,43 @@ def get_yts_torrent_info(imdb_id):
 
             return url, seeds, size, quality
 
-        except (IndexError, KeyError) as e:
+        except (IndexError, KeyError):
             logger.exception("There was a problem with yts api response")
+            return None
+
+
+def search_movie_subtitle(serie_episode):
+    video = Movie.fromname(serie_episode)
+    subtitles = download_best_subtitles({video}, {Language('spa')})
+
+    try:
+        best_sub = subtitles[video][0]
+    except IndexError:
+        logger.info("No subs found for %s. Subs", serie_episode, subtitles)
+        return None
+
+    saved_subs = save_subtitles(video, [best_sub], directory=SUBS_DIR)
+    if saved_subs:
+        sub_filename = get_subtitle_path(video.name, language=Language('spa'))
+        return os.path.join(SUBS_DIR, sub_filename)
+    else:
+        return None
+
+
+def send_subtitle(bot, update, sub, loading_message, title):
+    """Reply with the subtitle if found, else send error message"""
+    chat_id = update.callback_query.message.chat_id
+    if sub is None:
+        logger.info("No subtitle found for the movie")
+        bot.delete_message(chat_id=chat_id, message_id=loading_message.message_id)
+        update.effective_message.reply_text(
+            f'No encontré subs para `{title}`', parse_mode='markdown'
+        )
+
+    bot.delete_message(chat_id=chat_id, message_id=loading_message.message_id)
+    logger.info("Deleted loading message")
+    bot.send_document(
+        chat_id=chat_id,
+        document=open(sub, 'rb')
+    )
+    logger.info("Subtitle file sent")

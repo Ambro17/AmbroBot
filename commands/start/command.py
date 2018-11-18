@@ -2,9 +2,8 @@ def start(bot, update):
     message = (
         "Hola, soy Cuervot!\n"
         "Sé hacer un par de cosas:\n\n"
-
-        "/dolar - Cotización del dolar\n"
-        "/fdolar - Cotizacion dolar futuro\n"
+        "/dolar - Cotización del dólar\n"
+        "/rofex - Cotizacion dólar futuro\n"
         "/subte - Estado de subtes CABA\n"
         "/pelicula - Buscar detalle de pelicula\n"
         "/hoypido - Ver menú de hoypido\n"
@@ -15,5 +14,6 @@ def start(bot, update):
         "/partido - Próximo partido de San Lorenzo\n"
         "/posiciones - Tabla de posiciones Argenntina\n"
         "/cartelera - Peliculas más populares en cartelera\n"
+        "/aproximar - Calcular la solución del sistema de ecuaciones lineales\n"
     )
     update.message.reply_text(message, parse_mode='markdown')

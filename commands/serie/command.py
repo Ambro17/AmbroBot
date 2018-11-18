@@ -4,22 +4,23 @@ import os
 import requests
 from telegram.ext import run_async
 
+from commands.serie.keyboard import serie_main_keyboard
 from commands.serie.utils import prettify_serie
 from utils.decorators import send_typing_action, log_time
-from keyboards.keyboards import serie_keyboard
 
 logger = logging.getLogger(__name__)
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def serie(bot, update, chat_data, **kwargs):
     serie_input = kwargs.get('args')
     if not serie_input:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Te faltó pasarme el nombre de la serie. /serie <serie>',
+            text='Te faltó pasarme el nombre de la serie. `/serie <serie>`',
+            parse_mode='markdown',
         )
         return
 
@@ -30,7 +31,7 @@ def serie(bot, update, chat_data, **kwargs):
     if r.status_code != 200:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"No encontré información en imdb sobre '{serie}'. Está bien escrito el nombre?",
+            text=f"No encontré información en imdb sobre '{serie_query}'. Está bien escrito el nombre?",
         )
         return
 
@@ -39,7 +40,7 @@ def serie(bot, update, chat_data, **kwargs):
     except (KeyError, IndexError):
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"No encontré resultados en imdb sobre '{serie}'",
+            text=f"No encontré resultados en imdb sobre '{serie_query}'",
         )
         return
 
@@ -55,20 +56,22 @@ def serie(bot, update, chat_data, **kwargs):
     # We reply here with basic info because further info may take a while to process.
     bot.send_photo(update.message.chat_id, image)
     bot_reply = bot.send_message(
-        chat_id=update.message.chat_id,
-        text=response,
-        parse_mode='markdown'
+        chat_id=update.message.chat_id, text=response, parse_mode='markdown'
     )
 
     # Retrieve imdb_id for further requests on button callbacks
     params.pop('query')
-    r_id = requests.get(f'https://api.themoviedb.org/3/tv/{serie_id}/external_ids', params=params)
+    r_id = requests.get(
+        f'https://api.themoviedb.org/3/tv/{serie_id}/external_ids', params=params
+    )
     if r_id.status_code != 200:
-        logger.info(f"Request for imdb id was not succesfull. {r_id.reason} {r_id.status_code} {r_id.url}")
+        logger.info(
+            f"Request for imdb id was not succesfull. {r_id.reason} {r_id.status_code} {r_id.url}"
+        )
         bot.send_message(
             chat_id=update.message.chat_id,
             text='La api de imdb se puso la gorra 👮',
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -79,7 +82,7 @@ def serie(bot, update, chat_data, **kwargs):
         bot.send_message(
             chat_id=update.message.chat_id,
             text='No encontré el id de imdb de esta pelicula',
-            parse_mode='markdown'
+            parse_mode='markdown',
         )
         return
 
@@ -89,13 +92,14 @@ def serie(bot, update, chat_data, **kwargs):
             'imdb_id': imdb_id,
             'series_name': name,
             'series_raw_name': serie_query,
-            'message_info': (name, rating, overview, start_date)},
+            'message_info': (name, rating, overview, start_date),
+        },
         'command': 'serie',
         'edit_original_text': True,
     }
 
     # Now that i have the imdb_id, show buttons to retrieve extra info.
-    keyboard = serie_keyboard()
+    keyboard = serie_main_keyboard(imdb_id)
     bot.edit_message_reply_markup(
         chat_id=bot_reply.chat_id,
         message_id=bot_reply.message_id,

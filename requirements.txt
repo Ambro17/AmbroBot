@@ -2,6 +2,7 @@ requests
 beautifulsoup4
 lxml
 python-telegram-bot
-cachetools
 psycopg2-binary
+sqlalchemy
 subliminal
+numpy

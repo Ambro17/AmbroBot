@@ -1,6 +1,7 @@
 import logging
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from functools import lru_cache
+from operator import attrgetter
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,10 +14,13 @@ from commands.serie.constants import (
     SIZE,
     RELEASED,
     SEEDS,
-    Episode)
+    Episode,
+    EZTVEpisode,
+)
 from utils.command_utils import monospace
 
 logger = logging.getLogger(__name__)
+
 
 def rating_stars(rating):
     """Transforms int rating into stars with int"""
@@ -34,14 +38,17 @@ def prettify_serie(name, rating, overview, start_date):
 
 
 @lru_cache(20)
-def get_torrents_by_id(imdb_id, limit=None):
-    """Request torrents from api and return a minified torrent representation."""
+def request_eztv_torrents_by_imdb_id(imdb_id, limit=None):
+    """Request torrents from api and return a minified torrent representation.
+
+    A torrent is a tuple of (title, url, seeds, size)
+    """
     try:
-        r = requests.get('https://eztv.ag/api/get-torrents', params={'imdb_id': imdb_id, 'limit': limit})
-        torrents = sorted(
-            r.json()['torrents'],
-            key=lambda d: (d['season'], d['episode'])
+        r = requests.get(
+            'https://eztv.ag/api/get-torrents',
+            params={'imdb_id': imdb_id, 'limit': limit},
         )
+        torrents = r.json()['torrents']
     except KeyError:
         logger.info("No torrents in eztv api for this serie. Response %s", r.json())
         return None
@@ -49,39 +56,62 @@ def get_torrents_by_id(imdb_id, limit=None):
         logger.exception("Error requesting torrents for %s", imdb_id)
         return None
 
-    return _minify_torrents(torrents)
+    return parse_torrents(torrents)
 
 
-def _minify_torrents(torrents):
+def _read_season_episode_from_title(title):
+    for pattern in EPISODE_PATTERNS:
+        match = pattern.search(title)
+        if match:
+            season, episode = match.groups()
+            return season, episode
+    else:
+        return 0, 0
+
+
+def parse_torrents(torrents):
     """Returns a torrent name, url, seeds and size from json response"""
-    minified_torrents = []
+    parsed_torrents = []
     for torrent in torrents:
         try:
             MB = 1024 * 1024
             size_float = int(torrent['size_bytes']) / MB
             size = f"{size_float:.2f}"
-            minified_torrents.append(
-                (torrent['title'], torrent['torrent_url'], torrent['seeds'], size)
+            title = torrent['title']
+            season, episode = _read_season_episode_from_title(title)
+            parsed_torrents.append(
+                EZTVEpisode(
+                    name=title,
+                    season=season,
+                    episode=episode,
+                    torrent=torrent['torrent_url'],
+                    seeds=torrent['seeds'],
+                    size=size,
+                )
             )
         except Exception:
             logger.exception("Error parsing torrent from eztv api. <%s>", torrent)
             continue
 
-    return tuple(minified_torrents)
+    # Order torrents to from latest to oldest
+    ordered_torrents = sorted(
+        parsed_torrents, key=attrgetter('season', 'episode'), reverse=True
+    )
+    # Make it hashable so lru_cache can remember it and avoid reloading.
+    ordered_torrents = tuple(ordered_torrents)
+
+    return ordered_torrents
 
 
 @lru_cache(5)
-def prettify_torrents(torrents):
-    return '\n'.join(
-        prettify_torrent(*torrent) for torrent in torrents
-        if prettify_torrent(*torrent)
-    )
+def prettify_torrents(torrents, limit=5):
+    return '\n'.join(prettify_torrent(torrent) for torrent in torrents[:limit])
 
 
-def prettify_torrent(name, torrent_url, seeds, size):
+def prettify_torrent(torrent):
     return (
-        f"🏴‍☠️ [{name}]({torrent_url})\n"
-        f"🌱 Seeds: {seeds} | 🗳 Size: {size}MB\n"
+        f"[{torrent.name}]({torrent.torrent})\n"
+        f"🌱 Seeds: {torrent.seeds} | 🗳 Size: {torrent.size}MB\n"
     )
 
 
@@ -152,7 +182,10 @@ def get_all_seasons(series_name, raw_user_query):
         # Filter fake results that include series name but separated between other words.
         # For example, a query for The 100 also returns '*The* TV Show S07E00 Catfish Keeps it *100*' which we don't want
         # We also use the raw_user_query because sometimes the complete name from tmdb is not the same name used on eztv.
-        if not series_name.lower() in name.lower() and not raw_user_query.lower() in name.lower():
+        if (
+                not series_name.lower() in name.lower()
+                and not raw_user_query.lower() in name.lower()
+        ):
             # The tradeoff is that we don't longer work for series with typos. But it's better than giving fake results.
             logger.info(f"Fake result '{name}' for query '{series_name}'")
             return None
@@ -195,14 +228,16 @@ def get_all_seasons(series_name, raw_user_query):
         # Attach the episode under the season key, under the episode key, in a list of torrents of that episode
         series_episodes[season][episode].append(episode_info)
 
-    logger.info("'%s' series episodes retrieved. Seasons: %s", series_name, series_episodes.keys())
+    logger.info(
+        "'%s' series episodes retrieved. Seasons: %s",
+        series_name,
+        series_episodes.keys(),
+    )
     return series_episodes
 
 
 def prettify_episodes(episodes, header=None):
-    episodes = '\n\n'.join(
-        prettify_episode(ep) for ep in episodes
-    )
+    episodes = '\n\n'.join(prettify_episode(ep) for ep in episodes)
     if header:
         episodes = '\n'.join((header, episodes))
 
@@ -216,11 +251,8 @@ def prettify_episode(ep):
     if ep.torrent:
         header = f"[{ep.name}]({ep.torrent})\n"
     elif ep.magnet:
-        header = (f"Magnet: {monospace(ep.magnet)}")
+        header = f"Magnet: {monospace(ep.magnet)}"
     else:
         header = 'No torrent nor magnet available for this episode.'
 
-    return (
-        f"{header}"
-        f"🌱 Seeds: {ep.seeds} | 🗳 Size: {ep.size or '-'}"
-    )
+    return f"{header}" f"🌱 Seeds: {ep.seeds} | 🗳 Size: {ep.size or '-'}"

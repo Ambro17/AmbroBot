@@ -4,9 +4,9 @@ from utils.decorators import send_typing_action, log_time
 from utils.command_utils import soupify_url
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def cinearg(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'

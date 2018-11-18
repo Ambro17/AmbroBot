@@ -19,5 +19,3 @@ def feriados(bot, update, **kwargs):
     pretty_feriados = prettify_feriados(feriados, from_month=month)
 
     bot.send_message(chat_id=update.message.chat_id, text=pretty_feriados)
-
-

@@ -15,8 +15,10 @@ def send_action(action):
     def decorator(func):
         @wraps(func)
         def command_func(bot, update, **kwargs):
-            bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
-            func(bot, update, **kwargs)
+            bot.send_chat_action(
+                chat_id=update.effective_message.chat_id, action=action
+            )
+            return func(bot, update, **kwargs)
 
         return command_func
 
@@ -60,6 +62,9 @@ def group(func):
         if user == os.environ['admin']:
             func(bot, update, **kwargs)
         else:
-            logger.info("User %s not authorized to perform action.", user)
+            update.message.reply_text('🚫 No estás autorizado a usar este comando')
+            logger.info(
+                "User %s not authorized to perform action.", update.effective_user
+            )
 
     return restricted_func

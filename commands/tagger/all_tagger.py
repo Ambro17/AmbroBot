@@ -33,9 +33,8 @@ def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')
     if not msg:
-        logger.info("No users passed to set_all_members function. kwargs: %s",
-            kwargs,
-        )
+        logger.info(
+            "No users passed to set_all_members function. kwargs: %s", kwargs)
         return
 
     user_entities = update.message.parse_entities(

@@ -11,6 +11,7 @@ Torrent = namedtuple('Torrent', ['url', 'size', 'seeds', 'quality'])
 
 logger = logging.getLogger(__name__)
 
+
 def get_minimal_movie(movie, trim_description=True):
     """Return image, title, synopsis, and Torrents from a movie."""
     title = movie['title_long']
@@ -25,13 +26,14 @@ def get_minimal_movie(movie, trim_description=True):
     image = movie['large_cover_image']
     return title, synopsis, rating, imdb, yt_trailer, image
 
+
 def get_torrents(movie):
     return [get_torrent(torrent) for torrent in movie['torrents']]
 
 
 def prettify_yts_movie(title, synopsis, rating):
     # Add torrents as optional download buttons?
-    message = (f"{title}\n{rating_stars(rating)}\n{synopsis}\n")
+    message = f"{title}\n{rating_stars(rating)}\n{synopsis}\n"
     return message
 
 

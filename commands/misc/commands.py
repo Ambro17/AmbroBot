@@ -7,9 +7,9 @@ from utils.constants import COMANDO_DESCONOCIDO
 from utils.decorators import send_typing_action, log_time
 
 
+@log_time
 @send_typing_action
 @run_async
-@log_time
 def format_code(bot, update, **kwargs):
     """Format text as code if it starts with $, ~, \c or \code."""
     code = kwargs.get('groupdict').get('code')
@@ -34,4 +34,6 @@ def link_ticket(bot, update, **kwargs):
 @run_async
 def default(bot, update):
     """If a user sends an unknown command, answer accordingly"""
-    bot.send_message(chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO))
+    bot.send_message(
+        chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO)
+    )
