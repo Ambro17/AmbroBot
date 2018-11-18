@@ -6,3 +6,4 @@ psycopg2-binary
 sqlalchemy
 subliminal
 numpy
+dateparser
