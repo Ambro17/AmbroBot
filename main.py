@@ -21,8 +21,9 @@ from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
 from commands.feriados.command import feriados
 from commands.hoypido.command import hoypido
-from commands.meeting.command import save_meeting
 from commands.misc.commands import format_code, link_ticket, default
+from commands.meeting.command import show_meetings, delete_meeting
+from commands.meeting.conversation_handler import meeting_conversation
 from commands.partido.command import partido
 from commands.pelicula.callback import pelicula_callback
 from commands.pelicula.command import buscar_peli
@@ -71,7 +72,8 @@ serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=Tr
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 pelis_alt = CommandHandler('película', buscar_peli, pass_args=True, pass_chat_data=True)
 yts_handler = CommandHandler('yts', yts, pass_chat_data=True)
-meeting_handler = CommandHandler('meeting', save_meeting, pass_args=True)
+show_meetings_handler = CommandHandler('meetings', show_meetings)
+delete_meeting_handler = CommandHandler('delmeeting', delete_meeting, pass_args=True)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
 get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
@@ -121,10 +123,11 @@ dispatcher.add_handler(snippet_get_command)
 dispatcher.add_handler(show_snippets_handler)
 dispatcher.add_handler(delete_snippet_handler)
 dispatcher.add_handler(remind_me_handler)
-dispatcher.add_handler(meeting_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(tickets_handler)
+dispatcher.add_handler(show_meetings_handler)
+dispatcher.add_handler(delete_meeting_handler)
 
 
 # Add callback handlers
@@ -133,11 +136,12 @@ dispatcher.add_handler(yts_callback_handler)
 dispatcher.add_handler(reminders_callback_handler)
 dispatcher.add_handler(peliculas_callback)
 
+
 # Add Conversation handler
 dispatcher.add_handler(msup_conversation)
+dispatcher.add_handler(meeting_conversation)
+
 dispatcher.add_handler(callback_handler)
-
-
 dispatcher.add_handler(generic_handler)
 
 dispatcher.add_error_handler(error_handler)

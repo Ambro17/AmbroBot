@@ -5,7 +5,7 @@ from telegram.ext import run_async
 
 from commands.remindme.constants import GMT_BUENOS_AIRES
 from commands.retro.models import RetroItem, Session
-from utils.decorators import send_typing_action, log_time, private, admin_only
+from utils.decorators import send_typing_action, log_time, group_only, admin_only
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
-@private
+@group_only
 def retro_add(bot, update, args):
     if not args:
         update.message.reply_text(
@@ -35,9 +35,17 @@ def retro_add(bot, update, args):
 
 
 @log_time
+def save_retro_item(retro_item, user, date_time):
+    session = Session()
+    item = RetroItem(user=user, text=retro_item, datetime=date_time)
+    session.add(item)
+    session.commit()
+
+
+@log_time
 @send_typing_action
 @run_async
-@private
+@group_only
 def show_retro_items(bot, update):
     items = get_retro_items()
     if items:
@@ -49,6 +57,12 @@ def show_retro_items(bot, update):
         )
     else:
         update.message.reply_text('📋 No hay ningún retroitem guardado todavía')
+
+
+@log_time
+def get_retro_items():
+    session = Session()
+    return session.query(RetroItem).filter_by(expired=False).all()
 
 
 def _localize_time(date):
@@ -65,17 +79,3 @@ def expire_retro(bot, update):
         item.expired = True
     session.commit()
     update.message.reply_text('✅ Listo. El registro de retroitems fue reseteado.')
-
-
-@log_time
-def save_retro_item(retro_item, user, date_time):
-    session = Session()
-    item = RetroItem(user=user, text=retro_item, datetime=date_time)
-    session.add(item)
-    session.commit()
-
-
-@log_time
-def get_retro_items():
-    session = Session()
-    return session.query(RetroItem).filter_by(expired=False).all()

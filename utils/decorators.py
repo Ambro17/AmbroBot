@@ -1,9 +1,9 @@
+import os
+import json
 import logging
 import time
-
 from functools import wraps
 
-import os
 from telegram import ChatAction
 
 logger = logging.getLogger(__name__)
@@ -47,20 +47,20 @@ def admin_only(func):
     def restricted_func(bot, update, **kwargs):
         user = update.effective_user.username
         if user == os.environ['admin']:
-            func(bot, update, **kwargs)
+            return func(bot, update, **kwargs)
         else:
             logger.info("User %s not authorized to perform action.", user)
 
     return restricted_func
 
 
-def group(func):
+def group_only(func):
     # Ignore action if it doesn't happen on allowed group
     @wraps(func)
     def restricted_func(bot, update, **kwargs):
-        user = update.effective_user.username
-        if user == os.environ['admin']:
-            func(bot, update, **kwargs)
+        id = update.effective_user.id
+        if id in json.loads(os.environ['RETRO_USERS']):
+            return func(bot, update, **kwargs)
         else:
             update.message.reply_text('🚫 No estás autorizado a usar este comando')
             logger.info(
