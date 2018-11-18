@@ -44,3 +44,7 @@ Show latest movies added on yts.ag
 ```/feriados```
 
 Show next feriados for Argentina
+
+```/aproximar```
+
+Aproximar solución de sistemas de ecuaciones lineales mediante Jacobi y Gauss Seidel
