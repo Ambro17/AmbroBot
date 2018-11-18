@@ -6,7 +6,7 @@ from commands.snippets.utils import (
     save_to_db,
     select_all,
     remove_snippet,
-)
+    link_key)
 from utils.decorators import send_typing_action, log_time, admin_only
 
 
