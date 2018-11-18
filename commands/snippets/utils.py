@@ -84,3 +84,7 @@ def remove_snippet(key):
     except Exception:
         logger.exception("Error writing to db")
         return False
+
+
+def link_key(cmd):
+    return f'[{cmd}](http://t.me/share/url?url=/get {cmd})'
