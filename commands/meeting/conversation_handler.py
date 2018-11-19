@@ -58,8 +58,12 @@ def set_meeting(bot, update, chat_data, args):
 # First state
 def set_date(bot, update, chat_data):
     logger.info("[set_date] Parsing user input into a meeting date.")
-    buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
     date_obj = dateparser.parse(update.message.text, settings={'PREFER_DATES_FROM': 'future'})
+    logger.info("[set_date] Raw naive user date %s", date_obj)
+    # Users are from argentina but server is hosted on US. So we must clarify that 17:00 means 17:00 in UTC-3
+    buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
+    date_obj = date_obj.replace(tzinfo=buenos_aires_offset)
+    logger.info("[set_date] timezone aware user date %s.", date_obj)
     if not date_obj:
         logger.info("[set_date] Error detecting date from user string")
         update.message.reply_text(
