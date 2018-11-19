@@ -1,5 +1,5 @@
 import random
-from datetime import datetime as d
+from datetime import datetime as d, timezone, timedelta
 
 import dateparser
 from telegram import ReplyKeyboardRemove
@@ -16,6 +16,7 @@ import logging
 from commands.meeting.constants import MEETING_FILTER, CANCEL, time_delta_map
 from commands.meeting.keyboard import repeat_interval_keyboard
 from commands.meeting.db_operations import save_meeting
+from utils.constants import GMT_BUENOS_AIRES
 from utils.decorators import group_only, send_typing_action, log_time
 
 logger = logging.getLogger(__name__)
@@ -57,6 +58,7 @@ def set_meeting(bot, update, chat_data, args):
 # First state
 def set_date(bot, update, chat_data):
     logger.info("[set_date] Parsing user input into a meeting date.")
+    buenos_aires_offset = timezone(timedelta(hours=GMT_BUENOS_AIRES))
     date_obj = dateparser.parse(update.message.text, settings={'PREFER_DATES_FROM': 'future'})
     if not date_obj:
         logger.info("[set_date] Error detecting date from user string")
@@ -64,7 +66,7 @@ def set_date(bot, update, chat_data):
             "No pude interpretar la fecha. Volvé a intentar con un formato más estándar."
         )
         return
-    elif date_obj < d.now():
+    elif date_obj < d.now(buenos_aires_offset):
         logger.info("[set_date] Date can't be earlier than current time.")
         update.message.reply_text(
             "La fecha debe ser una fecha futura.\nLos viajes en el tiempo aún no están soportados.\n"
