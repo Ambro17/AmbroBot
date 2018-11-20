@@ -97,7 +97,7 @@ callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 # Add repeating jobs
 cron_tasks = updater.job_queue
-cron_tasks.run_repeating(subte_updates_cron, interval=10 * MINUTE, first=10 * MINUTE, context={})
+cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=20 * MINUTE, context={})
 
 #  Associate commands with action.
 dispatcher.add_handler(start_handler)
