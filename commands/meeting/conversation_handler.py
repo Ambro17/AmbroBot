@@ -125,7 +125,7 @@ def set_meeting_job(bot, update, chat_data, job_queue):
 
     update.callback_query.answer(text='Meeting saved')
     update.callback_query.message.edit_text(
-        f"✅ Listo. La reunión `{chat_data['name']}` quedó seteada para el  `{chat_data['date_buenos_aires'].capitalize()}` "
+        f"✅ Listo. La reunión `{chat_data['name']}` quedó seteada para el  `{chat_data['date'].capitalize()}` "
         f"y se repetirá `{frequency_friendly_name}`",
         parse_mode='markdown',
         reply_markup=None

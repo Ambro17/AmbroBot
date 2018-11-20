@@ -22,3 +22,6 @@ CODE_PREFIX = re.compile(r'^(~|\\code|\$|\\c) (?P<code>[\s\S]+)')
 
 # Minute in seconds
 MINUTE = 60
+
+# Buenos aires GMT offset
+GMT_BUENOS_AIRES = -3
