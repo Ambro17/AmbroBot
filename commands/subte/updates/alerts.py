@@ -26,10 +26,10 @@ def check_update():
 
     alerts = data['entity']
     updates = []
+    logger.info('Alerts: %s', alerts)
     for alert in alerts:
         alert_id = alert['id']
-        nombre_linea = LINEA.match(alert_id).group(1) if LINEA.match(alert_id) else 'X'
-
+        nombre_linea = LINEA.match(alert_id).group(1) if LINEA.match(alert_id) else alert_id
         info = alert['alert']
         translations = info['header_text']['translation']
         spanish_desc = next((translation
