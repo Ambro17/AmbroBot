@@ -1,5 +1,5 @@
 import random
-from datetime import datetime as d
+from datetime import datetime as d, timedelta
 
 import dateparser
 from telegram import ReplyKeyboardRemove
@@ -57,14 +57,17 @@ def set_meeting(bot, update, chat_data, args):
 # First state
 def set_date(bot, update, chat_data):
     logger.info("[set_date] Parsing user input into a meeting date.")
-    date_obj = dateparser.parse(update.message.text, settings={'PREFER_DATES_FROM': 'future'})
-    if not date_obj:
+    buenos_aires_date = dateparser.parse(update.message.text, settings={'PREFER_DATES_FROM': 'future'})
+    utc_date = buenos_aires_date + timedelta(hours=3)  # Todo: Fix lib to enable tz aware jobs
+
+    if not utc_date:
         logger.info("[set_date] Error detecting date from user string")
         update.message.reply_text(
             "No pude interpretar la fecha. Volvé a intentar con un formato más estándar."
         )
         return
-    elif date_obj < d.now():
+
+    elif utc_date < d.now():
         logger.info("[set_date] Date can't be earlier than current time.")
         update.message.reply_text(
             "La fecha debe ser una fecha futura.\nLos viajes en el tiempo aún no están soportados.\n"
@@ -72,15 +75,16 @@ def set_date(bot, update, chat_data):
         )
         return
 
-    logger.info("[set_date] Parsed date : %s", date_obj)
+    logger.info("[set_date] Parsed date : %s. UTC: %s", buenos_aires_date, utc_date)
 
-    date_string = date_obj.strftime('%A %d/%m %H:%M')
-    chat_data['date'] = date_string
-    chat_data['datetime'] = date_obj
-    logger.info(f"[set_date] Horario elegido. {date_string}")
+    bs_as_date_string = buenos_aires_date.strftime('%A %d/%m %H:%M')
+    chat_data['date_buenos_aires'] = bs_as_date_string
+    chat_data['datetime_utc'] = utc_date
+
+    logger.info(f"[set_date] Horario elegido. {bs_as_date_string}")
 
     update.message.reply_text(
-        f'Perfecto, la próxima reunión será el: `{date_string.capitalize()}`\n'
+        f'Perfecto, la próxima reunión será el: `{bs_as_date_string.capitalize()}`\n'
         'Cada cuanto se va a repetir esta reunión?',
         parse_mode='markdown',
         reply_markup=repeat_interval_keyboard()
@@ -107,20 +111,21 @@ def set_meeting_job(bot, update, chat_data, job_queue):
     job_queue.run_repeating(
         send_notification,
         interval=time_delta,
-        first=chat_data['datetime'],
+        first=chat_data['datetime_utc'],
         context=chat_data
     )
-    logger.info("[set_meeting_job] Meeting set with datetime %s and timedelta %s.", chat_data['datetime'], time_delta)
+    logger.info("[set_meeting_job] Meeting set with datetime %s. Bs As: %s, and timedelta %s.",
+                chat_data['datetime_utc'], chat_data['date_buenos_aires'], time_delta)
 
     # Save meeting to db
     try:
-        save_meeting(chat_data['name'], chat_data['datetime'])
+        save_meeting(chat_data['name'], chat_data['datetime_utc'])
     except Exception:
         logger.exception("Meeting could not be saved")
 
     update.callback_query.answer(text='Meeting saved')
     update.callback_query.message.edit_text(
-        f"✅ Listo. La reunión `{chat_data['name']}` quedó seteada para el  `{chat_data['date'].capitalize()}` "
+        f"✅ Listo. La reunión `{chat_data['name']}` quedó seteada para el  `{chat_data['date_buenos_aires'].capitalize()}` "
         f"y se repetirá `{frequency_friendly_name}`",
         parse_mode='markdown',
         reply_markup=None
