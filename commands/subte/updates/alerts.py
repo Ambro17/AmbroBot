@@ -21,7 +21,12 @@ def subte_updates_cron(bot, job):
     context = job.context
     if status_updates is not None and status_updates != context.get('last_update'):
         logger.info('Updating subte status')
-        pretty_update = prettify_updates(status_updates)
+        if not status_updates:
+            # There are no incidents to report.
+            pretty_update = '✅ Todos los subtes funcionan con normalidad'
+        else:
+            pretty_update = prettify_updates(status_updates)
+
         bot.send_message(chat_id='@subtescaba', text=pretty_update)
         context['last_update'] = status_updates
     else:
