@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import time
+import inspect
 from functools import wraps
 
 from telegram import ChatAction
@@ -68,3 +69,45 @@ def group_only(func):
             )
 
     return restricted_func
+
+
+def handle_empty_arg(*, required_params, error_message='Faltó un argumento', parse_mode=None):
+    """Shortcut function execution if any of the required_params is empty.
+
+    This decorator was created because many commands should output an error message if a
+    required argument was supplied with a empty value. By defining this decorator, we can
+    better follow the DRY principle, by parametrizing what message will be shown if certain
+    required parameters are empty.
+
+    For example /serie must be supplied with a <series name>. So if a user calls /serie without
+    any series_name, `error_message` will be replied on that conversation
+
+    All decorated functions are expected to have a signature of a telegram bot callback. Namely:
+        >>> def callback(bot, update, optional_arg_1, optional_arg_2, ... )
+    A toy example would be:
+        >>> @handle_empty_arg('req_param')
+        >>> def test(bot, update, req_param, a, b)
+                pass
+        >>>test(bot, update, '', 'a', 'b')
+        [Out] 'Faltó un argumento'
+
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            argument_and_values = zip(inspect.signature(func).parameters, args + tuple(kwargs.values()))
+            required_arg_is_empty = any(
+                not value
+                for arg, value in argument_and_values
+                if arg in required_params
+            )
+            if required_arg_is_empty:
+                bot, update, *remainder = args
+                return update.effective_message.reply_text(error_message, parse_mode=parse_mode)
+            else:
+                return func(*args, **kwargs)
+
+        return wrapped_func
+
+    return decorator

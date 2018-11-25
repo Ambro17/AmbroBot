@@ -2,7 +2,8 @@ import logging
 import random
 from datetime import datetime, timedelta, timezone
 
-from commands.remindme.constants import TIME_ICONS, GMT_BUENOS_AIRES
+from commands.remindme.constants import TIME_ICONS, GMT_BUENOS_AIRES, DONE, DONE_ICONS, REMIND_AGAIN
+from commands.remindme.keyboards import remind_again_or_done, time_options_keyboard
 from commands.remindme.utils import get_delay
 
 logger = logging.getLogger(__name__)
@@ -14,8 +15,22 @@ def reminder_callback(bot, update, chat_data, job_queue):
         'text': chat_data['to_remind'],
         'user': chat_data['user'],
     }
-    requested_delay = int(get_delay(update.callback_query.data))
+    answer = update.callback_query.data
+
     update.callback_query.answer(text='')
+
+    if answer == DONE:
+        icon = random.choice(DONE_ICONS)
+        update.callback_query.message.edit_text(f'Reminder resuelto {icon}')
+        return
+    elif answer == REMIND_AGAIN:
+        update.callback_query.message.edit_text(
+            text="Cuando querés que te notifique de nuevo? ⏳",
+            reply_markup=time_options_keyboard(),
+        )
+        return
+    else:
+        requested_delay = int(get_delay(answer))
 
     # Set up the job
     logger.info("Setup new job. Context: %s, Chat Data: %s", job_context, chat_data)
@@ -29,8 +44,9 @@ def reminder_callback(bot, update, chat_data, job_queue):
 
     # Send reply with the hour of the reminder
     update.callback_query.message.edit_text(
-        text=f"✅ Listo, te voy a recordar '{chat_data['to_remind']}' a las {remind_date.strftime('%H:%M')} 🔔",
+        text=f"✅ Listo, te voy a recordar `{chat_data['to_remind']}` a las {remind_date.strftime('%H:%M')} 🔔",
         reply_markup=None,
+        parse_mode='markdown'
     )
 
 
@@ -39,4 +55,5 @@ def send_notification(bot, job):
     bot.send_message(
         chat_id=job.context['chat_id'],
         text=f"{job.context['user']} {random_time_emoji} {job.context['text']}",
+        reply_markup=remind_again_or_done()
     )

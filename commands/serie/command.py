@@ -14,9 +14,8 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
-def serie(bot, update, chat_data, **kwargs):
-    serie_input = kwargs.get('args')
-    if not serie_input:
+def serie(bot, update, chat_data, args):
+    if not args:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Te faltó pasarme el nombre de la serie. `/serie <serie>`',
@@ -25,7 +24,7 @@ def serie(bot, update, chat_data, **kwargs):
         return
 
     # Obtener id de imdb
-    serie_query = ' '.join(serie_input)
+    serie_query = ' '.join(args)
     params = {'api_key': os.environ['TMDB_KEY'], 'query': serie_query}
     r = requests.get('https://api.themoviedb.org/3/search/tv', params=params)
     if r.status_code != 200:

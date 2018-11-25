@@ -1,20 +1,15 @@
 from telegram.ext import run_async
 
+from commands.remindme.constants import MISSING_ARG_MESSAGE
 from commands.remindme.keyboards import time_options_keyboard
-from utils.decorators import send_typing_action, log_time
+from utils.decorators import send_typing_action, log_time, handle_empty_arg
 
 
 @log_time
 @send_typing_action
 @run_async
+@handle_empty_arg(required_params=('args',), error_message=MISSING_ARG_MESSAGE, parse_mode='markdown')
 def remind_me(bot, update, chat_data, args):
-    if not args:
-        update.message.reply_text(
-            'Me tenés que dar algo que recordar! `/remind comprar frutas`',
-            parse_mode='markdown',
-        )
-        return
-
     # Save what the bot should remind the user
     chat_data['to_remind'] = ' '.join(args)
     chat_data['user'] = _tag_user(update.message.from_user)

@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton as Button
 
-from commands.remindme.constants import MINUTE, HOUR
+from commands.remindme.constants import MINUTE, HOUR, DONE, REMIND_AGAIN
 from commands.remindme.utils import remind_time
 
 
@@ -21,7 +21,18 @@ def time_options_keyboard():
         [
             Button('12 hours', callback_data=remind_time(12 * HOUR)),
             Button('24 hours', callback_data=remind_time(24 * HOUR)),
+            Button('48 hours', callback_data=remind_time(48 * HOUR)),
         ],
     ]
-    # Add Button('Guess from input', callback_data=GUESS_FROM_INPUT)
+
+    return InlineKeyboardMarkup(buttons)
+
+
+def remind_again_or_done():
+    buttons = [
+        [
+            Button('✅ Listo', callback_data=DONE),
+            Button('Recordar de nuevo ⏱', callback_data=REMIND_AGAIN),
+        ]
+    ]
     return InlineKeyboardMarkup(buttons)

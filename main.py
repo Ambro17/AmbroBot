@@ -147,4 +147,4 @@ dispatcher.add_handler(generic_handler)
 dispatcher.add_error_handler(error_handler)
 
 updater.start_polling()
-logger.info('Listening humans..')
+logger.info('Listening humans as %s..' % updater.bot.username)
