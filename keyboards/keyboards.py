@@ -11,20 +11,6 @@ from commands.yts.constants import (
 )
 
 
-@lru_cache(1)
-def banco_keyboard():
-    buttons = [
-        [
-            Button('Galicia', callback_data="Galicia"),
-            Button('Nación', callback_data="Nación"),
-            Button('Santander', callback_data="Santander"),
-            Button('Francés', callback_data="Frances"),
-            Button('Todos', callback_data="Todos"),
-        ]
-    ]
-    return InlineKeyboardMarkup(buttons)
-
-
 def yts_navigator_keyboard(imdb_id=None, yt_trailer=None, show_next=True):
     buttons = [
         [Button('📖 Read more', callback_data=YTS_FULL_DESC)],

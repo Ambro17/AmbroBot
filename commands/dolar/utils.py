@@ -1,3 +1,4 @@
+import unicodedata
 from collections import defaultdict
 
 from utils.command_utils import monospace, normalize
@@ -25,11 +26,19 @@ def get_cotizaciones(response_soup):
             banco, compra, venta = (
                 item.get_text() for item in row_cotizacion.find_all('td')
             )
-            banco = banco.replace('Banco ', '')
+            banco_raw = banco.replace('Banco ', '')
+            banco = _normalize_name(banco_raw)
             cotizaciones[banco]['compra'] = compra
             cotizaciones[banco]['venta'] = venta
 
     return cotizaciones
+
+
+def _normalize_name(banco_name):
+    """Normalize a single tag: remove non valid chars, lower case all. - Credits to @eduzen"""
+    value = unicodedata.normalize("NFKD", banco_name)
+    value = value.encode("ascii", "ignore").decode("utf-8")
+    return value.capitalize()
 
 
 def pretty_print_dolar(cotizaciones, limit=7):

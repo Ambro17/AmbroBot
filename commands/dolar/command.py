@@ -1,8 +1,8 @@
 from telegram.ext import run_async
 
+from commands.dolar.keyboards import banco_keyboard
 from commands.dolar.utils import get_cotizaciones, pretty_print_dolar
 from utils.decorators import send_typing_action, log_time
-from keyboards.keyboards import banco_keyboard
 from utils.command_utils import soupify_url
 
 
@@ -21,7 +21,7 @@ def dolar_hoy(bot, update, chat_data):
         'command': 'dolarhoy',
         'edit_original_text': True,
     }
-    keyboard = banco_keyboard()
+    keyboard = banco_keyboard(cotiz)
     bot.send_message(
         update.message.chat_id,
         text=pretty_result,
