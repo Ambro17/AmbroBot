@@ -17,3 +17,5 @@ month_name = {
 }
 DOLAR_REGEX = re.compile(r'DLR(\d{2})(\d{4})')  # DLRmmYYYY
 Contrato = namedtuple('Contrato', ['mes', 'año', 'valor'])
+
+EMPTY_MESSAGE = '⌛️ No hay info disponible en este momento'
