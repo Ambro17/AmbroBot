@@ -17,7 +17,7 @@ from commands.serie.constants import (
     Episode,
     EZTVEpisode,
 )
-from utils.command_utils import monospace
+from utils.utils import monospace
 
 logger = logging.getLogger(__name__)
 

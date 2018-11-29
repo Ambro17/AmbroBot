@@ -3,7 +3,7 @@ from telegram.ext import run_async
 from commands.dolar.keyboards import banco_keyboard
 from commands.dolar.utils import get_cotizaciones, pretty_print_dolar
 from utils.decorators import send_typing_action, log_time
-from utils.command_utils import soupify_url
+from utils.utils import soupify_url
 
 
 @log_time

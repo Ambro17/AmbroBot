@@ -5,7 +5,7 @@ from telegram import InputMediaPhoto
 from telegram.error import TimedOut
 
 from commands.serie.utils import rating_stars
-from utils.command_utils import normalize
+from utils.utils import normalize
 
 Torrent = namedtuple('Torrent', ['url', 'size', 'seeds', 'quality'])
 

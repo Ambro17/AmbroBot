@@ -1,7 +1,7 @@
 import unicodedata
 from collections import defaultdict
 
-from utils.command_utils import monospace, normalize
+from utils.utils import monospace, normalize
 
 
 def get_cotizaciones(response_soup):

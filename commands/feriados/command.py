@@ -2,7 +2,7 @@ from datetime import datetime as d
 
 from commands.feriados.constants import YEAR_2019, FERIADOS_URL, FERIADOS_2019_URL
 from commands.feriados.utils import get_feriados, prettify_feriados
-from utils.command_utils import soupify_url
+from utils.utils import soupify_url
 
 
 def feriados(bot, update, **kwargs):

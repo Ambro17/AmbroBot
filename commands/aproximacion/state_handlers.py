@@ -26,7 +26,7 @@ from commands.aproximacion.utils import (
     opposite_method,
     dump_results_to_csv,
 )
-from utils.command_utils import monospace
+from utils.utils import monospace
 from utils.decorators import send_typing_action
 
 READ_MATRIX_A, READ_MATRIX_B, SOLVE_METHOD, METHOD_PARAMETERS, APROXIMAR, DETAILS = range(6)

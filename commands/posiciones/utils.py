@@ -1,6 +1,6 @@
 import logging
 
-from utils.command_utils import normalize, monospace
+from utils.utils import normalize, monospace
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ import requests
 from telegram.ext import run_async
 
 from utils.decorators import send_typing_action, log_time
-from utils.command_utils import soupify_url
+from utils.utils import soupify_url
 
 
 @log_time

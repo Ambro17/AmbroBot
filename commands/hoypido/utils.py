@@ -5,7 +5,7 @@ from datetime import datetime
 
 import requests
 
-from utils.command_utils import monospace
+from utils.utils import monospace
 
 logger = logging.getLogger(__name__)
 

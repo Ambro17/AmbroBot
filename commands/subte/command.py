@@ -6,7 +6,7 @@ from telegram.ext import run_async
 
 from commands.subte.utils import format_estado_de_linea
 from utils.decorators import send_typing_action, log_time
-from utils.command_utils import soupify_url, monospace
+from utils.utils import soupify_url, monospace
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ from telegram.ext import run_async
 
 from commands.dolar_futuro.constants import DOLAR_REGEX, Contrato, month_name, EMPTY_MESSAGE
 from utils.decorators import send_typing_action, log_time
-from utils.command_utils import soupify_url, monospace
+from utils.utils import soupify_url, monospace
 
 
 @log_time
