@@ -7,12 +7,13 @@ from commands.snippets.utils import (
     select_all,
     remove_snippet,
     link_key)
-from utils.decorators import send_typing_action, log_time, admin_only
+from utils.decorators import send_typing_action, log_time, admin_only, requires_auth
 
 
 @log_time
 @send_typing_action
 @run_async
+@requires_auth
 def save_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = kwargs['groupdict'].get('content')
@@ -34,6 +35,7 @@ def save_snippet(bot, update, **kwargs):
 @log_time
 @send_typing_action
 @run_async
+@requires_auth
 def get_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = lookup_content(key)
@@ -48,6 +50,7 @@ def get_snippet(bot, update, **kwargs):
 @log_time
 @send_typing_action
 @run_async
+@requires_auth
 def get_snippet_command(bot, update, args):
     """Duplicate of get_snippet because only /commands can be clickable."""
     if not args:
@@ -66,6 +69,7 @@ def get_snippet_command(bot, update, args):
 @log_time
 @send_typing_action
 @run_async
+@requires_auth
 def show_snippets(bot, update):
     answers = select_all()
     if answers:

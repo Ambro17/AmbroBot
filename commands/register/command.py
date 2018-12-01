@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy.exc import IntegrityError
+from telegram.error import BadRequest
 
 from commands.register.db import add_user, _get_users
 from utils.decorators import handle_empty_arg, send_typing_action, admin_only
@@ -30,6 +31,11 @@ def authorize(bot, update, args):
     added = add_user_to_db(user)
     if added:
         update.message.reply_text('✅ User added to db')
+        # send message to new registered user
+        try:
+            bot.send_message(chat_id=user['id'], text='✅ Has sido autorizad@ para hablar con Cuervot!')
+        except BadRequest:
+            logger.error("Unable to send message. User hasn't talked yet privately with Cuervot.")
     else:
         update.message.reply_text('🚫 Error saving user to db')
 
