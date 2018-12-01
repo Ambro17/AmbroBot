@@ -1,9 +1,13 @@
+import logging
 from commands.feriados.constants import month_num, month_names, DAYS_REGEX
 
+logger = logging.getLogger(__name__)
 
 def get_feriados(soup):
     feriados = {}
     meses = soup.find_all('div', class_='mes')
+    logger.info("Meses: %s", meses)
+
     for mes in meses:
         mes_num = month_num[get_name(mes)]
         feriados[mes_num] = feriados_del_mes(mes)

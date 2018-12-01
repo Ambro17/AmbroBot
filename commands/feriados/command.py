@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime as d
 
 from commands.feriados.constants import YEAR_2019, FERIADOS_URL, FERIADOS_2019_URL
 from commands.feriados.utils import get_feriados, prettify_feriados
 from utils.utils import soupify_url
+
+logger = logging.getLogger(__name__)
 
 
 def feriados(bot, update, **kwargs):
@@ -18,4 +21,4 @@ def feriados(bot, update, **kwargs):
     feriados = get_feriados(soup)
     pretty_feriados = prettify_feriados(feriados, from_month=month)
 
-    bot.send_message(chat_id=update.message.chat_id, text=pretty_feriados)
+    bot.send_message(chat_id=update.message.chat_id, text=pretty_feriados or 'No pude obtener los feriados')

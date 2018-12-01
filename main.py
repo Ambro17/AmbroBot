@@ -1,8 +1,6 @@
 import os
 import logging
 
-from commands.register.command import register, authorize, show_users
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -31,6 +29,7 @@ from commands.pelicula.callback import pelicula_callback
 from commands.pelicula.command import buscar_peli
 from commands.pelicula.constants import PELICULA_REGEX
 from commands.posiciones.command import posiciones
+from commands.register.command import register, authorize, show_users
 from commands.remindme.callbacks import reminder_callback
 from commands.remindme.command import remind_me
 from commands.remindme.constants import REMINDERS_REGEX
