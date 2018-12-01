@@ -14,6 +14,7 @@ $ pip install -r requirements.txt
 
 Then open telegram and chat `@BotFather` to get a bot token. Once you have it add `PYTEL` environment variable with the token.
 For example, if you use Linux with zsh shell you should add this line to the end of your ~/.zshrc file
+
 `export PYTEL=<BotToken>`
 
 If you are on windows you can do it with a GUI, or with powershell. See [this link](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10) for instructions
@@ -26,6 +27,11 @@ DATABASE_URL # Database to persist information
 CABA_SECRET # Transport updates
 CABA_CLI_ID # Transport updates
 ```
+
+Once you have all packages installed and all environment variables set you can run the  bot with
+
+`$ python3 main.py`
+
 
 ## Bot in action
 
