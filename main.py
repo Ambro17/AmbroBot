@@ -1,6 +1,8 @@
 import os
 import logging
 
+from commands.register.command import register, authorize, show_users
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -51,7 +53,7 @@ from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from commands.yts.constants import YTS_REGEX
-from utils.command_utils import error_handler
+from utils.utils import error_handler
 from utils.constants import CODE_PREFIX, TICKET_REGEX, MINUTE
 
 # Setup bot
@@ -60,6 +62,9 @@ dispatcher = updater.dispatcher
 
 # Add commands handlers
 start_handler = CommandHandler('start', start)
+register_user = CommandHandler('register', register)
+authorize_handler = CommandHandler('authorize', authorize, pass_args=True)
+show_users_handler = CommandHandler('users', show_users)
 partido_handler = CommandHandler('partido', partido)
 dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)
 dolar_futuro_handler = CommandHandler('rofex', rofex)
@@ -101,6 +106,9 @@ cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=20 * MIN
 
 #  Associate commands with action.
 dispatcher.add_handler(start_handler)
+dispatcher.add_handler(register_user)
+dispatcher.add_handler(show_users_handler)
+dispatcher.add_handler(authorize_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(dolar_futuro_handler)

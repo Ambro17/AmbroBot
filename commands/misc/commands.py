@@ -2,7 +2,7 @@ import random
 
 from telegram.ext import run_async
 
-from utils.command_utils import monospace
+from utils.utils import monospace
 from utils.constants import COMANDO_DESCONOCIDO
 from utils.decorators import send_typing_action, log_time
 

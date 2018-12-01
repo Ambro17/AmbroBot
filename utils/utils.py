@@ -1,5 +1,6 @@
 import logging
 
+import os
 from requests import ReadTimeout
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut
 
@@ -71,3 +72,6 @@ def error_handler(bot, update, error):
             logger.info(f"Conflicting update: '{update.to_dict()}'")
         else:
             logger.info('Error found: %s. Update: %s', error, update)
+
+def send_message_to_admin(bot, message, **kwargs):
+    bot.send_message(chat_id=os.environ['ADMIN_ID'], text=message, **kwargs)
