@@ -17,8 +17,10 @@ def feriados(bot, update, **kwargs):
         url = FERIADOS_URL
         month = d.today().month
 
-    soup = soupify_url(url)
-    feriados = get_feriados(soup)
-    pretty_feriados = prettify_feriados(feriados, from_month=month)
+    # Set the header to trick the page to think we have javascript enabled and thus load the full page.
+    header = {'Cookie': 'has_js=1'}
+    soup = soupify_url(url, headers=header)
+    the_feriados = get_feriados(soup)
+    pretty_feriados = prettify_feriados(the_feriados, from_month=month)
 
     bot.send_message(chat_id=update.message.chat_id, text=pretty_feriados or 'No pude obtener los feriados')

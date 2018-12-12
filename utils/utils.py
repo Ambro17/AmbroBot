@@ -21,10 +21,10 @@ def normalize(text, limit=11, trim_end='.'):
     return f'{text[:limit]}{trim_end}' if len(text) > limit else text
 
 
-def soupify_url(url, timeout=2, encoding='utf-8'):
+def soupify_url(url, timeout=2, encoding='utf-8', **kwargs):
     """Given a url returns a BeautifulSoup object"""
     try:
-        r = requests.get(url, timeout=timeout)
+        r = requests.get(url, timeout=timeout, **kwargs)
     except ReadTimeout:
         logger.info("[soupify_url] Request for %s timed out.", url)
         raise
