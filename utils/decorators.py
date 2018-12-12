@@ -5,6 +5,7 @@ import time
 import inspect
 from functools import wraps
 
+import telegram
 from telegram import ChatAction
 
 from commands.register.db import authorized_user
@@ -131,3 +132,22 @@ def requires_auth(func):
             )
 
     return restricted_func
+
+
+def private_chat_only(func):
+    @wraps(func)
+    def deco_func(bot, update, **kwargs):
+        chat_type = update.effective_chat.type
+        if chat_type == telegram.Chat.PRIVATE:
+            return func(bot, update, **kwargs)
+        else:
+            logger.info(f"{update.effective_message.text} can only be executed on a private conversation."
+                        f"{update.effective_user.name}")
+            update.effective_message.reply_text(
+                'El comando funciona solo en conversacion privada con @CuervoBot.\n'
+                'Clickea el username para iniciar una conversación con él',
+                parse_mode='markdown',
+                quote=False
+            )
+
+    return deco_func

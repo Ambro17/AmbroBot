@@ -6,6 +6,7 @@ import re
 import requests
 
 from commands.subte.constants import DELAY_ICONS
+from commands.subte.suscribers.db import get_suscriptors_by_line
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,10 @@ def subte_updates_cron(bot, job):
             pretty_update = prettify_updates(status_updates)
 
         bot.send_message(chat_id='@subtescaba', text=pretty_update)
+        try:
+            notify_suscribers(bot, status_updates)
+        except Exception:
+            logger.error("Could not notify suscribers", exc_info=True)
         context['last_update'] = status_updates
     else:
         logger.info(
@@ -87,6 +92,12 @@ def _get_incident_text(alert):
         return None
 
     return spanish_desc['text']
+
+
+def notify_suscribers(bot, status_updates):
+    for linea, update in status_updates:
+        for suscription in get_suscriptors_by_line(linea):
+            bot.send_message(chat_id=suscription.user_id, text=f'{linea} | 🚇 {update}')
 
 
 def prettify_updates(updates):
