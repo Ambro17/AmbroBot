@@ -47,6 +47,7 @@ from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.start.command import start
 from commands.subte.command import subte
+from commands.subte.suscribers.command import suscribe, suscribers, unsuscribe
 from commands.subte.updates.alerts import subte_updates_cron
 from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
@@ -63,6 +64,9 @@ dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
 register_user = CommandHandler('register', register)
 authorize_handler = CommandHandler('authorize', authorize, pass_args=True)
+subte_suscriptions = CommandHandler('suscribe', suscribe, pass_args=True)
+subte_desuscriptions = CommandHandler('unsuscribe', unsuscribe, pass_args=True)
+subte_show_suscribers = CommandHandler('suscribers', suscribers)
 show_users_handler = CommandHandler('users', show_users)
 partido_handler = CommandHandler('partido', partido)
 dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)
@@ -110,6 +114,9 @@ dispatcher.add_handler(show_users_handler)
 dispatcher.add_handler(authorize_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
+dispatcher.add_handler(subte_suscriptions)
+dispatcher.add_handler(subte_desuscriptions)
+dispatcher.add_handler(subte_show_suscribers)
 dispatcher.add_handler(dolar_futuro_handler)
 dispatcher.add_handler(posiciones_handler)
 dispatcher.add_handler(subte_handler)
