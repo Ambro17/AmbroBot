@@ -22,6 +22,7 @@ def feedback(bot, update, args):
 def send_feedback(bot, update):
     suggestion = update.effective_message.text
     _send_feedback(bot, update, suggestion)
+    return ConversationHandler.END
 
 
 def _send_feedback(bot, update, suggestion):
