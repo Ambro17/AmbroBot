@@ -19,6 +19,7 @@ from commands.aproximacion.conversation_handler import msup_conversation
 from commands.cartelera.command import cinearg
 from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
+from commands.feedback.command import feedback_receiver
 from commands.feriados.command import feriados
 from commands.hoypido.command import hoypido
 from commands.misc.commands import format_code, link_ticket, default
@@ -108,6 +109,7 @@ cron_tasks = updater.job_queue
 cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=20 * MINUTE, context={})
 
 #  Associate commands with action.
+dispatcher.add_handler(feedback_receiver)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(register_user)
 dispatcher.add_handler(show_users_handler)
