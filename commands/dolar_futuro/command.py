@@ -17,7 +17,7 @@ def rofex(bot, update):
 
 def get_rofex():
     try:
-        soup = soupify_url('http://www.rofex.com.ar/')
+        soup = soupify_url('https://www.rofex.com.ar/', verify=False)
     except TimeoutError:
         return None
 

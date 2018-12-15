@@ -28,6 +28,9 @@ def soupify_url(url, timeout=2, encoding='utf-8', **kwargs):
     except ReadTimeout:
         logger.info("[soupify_url] Request for %s timed out.", url)
         raise
+    except Exception as e:
+        logger.error(f"Request for {url} could not be resolved", exc_info=True)
+        raise
 
     r.raise_for_status()
     r.encoding = encoding
