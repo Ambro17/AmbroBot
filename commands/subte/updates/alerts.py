@@ -29,8 +29,9 @@ def subte_updates_cron(bot, job):
             pretty_update = prettify_updates(status_updates)
 
         bot.send_message(chat_id='@subtescaba', text=pretty_update)
+        update_context_per_line(status_updates, context)
         try:
-            notify_suscribers(bot, status_updates)
+            notify_suscribers(bot, status_updates, context)
         except Exception:
             logger.error("Could not notify suscribers", exc_info=True)
         context['last_update'] = status_updates
@@ -94,10 +95,21 @@ def _get_incident_text(alert):
     return spanish_desc['text']
 
 
-def notify_suscribers(bot, status_updates):
+def notify_suscribers(bot, status_updates, context):
     for linea, update in status_updates:
         for suscription in get_suscriptors_by_line(linea):
-            bot.send_message(chat_id=suscription.user_id, text=f'{linea} | 🚇 {update}')
+            if update != context.get(linea):
+                # Status Update may have changed but because another line is suspended.
+                # If we are here, it means the status of the suscribed line has changed.
+                bot.send_message(chat_id=suscription.user_id, text=f'{linea} | 🚇 {update}')
+            else:
+                logger.info(f'{linea} status has not changed')
+
+
+def update_context_per_line(status_updates, context):
+    context.update(
+        {linea: status for linea, status in status_updates}
+    )
 
 
 def prettify_updates(updates):

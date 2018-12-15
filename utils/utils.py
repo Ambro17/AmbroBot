@@ -73,5 +73,6 @@ def error_handler(bot, update, error):
         else:
             logger.info('Error found: %s. Update: %s', error, update)
 
+
 def send_message_to_admin(bot, message, **kwargs):
     bot.send_message(chat_id=os.environ['ADMIN_ID'], text=message, **kwargs)

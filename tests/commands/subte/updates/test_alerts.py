@@ -1,6 +1,7 @@
 import pytest
+from unittest.mock import call
 
-from commands.subte.updates.alerts import _get_linea_name
+from commands.subte.updates.alerts import _get_linea_name, notify_suscribers, update_context_per_line
 
 sample_alerts = [
     {
@@ -148,3 +149,46 @@ def linea_alert(linea_name):
 ])
 def test_get_correct_line_identifier(linea_raw, linea):
     assert _get_linea_name(linea_raw) == linea
+
+
+@pytest.fixture()
+def suscriptor(mocker):
+    def inner(id_):
+        user = mocker.MagicMock(name='user')
+        user.user_id = id_
+        return user
+
+    return inner
+
+
+def test_dont_send_message_if_linea_status_has_not_changed(mocker, suscriptor):
+    """Test that if context has already the line status, no new message is sent."""
+    # Setup
+    bot = mocker.MagicMock(name='bot')
+    context = {'A': 'broken', 'B': 'with_delays'}
+    status_updates = [('A', 'broken'), ('B', 'with_delays'), ('C', 'new_update')]
+    mocker.patch(
+        'commands.subte.updates.alerts.get_suscriptors_by_line',
+        return_value=[suscriptor(id_=10), suscriptor(id_=30)]
+    )
+
+    # Exercise
+    notify_suscribers(bot, status_updates, context)
+
+    # Validate
+    assert bot.send_message.call_count == 2
+    send_message_calls = [
+        call(chat_id=10, text='C | 🚇 new_update'),
+        call(chat_id=30, text='C | 🚇 new_update')
+    ]
+    bot.send_message.assert_has_calls(send_message_calls)
+
+
+@pytest.mark.parametrize('context, status_updates, updated_context', [
+    ({}, [('A', 'something'), ('B', 'otherthing')], {'A': 'something', 'B': 'otherthing'}),
+    ({'C': '123'}, [('A', 'something'), ('B', 'otherthing')], {'A': 'something', 'B': 'otherthing', 'C': '123'}),
+    ({'A': '123'}, [('A', 'something')], {'A': 'something'}),
+])
+def test_update_context_per_line(context, status_updates, updated_context):
+    update_context_per_line(status_updates, context)
+    assert context == updated_context

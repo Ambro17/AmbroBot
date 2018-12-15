@@ -142,7 +142,7 @@ def private_chat_only(func):
             return func(bot, update, **kwargs)
         else:
             logger.info(f"{update.effective_message.text} can only be executed on a private conversation."
-                        f"{update.effective_user.name}")
+                        f" {update.effective_user.name}")
             update.effective_message.reply_text(
                 'El comando funciona solo en conversacion privada con @CuervoBot.\n'
                 'Clickea el username para iniciar una conversación con él',
