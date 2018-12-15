@@ -68,10 +68,19 @@ def error_handler(bot, update, error):
         logger.exception("A TelegramError occurred")
 
     finally:
-        if hasattr(update, 'to_dict'):
-            logger.info(f"Conflicting update: '{update.to_dict()}'")
-        else:
-            logger.info('Error found: %s. Update: %s', error, update)
+        try:
+            text = update.effective_message.text
+            user = update.effective_user.name
+            chat = update.effective_chat
+
+            error_msg = f"User: {user}, Text: {text}, Chat: {chat.id, chat.type, chat.username}"
+            logger.info(f"Conflicting update: {error_msg}")
+
+        except Exception:
+            error_msg = f'Error found: {error}. Update: {update}'
+            logger.error(error_msg, exc_info=True)
+
+        send_message_to_admin(bot, error_msg)
 
 
 def send_message_to_admin(bot, message, **kwargs):
