@@ -92,7 +92,7 @@ show_snippets_handler = CommandHandler('snippets', show_snippets)
 remind_me_handler = CommandHandler('remind', remind_me, pass_args=True, pass_chat_data=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
-tickets_handler = RegexHandler(TICKET_REGEX, link_ticket, pass_groupdict=True)
+tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
 generic_handler = MessageHandler(Filters.command, default)
 
 # Add callback query handlers
@@ -110,6 +110,7 @@ cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=20 * MIN
 
 #  Associate commands with action.
 dispatcher.add_handler(feedback_receiver)
+dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(register_user)
 dispatcher.add_handler(show_users_handler)
@@ -141,7 +142,6 @@ dispatcher.add_handler(delete_snippet_handler)
 dispatcher.add_handler(remind_me_handler)
 dispatcher.add_handler(tag_all)
 dispatcher.add_handler(edit_tag_all)
-dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(show_meetings_handler)
 dispatcher.add_handler(delete_meeting_handler)
 

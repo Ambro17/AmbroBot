@@ -1,9 +1,11 @@
+import os
 import random
+import re
 
 from telegram.ext import run_async
 
 from utils.utils import monospace
-from utils.constants import COMANDO_DESCONOCIDO
+from utils.constants import COMANDO_DESCONOCIDO, TICKET_REGEX
 from utils.decorators import send_typing_action, log_time
 
 
@@ -21,13 +23,15 @@ def format_code(bot, update, **kwargs):
 
 @send_typing_action
 @run_async
-def link_ticket(bot, update, **kwargs):
+def link_ticket(bot, update):
     """Given a ticket id, return the url."""
-    ticket_id = kwargs.get('groupdict').get('ticket')
-    if ticket_id:
-        bot.send_message(
-            chat_id=update.message.chat_id, text=os.environ['jira'].format(ticket_id)
+    jira_base = os.environ['jira']
+    ticket_links = '\n'.join(
+        f"» {jira_base.format(match.group('ticket'))}"
+        for match in re.finditer(TICKET_REGEX, update.message.text)
         )
+
+    update.message.reply_text(ticket_links, quote=False)
 
 
 @send_typing_action
