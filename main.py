@@ -20,7 +20,7 @@ from commands.cartelera.command import cinearg
 from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
 from commands.feedback.command import feedback_receiver
-from commands.feriados.command import feriados
+from commands.feriados.command import feriadosarg
 from commands.hoypido.command import hoypido
 from commands.misc.commands import format_code, link_ticket, default
 from commands.meeting.command import show_meetings, delete_meeting
@@ -76,7 +76,7 @@ posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
 cartelera_handler = CommandHandler('cartelera', cinearg)
 hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)
-feriados_handler = CommandHandler('feriados', feriados, pass_args=True)
+feriados_handler = CommandHandler('feriados', feriadosarg)
 serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)
 pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
 pelis_alt = CommandHandler('película', buscar_peli, pass_args=True, pass_chat_data=True)

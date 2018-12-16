@@ -1,88 +1,69 @@
+import datetime
 import logging
-from commands.feriados.constants import month_num, month_names, DAYS_REGEX
+
+import requests
+
+from commands.feriados.constants import month_names, FERIADOS_URL
 
 logger = logging.getLogger(__name__)
 
-def get_feriados(soup):
-    feriados = {}
-    meses = soup.find_all('div', class_='mes')
-    logger.info("Meses: %s", meses)
 
-    for mes in meses:
-        mes_num = month_num[get_name(mes)]
-        feriados[mes_num] = feriados_del_mes(mes)
+def get_feriados(year):
+    try:
+        url = FERIADOS_URL.format(year=year)
+        r = requests.get(url, params={'incluir': 'opcional'})
+        logger.info(f'Retrieved feriados from {r.url}')
+    except Exception:
+        logger.error("Error requestion feriados", exc_info=True)
+        return None
+    if r.status_code != 200:
+        logger.info(f"Response not 200. {r.status_code} {r.reason}")
+        return None
+
+    feriados = r.json()
+    logger.info("Feriados: %s", feriados)
 
     return feriados
 
 
-def get_name(mes):
-    return mes.h2.text.lower()
+def filter_feriados(today, feriados):
+    """Returns the future feriados. Filtering past feriados."""
+    return [
+        f for f in feriados
+        if (f['mes'] == today.month and f['dia'] >= today.day)
+           or f['mes'] > today.month
+    ]
 
 
-def feriados_del_mes(mes):
+def prettify_feriados(today, feriados, compact=False):
+    """Receives a feriado dict of following feriados and pretty prints them.
+    [{
+        "motivo": "Año Nuevo",
+        "tipo": "inamovible",
+        "dia": 1,
+        "mes": 1,
+        "id": "año-nuevo"
+    }, {
+        "motivo": "Carnaval",
+        "tipo": "inamovible",
+        "dia": 4,
+        "mes": 3,
+        "id": "carnaval"
+    },
+        ...
+    ]
     """
-    <div class="fer">
-        <p>24. Día Nacional de la Memoria por la Verdad y la Justicia.
-            <span class="sr-only">Feriado inamovible</span>
-        </p>
-        <p>29. Jueves Santo.
-            <span class="sr-only">Día no laborable</span>
-        </p>
-        <p>30. Viernes Santo.
-            <span class="sr-only">Feriado inamovible</span>
-        </p>
-        <p>30 y 31. Pascuas Judías.
-            <span class="sr-only">Día no laborable</span>
-        </p>
-    </div>
-    Args:
-        mes: bs4 tag with name of the month and a subling with feriados descriptions
+    # Get days until next feriado
+    nextest_feriado = feriados[0]
+    next_feriado_date = datetime.datetime(day=nextest_feriado['dia'], month=nextest_feriado['mes'], year=today.year,
+                                          tzinfo=datetime.timezone(datetime.timedelta(hours=-3)))
+    faltan = (next_feriado_date - today)
+    res = (f"Faltan *{faltan.days} días* para el próximo feriado"
+           f" del *{nextest_feriado['dia']} de {month_names[nextest_feriado['mes']]}*\n\n")
 
-    Returns:
-        dict
-    """
-    feriados = {}
-    fer_div = mes.parent.find('div', class_='fer')
-    for fer_desc in fer_div.find_all('p'):
-        tipo_de_feriado = fer_desc.span.extract()  # No laborable, inamovible o trasladable
-        feriados.update(
-            feriados_from_string(fer_desc.text.strip(), tipo_de_feriado.text.strip())
-        )
-    return feriados
-
-
-def feriados_from_string(date, tipo_feriado):
-    """Returns feriados by day, with description.
-
-    Args:
-        date: string with day and feriado description
-
-    Returns:
-        dict: feriado days as key and description as value
-
-    example input:
-        '1, 5 y 6. Pascuas Judías.', 'Día no laborable'
-    example output:
-        {
-            1: 'Pascuas Judías.', 'Día no laborable'),
-            2: 'Pascuas Judías.', 'Día no laborable')
-            3: 'Pascuas Judías.', 'Día no laborable')
-        }
-    """
-    dates, description = date.split('.', 1)
-    days = [int(d) for d in DAYS_REGEX.findall(dates)]
-
-    return {day: (description.strip(), tipo_feriado) for day in days}
-
-
-def prettify_feriados(feriados, from_month=None):
-    """Receives a feriado dict and pretty prints the future feriados."""
-    if from_month:
-        feriados = {k: v for k, v in feriados.items() if k >= from_month}
-    res = ''
-    for month_num, days in feriados.items():
-        month_name = month_names[month_num]
-        all_days = '\n'.join(f"{dia}. {evento[0]}" for dia, evento in days.items())
-        res += f"{month_name.capitalize()}\n{all_days}\n\n"
+    for feriado in feriados:
+        # Improvement. Print mes header before feriados of that month
+        fecha = f"{feriado['dia']} de {month_names[feriado['mes']]}"
+        res += f"👉 {fecha:<16} -  {feriado['motivo']} | _{feriado['tipo']}_\n"
 
     return res
