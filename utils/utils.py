@@ -76,7 +76,7 @@ def error_handler(bot, update, error):
             user = update.effective_user.name
             chat = update.effective_chat
 
-            error_msg = f"User: {user}, Text: {text}, Chat: {chat.id, chat.type, chat.username}"
+            error_msg = f"User: {user}\nText: {text}\nChat: {chat.id, chat.type, chat.username}\nError:{repr(error)}"
             logger.info(f"Conflicting update: {error_msg}")
 
         except Exception:
