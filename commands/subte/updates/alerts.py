@@ -5,7 +5,7 @@ import re
 
 import requests
 
-from commands.subte.constants import DELAY_ICONS
+from commands.subte.constants import DELAY_ICONS, SUBWAY_STATUS_OK, SUBWAY_ICON, SUBWAY_LINE_OK
 from commands.subte.suscribers.db import get_suscriptors_by_line
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def subte_updates_cron(bot, job):
         logger.info('Updating subte status')
         if not status_updates:
             # There are no incidents to report.
-            pretty_update = '✅ Todos los subtes funcionan con normalidad'
+            pretty_update = SUBWAY_STATUS_OK
         else:
             pretty_update = prettify_updates(status_updates)
 
@@ -42,6 +42,15 @@ def subte_updates_cron(bot, job):
 
 
 def check_update():
+    """Returns status incidents per line.
+
+    None if response code is not 200
+    empty dict if there are no updates
+    dict with linea as keys and incident details as values.
+
+    Returns:
+        dict|None: mapping of line incidents
+    """
     params = {
         'client_id': os.environ['CABA_CLI_ID'],
         'client_secret': os.environ['CABA_SECRET'],
@@ -59,7 +68,7 @@ def check_update():
     alerts = data['entity']
     logger.info('Alerts: %s', alerts)
 
-    return [_get_update_info(alert['alert']) for alert in alerts]
+    return dict(_get_update_info(alert['alert']) for alert in alerts)
 
 
 def _get_update_info(alert):
@@ -78,7 +87,7 @@ def _get_linea_name(alert):
         nombre_linea = LINEA.match(nombre_linea).group(1)
     except AttributeError:
         # There was no linea match -> Premetro y linea Urquiza
-        nombre_linea = nombre_linea.replace('PM-', 'Premetro ')
+        nombre_linea = nombre_linea.replace('PM-', 'PM ')
 
     return nombre_linea
 
@@ -96,25 +105,50 @@ def _get_incident_text(alert):
 
 
 def notify_suscribers(bot, status_updates, context):
-    for linea, update in status_updates:
+    """Notify suscribers of updates on their lines.
+
+    Args:
+        bot: telegram.bot instance
+        status_updates (dict): New incidents reported by the api
+        context (dict): Incidents last time we checked
+    """
+    # Send updates of new incidents
+    for linea, update in status_updates.items():
         for suscription in get_suscriptors_by_line(linea):
             if update != context.get(linea):
                 # Status Update may have changed but because another line is suspended.
                 # If we are here, it means the status of the suscribed line has changed.
-                bot.send_message(chat_id=suscription.user_id, text=f'{linea} | 🚇 {update}')
+                bot.send_message(chat_id=suscription.user_id, text=pretty_update(linea, update))
             else:
                 logger.info(f'{linea} status has not changed')
 
+    # Send update on lines that had issues but were solved
+    for line, previous_status in context.items():
+        if line not in status_updates:
+            # If the line is not included anymore on status updates,
+            # it means its now working normally.
+            for suscription in get_suscriptors_by_line(line):
+                bot.send_message(chat_id=suscription.user_id, text=SUBWAY_LINE_OK.format(line))
+
 
 def update_context_per_line(status_updates, context):
-    context.update(
-        {linea: status for linea, status in status_updates}
-    )
+    if not status_updates:
+        # All lines work normally. Remove all entries from context.
+        context.clear()
+    else:
+        context.update(
+            {linea: status for linea, status in status_updates}
+        )
 
 
 def prettify_updates(updates):
     delay_icon = random.choice(DELAY_ICONS)
     return '\n'.join(
-        f'{linea} | {delay_icon}️ {status}'
+        pretty_update(linea, status, delay_icon)
         for linea, status in updates
     )
+
+
+def pretty_update(linea, update, icon=SUBWAY_ICON):
+    return f'{linea} | {icon}️ {update}'
+

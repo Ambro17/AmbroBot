@@ -58,6 +58,7 @@ def error_handler(bot, update, error):
                 "Tried to edit a message but text hasn't changed."
                 " Probably a button in inline keyboard was pressed but it didn't change the message"
             )
+            return
         else:
             logger.info("Bad Request exception: %s", msg)
 
@@ -76,7 +77,7 @@ def error_handler(bot, update, error):
             user = update.effective_user.name
             chat = update.effective_chat
 
-            error_msg = f"User: {user}, Text: {text}, Chat: {chat.id, chat.type, chat.username}"
+            error_msg = f"User: {user}\nText: {text}\nChat: {chat.id, chat.type, chat.username}\nError:{repr(error)}"
             logger.info(f"Conflicting update: {error_msg}")
 
         except Exception:
