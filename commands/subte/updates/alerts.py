@@ -145,7 +145,7 @@ def prettify_updates(updates):
     delay_icon = random.choice(DELAY_ICONS)
     return '\n'.join(
         pretty_update(linea, status, delay_icon)
-        for linea, status in updates
+        for linea, status in updates.items()
     )
 
 
