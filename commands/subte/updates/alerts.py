@@ -137,7 +137,7 @@ def update_context_per_line(status_updates, context):
         context.clear()
     else:
         context.update(
-            {linea: status for linea, status in status_updates}
+            {linea: status for linea, status in status_updates.items()}
         )
 
 

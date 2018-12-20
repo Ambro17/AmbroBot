@@ -30,7 +30,8 @@ def soupify_url(url, timeout=2, encoding='utf-8', **kwargs):
         raise
     except Exception as e:
         logger.error(f"Request for {url} could not be resolved", exc_info=True)
-        raise
+        raise ConnectionError(repr(e))
+
 
     r.raise_for_status()
     r.encoding = encoding
