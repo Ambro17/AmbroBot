@@ -58,6 +58,7 @@ def error_handler(bot, update, error):
                 "Tried to edit a message but text hasn't changed."
                 " Probably a button in inline keyboard was pressed but it didn't change the message"
             )
+            return
         else:
             logger.info("Bad Request exception: %s", msg)
 
