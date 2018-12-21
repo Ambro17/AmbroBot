@@ -54,7 +54,7 @@ from commands.tagger.all_tagger import tag_all, set_all_members
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from commands.yts.constants import YTS_REGEX
-from utils.utils import error_handler
+from utils.utils import error_handler, send_message_to_admin
 from utils.constants import CODE_PREFIX, TICKET_REGEX, MINUTE
 
 # Setup bot
@@ -164,3 +164,4 @@ dispatcher.add_error_handler(error_handler)
 
 updater.start_polling()
 logger.info('Listening humans as %s..' % updater.bot.username)
+send_message_to_admin(updater.bot, "⚡️ I'm up and running ⚡️️")

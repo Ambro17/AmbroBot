@@ -2,8 +2,9 @@
 import pytest
 from unittest.mock import call
 
-from commands.subte.constants import SUBWAY_ICON, SUBWAY_LINE_OK
-from commands.subte.updates.alerts import _get_linea_name, notify_suscribers, update_context_per_line
+from commands.subte.constants import SUBWAY_ICON, SUBWAY_LINE_OK, SUBWAY_STATUS_OK
+from commands.subte.updates.alerts import notify_suscribers, subte_updates_cron
+from commands.subte.updates.utils import _get_linea_name
 
 sample_alerts = [
     {
@@ -123,6 +124,17 @@ def bot(mocker):
 
 
 @pytest.fixture()
+def job(mocker):
+    job = mocker.MagicMock(name='job')
+
+    def inner(context):
+        job.context = context
+        return job
+
+    return inner
+
+
+@pytest.fixture()
 def linea_alert(linea_name):
     return {
         'active_period': [],
@@ -166,17 +178,6 @@ def test_get_correct_line_identifier(linea_raw, linea):
     assert _get_linea_name(linea_raw) == linea
 
 
-@pytest.mark.parametrize('context, status_updates, updated_context', [
-    ({}, [('A', 'something'), ('B', 'otherthing')], {'A': 'something', 'B': 'otherthing'}),
-    ({'C': '123'}, [('A', 'something'), ('B', 'otherthing')], {'A': 'something', 'B': 'otherthing', 'C': '123'}),
-    ({'A': '123'}, [('A', 'something')], {'A': 'something'}),
-    ({'A': '123'}, [], {}),
-])
-def test_update_context_per_line(context, status_updates, updated_context):
-    update_context_per_line(status_updates, context)
-    assert context == updated_context
-
-
 @pytest.fixture()
 def suscriptor(mocker):
     def inner(id_):
@@ -194,7 +195,7 @@ def test_dont_send_message_if_linea_status_has_not_changed(mocker, suscriptor):
     context = {'A': 'broken', 'B': 'with_delays'}
     status_updates = dict([('A', 'broken'), ('B', 'with_delays'), ('C', 'new_update')])
     mocker.patch(
-        'commands.subte.updates.alerts.get_suscriptors_by_line',
+        'commands.subte.updates.utils.get_suscriptors_by_line',
         return_value=[suscriptor(id_=10), suscriptor(id_=30)]
     )
 
@@ -205,7 +206,7 @@ def test_dont_send_message_if_linea_status_has_not_changed(mocker, suscriptor):
     assert bot.send_message.call_count == 2
     assert bot.send_message.call_args_list == [
         call(chat_id=10, text=f'C | {SUBWAY_ICON}️ new_update'),
-        call(chat_id=30, text=f'C | {SUBWAY_ICON}️ new_update'),
+        call(chat_id=30, text=f'C | {SUBWAY_ICON}️ new_update')
     ]
 
 
@@ -218,7 +219,7 @@ def test_dont_send_message_if_linea_status_has_not_changed(mocker, suscriptor):
 def test_send_update_when_line_has_resumed_normal_operation(mocker, suscriptor, context, status_updates, messages_sent):
     bot = mocker.MagicMock(name='bot')
     mocker.patch(
-        'commands.subte.updates.alerts.get_suscriptors_by_line',
+        'commands.subte.updates.utils.get_suscriptors_by_line',
         return_value=[suscriptor(id_=15)]
     )
 
@@ -236,7 +237,7 @@ def test_notify_normalization_and_new_updates(mocker, suscriptor, bot):
     context = {'A': 'Broken', 'B': 'Broken', 'C': 'Broken'}
     status_updates = {'B': 'Working on fixing', 'C': 'now dead'}
     mocker.patch(
-        'commands.subte.updates.alerts.get_suscriptors_by_line',
+        'commands.subte.updates.utils.get_suscriptors_by_line',
         return_value=[suscriptor(id_=1)]
     )
 
@@ -257,7 +258,7 @@ def test_send_to_corresponding_suscriptor(bot, mocker, suscriptor):
     context = {'A': 'Broken', 'B': 'Broken'}
     status_updates = {'A': 'Working', 'B': 'Working'}
     mocker.patch(
-        'commands.subte.updates.alerts.get_suscriptors_by_line',
+        'commands.subte.updates.utils.get_suscriptors_by_line',
         side_effect=[
             (suscriptor(id_=1), (suscriptor(id_=2))),  # suscribers to A line
             (suscriptor(id_=10), (suscriptor(id_=11))),  # suscribers to B line
@@ -276,3 +277,88 @@ def test_send_to_corresponding_suscriptor(bot, mocker, suscriptor):
         call(chat_id=11, text='B | 🚆️ Working')
     ]
 
+
+@pytest.mark.parametrize('context, status_update, send_msg_calls', [
+    (
+            # From normal to one incident
+            {}, {'A': 'update'},
+            [
+                call(chat_id='@subtescaba', text='A | ⚠️ update'),
+                call(chat_id=2, text='A | 🚆️ update')
+            ]
+    ),
+    (
+            # The incident was solved
+            {'A': 'broken'}, {},
+            [
+                call(chat_id='@subtescaba', text=SUBWAY_STATUS_OK),
+                call(chat_id=2, text=SUBWAY_LINE_OK.format('A'))
+            ]
+    ),
+    (
+            # From normal to two incidents
+            {}, {'B': 'b_update', 'C': 'c_update'},
+            [
+                call(chat_id='@subtescaba', text='B | ⚠️ b_update\nC | ⚠️ c_update'),
+                call(chat_id=2, text='B | 🚆️ b_update'),
+                call(chat_id=2, text='C | 🚆️ c_update')
+            ]
+    ),
+    (
+            # All incidents were solved
+            {'A': 'broken', 'B': 'broken'}, {},
+            [
+                call(chat_id='@subtescaba', text='✅ Todos los subtes funcionan con normalidad'),
+                call(chat_id=2, text=SUBWAY_LINE_OK.format('A')),
+                call(chat_id=2, text=SUBWAY_LINE_OK.format('B'))
+            ]
+    ),
+    (
+            # Incident description changed
+            {'A': 'status'}, {'A': 'update_changed'},
+            [
+                call(chat_id='@subtescaba', text='A | ⚠️ update_changed'),
+                call(chat_id=2, text='A | 🚆️ update_changed')
+            ]
+    ),
+    (
+            # First line still broken, B Fixed
+            {'A': 'broken', 'B': 'delayed'}, {'A': 'broken'},
+            [
+                call(chat_id='@subtescaba', text='A | ⚠️ broken'),
+                call(chat_id=2, text='✅ La linea B funciona con normalidad')
+            ]
+    ),
+    (
+            # First line still broken, B changed status
+            {'A': 'broken', 'B': 'suspended'}, {'A': 'fixed', 'B': 'resumed'},
+            [
+                call(chat_id='@subtescaba', text='A | ⚠️ fixed\nB | ⚠️ resumed'),
+                call(chat_id=2, text='A | 🚆️ fixed'),
+                call(chat_id=2, text='B | 🚆️ resumed'),
+            ]
+    ),
+    (
+        # First line still broken, B changed status
+        {'A': 'broken', 'B': 'broken', 'C': 'broken', 'D': 'broken', 'E': 'broken', 'H': 'broken'},
+        {'A': 'fixed', 'B': 'fixed', 'C': 'fixed', 'D': 'fixed', 'E': 'fixed', 'H': 'fixed'},
+        [
+            call(chat_id='@subtescaba',
+                 text='A | ⚠️ fixed\nB | ⚠️ fixed\nC | ⚠️ fixed\nD | ⚠️ fixed\nE | ⚠️ fixed\nH | ⚠️ fixed'),
+            call(chat_id=2, text='A | 🚆️ fixed'),
+            call(chat_id=2, text='B | 🚆️ fixed'),
+            call(chat_id=2, text='C | 🚆️ fixed'),
+            call(chat_id=2, text='D | 🚆️ fixed'),
+            call(chat_id=2, text='E | 🚆️ fixed'),
+            call(chat_id=2, text='H | 🚆️ fixed'),
+        ]
+    )
+])
+def test_subte_updates_cron(mocker, bot, job, suscriptor, context, status_update, send_msg_calls):
+    mocker.patch('commands.subte.updates.alerts.check_update', return_value=status_update)
+    mocker.patch('commands.subte.updates.utils.get_suscriptors_by_line', return_value=[suscriptor(id_=2)])
+    mocker.patch('commands.subte.updates.utils.random.choice', return_value='⚠')  # Avoid random icon to ease testing
+
+    job = job(context)
+    subte_updates_cron(bot, job)
+    assert bot.send_message.call_args_list == send_msg_calls
