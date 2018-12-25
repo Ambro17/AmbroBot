@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-from commands.feriados.utils import get_feriados, prettify_feriados, filter_feriados
+from commands.feriados.utils import get_feriados, prettify_feriados, filter_feriados, next_feriado_message
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,9 @@ def feriadosarg(bot, update):
 
     following_feriados = filter_feriados(today, feriados)
     if following_feriados:
-        msg = prettify_feriados(today, following_feriados)
+        header_msg = next_feriado_message(today, following_feriados)
+        all_feriados = prettify_feriados(following_feriados)
+        msg = '\n'.join([header_msg, all_feriados])
     else:
         msg = 'No hay más feriados este año'
 

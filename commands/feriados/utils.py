@@ -35,7 +35,29 @@ def filter_feriados(today, feriados):
     ]
 
 
-def prettify_feriados(today, feriados, compact=False):
+def next_feriado_message(today, feriados):
+    """Get message corresponding to how many days are left until next feriado"""
+    # Get days until next feriado
+    nextest_feriado = feriados[0]
+    next_feriado_date = datetime.datetime(day=nextest_feriado['dia'], month=nextest_feriado['mes'], year=today.year,
+                                          tzinfo=datetime.timezone(datetime.timedelta(hours=-3)))
+
+    # In python, timedeltas can have negative days if we do a-b and b > a). See timedelta docs for details
+    faltan = (next_feriado_date - today)
+    days_to_feriado = max(faltan.days, 0)
+
+    if days_to_feriado == 0:
+        feriado_msg = f"Hoy es feriado por *{nextest_feriado['motivo']}*! 🎉\n"
+    else:
+        feriado_msg = (
+            f"Faltan *{days_to_feriado} días* para el próximo feriado del"
+            f" *{nextest_feriado['dia']} de {month_names[nextest_feriado['mes']]}*\n"
+        )
+
+    return feriado_msg
+
+
+def prettify_feriados(feriados):
     """Receives a feriado dict of following feriados and pretty prints them.
     [{
         "motivo": "Año Nuevo",
@@ -52,15 +74,11 @@ def prettify_feriados(today, feriados, compact=False):
     },
         ...
     ]
+    Output:
+        👉 25 de diciembre  -  Navidad | inamovible
+        👉 31 de diciembre  -  Feriado Puente Turístico | puente
     """
-    # Get days until next feriado
-    nextest_feriado = feriados[0]
-    next_feriado_date = datetime.datetime(day=nextest_feriado['dia'], month=nextest_feriado['mes'], year=today.year,
-                                          tzinfo=datetime.timezone(datetime.timedelta(hours=-3)))
-    faltan = (next_feriado_date - today)
-    res = (f"Faltan *{faltan.days} días* para el próximo feriado"
-           f" del *{nextest_feriado['dia']} de {month_names[nextest_feriado['mes']]}*\n\n")
-
+    res = ''
     for feriado in feriados:
         # Improvement. Print mes header before feriados of that month
         fecha = f"{feriado['dia']} de {month_names[feriado['mes']]}"
