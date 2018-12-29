@@ -1,6 +1,7 @@
 import logging
-
 import os
+import signal
+
 from requests import ReadTimeout
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut
 
@@ -90,3 +91,8 @@ def error_handler(bot, update, error):
 
 def send_message_to_admin(bot, message, **kwargs):
     bot.send_message(chat_id=os.environ['ADMIN_ID'], text=message, **kwargs)
+
+
+def signal_handler(signal_number, frame):
+    sig_name = signal.Signals(signal_number).name
+    logger.info(f'Captured signal number {signal_number}. Name: {sig_name}')
