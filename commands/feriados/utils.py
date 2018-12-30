@@ -40,6 +40,7 @@ def next_feriado_message(today, feriados):
     # Get days until next feriado
     nextest_feriado = feriados[0]
     next_feriado_date = datetime.datetime(day=nextest_feriado['dia'], month=nextest_feriado['mes'], year=today.year,
+                                          hour=today.hour, minute=today.minute, second=today.second + 1,
                                           tzinfo=datetime.timezone(datetime.timedelta(hours=-3)))
 
     # In python, timedeltas can have negative days if we do a-b and b > a). See timedelta docs for details
