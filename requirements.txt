@@ -7,3 +7,4 @@ sqlalchemy
 subliminal
 numpy
 dateparser
+pytz

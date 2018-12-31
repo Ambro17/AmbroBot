@@ -7,7 +7,7 @@ def hoypido_keyboard(comidas):
     weekday_buttons = [
         [
             Button(day_names[day_int], callback_data=day_int)
-            for day_int in comidas.keys()
+            for day_int in sorted(comidas)
         ],
         [
             Button('🥕 Ir a Hoypido', url='https://www.hoypido.com/menu/onapsis.saludable')
