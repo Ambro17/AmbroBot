@@ -1,7 +1,7 @@
 import os
 import logging
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(format='%(asctime)s - %(name)30s - %(levelname)8s [%(funcName)s] %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
@@ -31,9 +31,9 @@ from commands.pelicula.command import buscar_peli
 from commands.pelicula.constants import PELICULA_REGEX
 from commands.posiciones.command import posiciones
 from commands.register.command import register, authorize, show_users
-from commands.remindme.callbacks import reminder_callback
-from commands.remindme.command import remind_me
+from commands.remindme.command import remind, reminder_callback
 from commands.remindme.constants import REMINDERS_REGEX
+from commands.remindme.persistence.job_loader import load_reminders
 from commands.retro.handler import add_retro_item, show_retro_details, expire_retro_command
 from commands.serie.callbacks import serie_callback_handler
 from commands.serie.command import serie
@@ -89,7 +89,7 @@ get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
 snippet_get_command = CommandHandler('get', get_snippet_command, pass_args=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
-remind_me_handler = CommandHandler('remind', remind_me, pass_args=True, pass_chat_data=True)
+remind_me_handler = CommandHandler('remind', remind, pass_args=True, pass_chat_data=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
@@ -107,6 +107,11 @@ callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 # Add repeating jobs
 cron_tasks = updater.job_queue
 cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=1 * MINUTE, context={})
+
+# Load reminders that were lost on bot restart (job_queue is not persistent)
+loaded_reminders = load_reminders(updater.bot, cron_tasks)
+logger.info(f"Recovered {loaded_reminders} reminders")
+
 
 #  Associate commands with action.
 dispatcher.add_handler(feedback_receiver)

@@ -49,10 +49,15 @@ def prettify_food_offers(menu_por_dia, day=None):
     except KeyError:
         # If you ask on tuesday at night, only wednesday food will be retrieved.
         logger.info(
-            "Menu for today not available. Showing tomorrow's menu. %s", menu_por_dia
+            "Menu for today not available. Showing next day's menu. %s", menu_por_dia
         )
-        day = day + 1
-        food_offers = menu_por_dia[day]
+        day = next((key for key in sorted(menu_por_dia) if key > day), None)
+        food_offers = menu_por_dia.get(day)
 
-    header = [f"\t\t\t\t\tMenú del {day_names[day]}"]
-    return monospace('\n'.join(header + food_offers + ['⚡️ by Yona']))
+    if food_offers:
+        header = [f"\t\t\t\t\tMenú del {day_names[day]}"]
+        msg = monospace('\n'.join(header + food_offers + ['⚡️ by Yona']))
+    else:
+        msg = 'No hay información sobre el menú 🍽'
+
+    return msg
