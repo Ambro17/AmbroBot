@@ -47,7 +47,8 @@ from commands.snippets.command import (
 from commands.serie.constants import SERIE_REGEX
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.start.command import start
-from commands.subte.command import subte
+from commands.subte.command import subte, modify_freq
+from commands.subte.constants import SUBTE_UPDATES_CRON
 from commands.subte.suscribers.command import suscribe, suscribers, unsuscribe
 from commands.subte.updates.alerts import subte_updates_cron
 from commands.tagger.all_tagger import tag_all, set_all_members
@@ -74,6 +75,7 @@ dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)
 dolar_futuro_handler = CommandHandler('rofex', rofex)
 posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)
 subte_handler = CommandHandler('subte', subte)
+modify_subte_freq = CommandHandler('setsubfreq', modify_freq, pass_job_queue=True, pass_args=True)
 cartelera_handler = CommandHandler('cartelera', cinearg)
 hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)
 feriados_handler = CommandHandler('feriados', feriadosarg)
@@ -106,7 +108,7 @@ callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)
 
 # Add repeating jobs
 cron_tasks = updater.job_queue
-cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=1 * MINUTE, context={})
+cron_tasks.run_repeating(subte_updates_cron, interval=5 * MINUTE, first=1 * MINUTE, context={}, name=SUBTE_UPDATES_CRON)
 
 # Load reminders that were lost on bot restart (job_queue is not persistent)
 loaded_reminders = load_reminders(updater.bot, cron_tasks)
@@ -123,6 +125,7 @@ dispatcher.add_handler(authorize_handler)
 dispatcher.add_handler(partido_handler)
 dispatcher.add_handler(dolar_handler)
 dispatcher.add_handler(subte_suscriptions)
+dispatcher.add_handler(modify_subte_freq)
 dispatcher.add_handler(subte_desuscriptions)
 dispatcher.add_handler(subte_show_suscribers)
 dispatcher.add_handler(dolar_futuro_handler)
