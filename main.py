@@ -21,6 +21,7 @@ from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
 from commands.feedback.command import feedback_receiver
 from commands.feriados.command import feriadosarg
+from commands.hastebin.command import hastebin, HASTEBIN_PREFIX
 from commands.hoypido.command import hoypido
 from commands.misc.commands import format_code, link_ticket, default
 from commands.meeting.command import show_meetings, delete_meeting
@@ -92,6 +93,7 @@ snippet_get_command = CommandHandler('get', get_snippet_command, pass_args=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
 remind_me_handler = CommandHandler('remind', remind, pass_args=True, pass_chat_data=True)
+hastebin_handler = RegexHandler(HASTEBIN_PREFIX, hastebin, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
@@ -117,7 +119,6 @@ logger.info(f"Recovered {loaded_reminders} reminders")
 
 #  Associate commands with action.
 dispatcher.add_handler(feedback_receiver)
-dispatcher.add_handler(tickets_handler)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(register_user)
 dispatcher.add_handler(show_users_handler)
@@ -149,9 +150,11 @@ dispatcher.add_handler(show_snippets_handler)
 dispatcher.add_handler(delete_snippet_handler)
 dispatcher.add_handler(remind_me_handler)
 dispatcher.add_handler(tag_all)
-dispatcher.add_handler(edit_tag_all)
 dispatcher.add_handler(show_meetings_handler)
 dispatcher.add_handler(delete_meeting_handler)
+dispatcher.add_handler(hastebin_handler)
+dispatcher.add_handler(tickets_handler)
+dispatcher.add_handler(edit_tag_all)
 
 
 # Add callback handlers
