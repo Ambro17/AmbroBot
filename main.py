@@ -21,7 +21,7 @@ from commands.dolar.command import dolar_hoy
 from commands.dolar_futuro.command import rofex
 from commands.feedback.command import feedback_receiver
 from commands.feriados.command import feriadosarg
-from commands.hastebin.command import hastebin, HASTEBIN_PREFIX
+from commands.hastebin.command import code_paster, CODELINK_PREFIX
 from commands.hoypido.command import hoypido
 from commands.misc.commands import format_code, link_ticket, default
 from commands.meeting.command import show_meetings, delete_meeting
@@ -93,7 +93,7 @@ snippet_get_command = CommandHandler('get', get_snippet_command, pass_args=True)
 delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
 show_snippets_handler = CommandHandler('snippets', show_snippets)
 remind_me_handler = CommandHandler('remind', remind, pass_args=True, pass_chat_data=True)
-hastebin_handler = RegexHandler(HASTEBIN_PREFIX, hastebin, pass_groupdict=True)
+hastebin_handler = RegexHandler(CODELINK_PREFIX, code_paster, pass_groupdict=True)
 tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
 edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)
 tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
