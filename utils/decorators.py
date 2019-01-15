@@ -30,6 +30,7 @@ def send_action(action):
 
 
 send_typing_action = send_action(ChatAction.TYPING)
+sending_audio_action = send_action(ChatAction.UPLOAD_AUDIO)
 send_upload_video_action = send_action(ChatAction.UPLOAD_VIDEO)
 send_upload_photo_action = send_action(ChatAction.UPLOAD_PHOTO)
 

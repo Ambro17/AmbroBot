@@ -53,6 +53,7 @@ from commands.subte.constants import SUBTE_UPDATES_CRON
 from commands.subte.suscribers.command import suscribe, suscribers, unsuscribe
 from commands.subte.updates.alerts import subte_updates_cron
 from commands.tagger.all_tagger import tag_all, set_all_members
+from commands.youtube.command import youtube_to_mp3
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from commands.yts.constants import YTS_REGEX
@@ -67,6 +68,8 @@ dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
 register_user = CommandHandler('register', register)
 authorize_handler = CommandHandler('authorize', authorize, pass_args=True)
+yt_handler = CommandHandler('yt2mp3', youtube_to_mp3, pass_args=True)
+yt_handler_alt = CommandHandler('y', youtube_to_mp3, pass_args=True)
 subte_suscriptions = CommandHandler('suscribe', suscribe, pass_args=True)
 subte_desuscriptions = CommandHandler('unsuscribe', unsuscribe, pass_args=True)
 subte_show_suscribers = CommandHandler('suscribers', suscribers)
@@ -142,6 +145,8 @@ dispatcher.add_handler(yts_handler)
 dispatcher.add_handler(hoypido_handler)
 dispatcher.add_handler(feriados_handler)
 dispatcher.add_handler(serie_handler)
+dispatcher.add_handler(yt_handler)
+dispatcher.add_handler(yt_handler_alt)
 dispatcher.add_handler(code_handler)
 dispatcher.add_handler(save_snippet_handler)
 dispatcher.add_handler(get_snippet_handler)

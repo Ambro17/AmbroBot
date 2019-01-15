@@ -8,3 +8,4 @@ subliminal
 numpy
 dateparser
 pytz
+youtube_dl
