@@ -68,7 +68,7 @@ dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
 register_user = CommandHandler('register', register)
 authorize_handler = CommandHandler('authorize', authorize, pass_args=True)
-yt_handler = CommandHandler('yt2mp3', youtube_to_mp3, pass_args=True)
+yt_handler = CommandHandler('yttomp3', youtube_to_mp3, pass_args=True)
 yt_handler_alt = CommandHandler('y', youtube_to_mp3, pass_args=True)
 subte_suscriptions = CommandHandler('suscribe', suscribe, pass_args=True)
 subte_desuscriptions = CommandHandler('unsuscribe', unsuscribe, pass_args=True)
