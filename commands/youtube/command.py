@@ -2,30 +2,34 @@ import logging
 import os
 
 import youtube_dl
+from telegram import ChatAction
+from telegram.error import NetworkError
 
-from utils.decorators import handle_empty_arg, sending_audio_action
+from utils.decorators import handle_empty_arg, send_recording_action
 from utils.utils import send_message_to_admin
 
 logger = logging.getLogger(__name__)
 
+FILENAME = 'Audio_Cuervot'
+VLC_LINK = 'https://play.google.com/store/apps/details?id=org.videolan.vlc'
 
-@sending_audio_action
+
+@send_recording_action
 @handle_empty_arg(required_params=('args',), error_message='Y la url del video? `/yt2mp3 <url>`', parse_mode='markdown')
 def youtube_to_mp3(bot, update, args):
     video_url = args[0]
 
+    def ext(f):
+        return f'bestaudio[ext={f}]'
+
+    def format_extensions(extens):
+        return '/'.join(map(ext, extens))
+
     try:
-        def ext(f):
-            return f'bestaudio[ext={f}]'
-
-        def format_extensions(extens):
-            return '/'.join(map(ext, extens))
-
-        extensions = ('m4a', 'mp3', '3gp', 'aac', 'wav', 'flac')
+        extensions = ('mp3', '3gp', 'aac', 'wav', 'flac', 'm4a')
         ydl_opts = {
             'format': format_extensions(extensions),
-            'outtmpl': 'Audio_AmbroBot.%(ext)s',  # TODO: Maybe include title in filename so we can save more than one.
-            'noprogress': True,
+            'outtmpl': f'{FILENAME}.%(ext)s',
         }
         logger.info(f'Starting download of {video_url}..')
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -39,14 +43,22 @@ def youtube_to_mp3(bot, update, args):
 
     # Download was successful, now we must open the audio file
     try:
-        logger.debug('Reading audio file from local storage')
+        logger.info('Reading audio file from local storage')
         file, filename = get_audio_file(extensions)
-        logger.debug(f'Filename: {filename}')
+        update.message.reply_text(f'✅ Archivo descargado. Enviando...')
+        bot.send_chat_action(chat_id=update.message.chat_id, action=ChatAction.UPLOAD_AUDIO)
+        logger.info(f'Filename: {filename}')
         if file:
             logger.info('Sending file to user')
             update.message.reply_document(document=file)
+            update.message.reply_text(f'💬 Tip: Podés usar [VLC]({VLC_LINK}) para reproducir el audio 🎶',
+                                      parse_mode='markdown', disable_web_page_preview=True)
             file.close()
             logger.info('File sent successfully')
+    except NetworkError:
+        logger.error('A network error occurred.', exc_info=True)
+        update.message.reply_text(text='🚀 Hay problemas de conexión en estos momentos. Intentá mas tarde..')
+        send_message_to_admin(bot, f'Error mandando {video_url}, {filename}')
 
     except Exception:
         msg = 'Error uploading file to telegram servers'
@@ -57,9 +69,9 @@ def youtube_to_mp3(bot, update, args):
         if filename:
             try:
                 # Remove the file we just sent, as the name is hardcoded.
-                logger.debug(f"Removing file '{filename}'")
+                logger.info(f"Removing file '{filename}'")
                 os.remove(filename)
-                logger.debug('File removed')
+                logger.info('File removed')
             except FileNotFoundError:
                 msg = f'Error removing audio file. File not found {filename}'
                 logger.error(msg), send_message_to_admin(bot, msg)
@@ -69,7 +81,8 @@ def youtube_to_mp3(bot, update, args):
 
 
 def get_audio_file(exts):
-    possible_filenames = (f"Audio_AmbroBot.{ext}" for ext in exts)
+    """Youtube-dl does not return file data on success, so we must guess the file extension"""
+    possible_filenames = (f"{FILENAME}.{ext}" for ext in exts)
     for filename in possible_filenames:
         try:
             return open(filename, 'rb'), filename
