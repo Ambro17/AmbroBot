@@ -14,10 +14,11 @@ def partido(bot, update):
     except requests.exceptions.ReadTimeout:
         update.message.reply_text('En estos momentos no puedo darte esta info.')
         return
-    partido = soup.find('div', {'class': 'widget-partido'}).find(
-        'div', {'class': 'cont'}
-    )
+
     try:
+        partido = soup.find_all('div', {'class': 'widget-partido'})[1].find(
+            'div', {'class': 'cont'}
+        )
         logo, *info = info_de_partido(partido)
     except ValueError:
         update.message.reply_text('No pude leer el próximo partido.\n'
