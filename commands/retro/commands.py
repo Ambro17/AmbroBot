@@ -50,10 +50,11 @@ def show_retro_items(bot, update):
     items = get_retro_items()
     if items:
         update.message.reply_text(
-            '\n'.join(
-                f"{item.user} | {item.text.capitalize()} | {_localize_time(item.datetime)}"
+            '\n\n'.join(
+                f"*{item.user}* | {item.text.capitalize()} | {_localize_time(item.datetime)}"
                 for item in items
-            )
+            ),
+            parse_mode='markdown'
         )
     else:
         update.message.reply_text('📋 No hay ningún retroitem guardado todavía')
