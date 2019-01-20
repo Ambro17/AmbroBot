@@ -58,7 +58,7 @@ def lookup_content(key):
 
 
 @log_time
-def select_all():
+def select_all_snippets():
     try:
         with psycopg2.connect(DB) as conn:
             with conn.cursor() as curs:

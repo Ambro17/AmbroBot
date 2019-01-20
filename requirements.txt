@@ -9,3 +9,4 @@ numpy
 dateparser
 pytz
 youtube_dl
+python-Levenshtein

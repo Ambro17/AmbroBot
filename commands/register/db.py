@@ -29,6 +29,7 @@ class User(Base):
         return "<User(first_name='%s', last_name='%s', username='@%s', id=%s)>" % (
             self.first_name, self.last_name, self.username, self.id,
         )
+
     def __str__(self):
         if self.username:
             return f"@{self.username}"

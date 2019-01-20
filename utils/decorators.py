@@ -125,9 +125,31 @@ def requires_auth(func):
         if authorized_user(user_id):
             return func(bot, update, **kwargs)
         else:
-            logger.info(f"{update.effective_user.name} (id={user_id}) wants to execute {update.effective_message.text}")
+            logger.info(f"{update.effective_user.name} (id={user_id})"
+                        f" wants to execute {update.effective_message.text}")
             update.effective_message.reply_text(
                 'Debés registrarte primero para usar este comando. Escribí `/register`',
+                parse_mode='markdown',
+                quote=False
+            )
+
+    return restricted_func
+
+
+def inline_auth(func):
+    """Allow only authorized users to user the decorated funcs"""
+
+    @wraps(func)
+    def restricted_func(bot, update, **kwargs):
+        user_id = update.effective_user.id
+        if authorized_user(user_id):
+            return func(bot, update, **kwargs)
+        else:
+            logger.info(f"{update.effective_user.name} (id={user_id})"
+                        f" wants to inlinequery with '{update.inline_query.query}'")
+            bot.send_message(
+                chat_id=user_id,
+                text='🚫 Access denied. Write `/register` to register',
                 parse_mode='markdown',
                 quote=False
             )

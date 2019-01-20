@@ -4,7 +4,7 @@ from telegram.ext import run_async
 from commands.snippets.utils import (
     lookup_content,
     save_to_db,
-    select_all,
+    select_all_snippets,
     remove_snippet,
     link_key)
 from utils.decorators import send_typing_action, log_time, admin_only, requires_auth
@@ -71,7 +71,7 @@ def get_snippet_command(bot, update, args):
 @run_async
 @requires_auth
 def show_snippets(bot, update):
-    answers = select_all()
+    answers = select_all_snippets()
     if answers:
         keys = [f'🔑  {link_key(key)}' for id, key, content in answers]
         reminder = ['Para ver algún snippet » `/get <clave>` o\nclickeá la clave y reenviá a un chat donde esté yo']

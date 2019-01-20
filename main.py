@@ -57,6 +57,7 @@ from commands.youtube.command import youtube_to_mp3
 from commands.yts.callback_handler import handle_callback
 from commands.yts.command import yts
 from commands.yts.constants import YTS_REGEX
+from inlinequeries.snippets import inline_snippets
 from utils.utils import error_handler, send_message_to_admin, signal_handler
 from utils.constants import CODE_PREFIX, TICKET_REGEX, MINUTE
 
@@ -122,6 +123,7 @@ logger.info(f"Recovered {loaded_reminders} reminders")
 
 #  Associate commands with action.
 dispatcher.add_handler(feedback_receiver)
+dispatcher.add_handler(inline_snippets)
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(register_user)
 dispatcher.add_handler(show_users_handler)
