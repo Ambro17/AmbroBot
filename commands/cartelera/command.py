@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
@@ -18,3 +18,6 @@ def cinearg(bot, update):
     ]
     top_5 = '\n'.join(f'[{rank}. {title}]({link})' for rank, title, link in listado[:5])
     bot.send_message(chat_id=update.message.chat_id, text=top_5, parse_mode='markdown')
+
+
+cartelera_handler = CommandHandler('cartelera', cinearg)

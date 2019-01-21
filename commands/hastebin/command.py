@@ -3,6 +3,7 @@ import os
 import re
 
 import requests
+from telegram.ext import RegexHandler
 
 from utils.decorators import send_typing_action, log_time
 from utils.utils import monospace
@@ -94,3 +95,6 @@ class CodePaster:
             success, msg = cls.post_snippet_pastebin(snippet)
 
         return success, msg
+
+
+hastebin_handler = RegexHandler(CODELINK_PREFIX, code_paster, pass_groupdict=True)

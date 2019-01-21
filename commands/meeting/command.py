@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.meeting.db_operations import get_meetings, delete_meeting_db
 from commands.remindme.constants import GMT_BUENOS_AIRES
@@ -45,3 +45,7 @@ def delete_meeting(bot, update, args):
         update.message.reply_text(f'Reunión `{name}` borrada', parse_mode='markdown')
     else:
         update.message.reply_text('No existe reunión bajo ese nombre')
+
+
+show_meetings_handler = CommandHandler('meetings', show_meetings)
+delete_meeting_handler = CommandHandler('delmeeting', delete_meeting, pass_args=True)

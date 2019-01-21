@@ -1,5 +1,5 @@
 import requests
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
@@ -63,3 +63,6 @@ def info_de_partido(partido):
         raise ValueError('Website html has changed. Review parsing')
 
     return logo, fecha, hora_tv, estadio_arbitro
+
+
+partido_handler = CommandHandler('partido', partido)

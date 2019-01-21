@@ -1,4 +1,7 @@
 import logging
+
+from telegram.ext import CallbackQueryHandler
+
 from commands.serie.constants import (
     LOAD_EPISODES,
     LATEST_EPISODES,
@@ -8,7 +11,7 @@ from commands.serie.constants import (
     EZTV_API_ERROR,
     EZTV_NO_RESULTS,
     LOAD_MORE_LATEST,
-)
+    SERIE_REGEX)
 from commands.serie.keyboard import (
     serie_go_back_keyboard,
     serie_episodes_keyboards,
@@ -130,3 +133,6 @@ def serie_callback_handler(bot, update, chat_data):
             "Selected option '%s' would leave text as it is. Ignoring to avoid exception. '%s' "
             % (answer, response)
         )
+
+
+serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)

@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.hoypido.keyboard import hoypido_keyboard
 from commands.hoypido.utils import get_comidas, prettify_food_offers
@@ -24,3 +24,6 @@ def hoypido(bot, update, chat_data):
         reply_markup=keyboard,
         parse_mode='markdown',
     )
+
+
+hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)

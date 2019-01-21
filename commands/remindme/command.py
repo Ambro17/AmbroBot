@@ -3,13 +3,13 @@ from datetime import datetime, timedelta
 import logging
 
 import pytz
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler, CallbackQueryHandler
 
-from commands.remindme.constants import REMINDER_DEFAULT, MISSING_CHAT_DATA, BUENOS_AIRES_TIMEZONE
+from commands.remindme.constants import REMINDER_DEFAULT, MISSING_CHAT_DATA, BUENOS_AIRES_TIMEZONE, REMINDERS_REGEX
 from commands.remindme.job import send_notification
 from commands.remindme.keyboards import time_options_keyboard
 from commands.remindme.utils import get_delay, _tag_user, _datetime_from_answer, add_job_to_db
-from utils.decorators import send_typing_action, log_time
+from utils.decorators import send_typing_action
 from utils.utils import send_message_to_admin
 
 logger = logging.getLogger(__name__)
@@ -94,3 +94,9 @@ def _reply_reminder_details(update, job_context):
         reply_markup=None,
         parse_mode='markdown'
     )
+
+
+remind_me_handler = CommandHandler('remind', remind, pass_args=True, pass_chat_data=True)
+reminders_callback_handler = CallbackQueryHandler(
+    reminder_callback, pattern=REMINDERS_REGEX, pass_chat_data=True, pass_job_queue=True
+)

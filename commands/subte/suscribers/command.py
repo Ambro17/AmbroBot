@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.subte.suscribers.constants import MISSING_LINEA_MESSAGE, LINEAS, UNSUSCRIBED_MESSAGE
 from commands.subte.suscribers.db import get_suscriptors, remove_subte_suscriber
@@ -64,3 +64,8 @@ def suscribers(bot, update):
         )
     else:
         update.message.reply_text('📋 Aún no hay suscriptores a los subte updates')
+
+
+subte_suscriptions = CommandHandler('suscribe', suscribe, pass_args=True)
+subte_desuscriptions = CommandHandler('unsuscribe', unsuscribe, pass_args=True)
+subte_show_suscribers = CommandHandler('suscribers', suscribers)

@@ -2,10 +2,10 @@ import os
 import random
 import re
 
-from telegram.ext import run_async
+from telegram.ext import run_async, RegexHandler, MessageHandler, Filters
 
 from utils.utils import monospace
-from utils.constants import COMANDO_DESCONOCIDO, TICKET_REGEX
+from utils.constants import COMANDO_DESCONOCIDO, TICKET_REGEX, CODE_PREFIX
 from utils.decorators import send_typing_action, log_time
 
 
@@ -41,3 +41,8 @@ def default(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO)
     )
+
+
+code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
+tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
+generic_handler = MessageHandler(Filters.command, default)

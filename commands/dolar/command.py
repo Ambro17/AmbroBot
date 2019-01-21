@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.dolar.keyboards import banco_keyboard
 from commands.dolar.utils import get_cotizaciones, pretty_print_dolar
@@ -28,3 +28,6 @@ def dolar_hoy(bot, update, chat_data):
         reply_markup=keyboard,
         parse_mode='markdown',
     )
+
+
+dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)

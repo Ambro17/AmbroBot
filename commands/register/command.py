@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy.exc import IntegrityError
 from telegram.error import BadRequest
+from telegram.ext import CommandHandler
 
 from commands.register.db import add_user, _get_users
 from utils.decorators import handle_empty_arg, send_typing_action, admin_only
@@ -59,6 +60,7 @@ def _user_to_string(user):
         f"username:{user.username}"
     )
 
+
 def _string_to_user(user_string):
     """Receives a user string and returns a dict with its attributes."""
     try:
@@ -72,6 +74,7 @@ def _string_to_user(user_string):
         logger.info("Malformed user string")
         return None
 
+
 def add_user_to_db(user):
     try:
         add_user(user)
@@ -83,3 +86,8 @@ def add_user_to_db(user):
     except Exception:
         logger.exception("Error saving user to db")
         return False
+
+
+register_user = CommandHandler('register', register)
+authorize_handler = CommandHandler('authorize', authorize, pass_args=True)
+show_users_handler = CommandHandler('users', show_users)

@@ -2,7 +2,7 @@ import re
 import logging
 
 from requests.exceptions import ReadTimeout
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.subte.constants import SUBTE_UPDATES_CRON
 from commands.subte.utils import format_estado_de_linea
@@ -63,3 +63,7 @@ def modify_freq(bot, update, job_queue, args):
 
     update.message.reply_text(msg)
     logger.info(msg)
+
+
+subte_handler = CommandHandler('subte', subte)
+modify_subte_freq = CommandHandler('setsubfreq', modify_freq, pass_job_queue=True, pass_args=True)

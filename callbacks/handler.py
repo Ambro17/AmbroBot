@@ -1,6 +1,8 @@
 # -*- coding: UTF-8 -*-
 import logging
 
+from telegram.ext import CallbackQueryHandler
+
 from commands.dolar.callback import dolarhoy_callback
 from commands.dolar.keyboards import banco_keyboard
 from commands.hoypido.callback import hoypido_callback
@@ -57,3 +59,6 @@ def handle_callbacks(bot, update, chat_data):
             text=handled_response,
             parse_mode='markdown',
         )
+
+
+callback_handler = CallbackQueryHandler(handle_callbacks, pass_chat_data=True)

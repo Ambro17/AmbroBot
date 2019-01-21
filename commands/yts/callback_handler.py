@@ -1,11 +1,13 @@
 import logging
 
+from telegram.ext import CallbackQueryHandler
+
 from commands.yts.constants import (
     NEXT_YTS,
     YTS_TORRENT,
     YTS_FULL_DESC,
     MEDIA_CAPTION_LIMIT,
-)
+    YTS_REGEX)
 from commands.yts.utils import (
     get_torrents,
     prettify_torrent,
@@ -121,3 +123,6 @@ def handle_callback(bot, update, chat_data):
             text=pretty_torrents,
             parse_mode='markdown',
         )
+
+
+yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)

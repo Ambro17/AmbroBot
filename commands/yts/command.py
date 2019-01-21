@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.yts.utils import get_minimal_movie, prettify_yts_movie
 from utils.decorators import send_typing_action, log_time
@@ -47,3 +47,6 @@ def yts(bot, update, chat_data):
         caption=movie_desc,
         reply_markup=yts_navigator,
     )
+
+
+yts_handler = CommandHandler('yts', yts, pass_chat_data=True)

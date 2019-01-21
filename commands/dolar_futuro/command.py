@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.dolar_futuro.constants import DOLAR_REGEX, Contrato, month_name, EMPTY_MESSAGE
 from utils.decorators import send_typing_action, log_time
@@ -39,3 +39,6 @@ def prettify_rofex(contratos):
     )
     header = '  Dólar  | Valor\n'
     return monospace(header + values) if contratos is not None else EMPTY_MESSAGE
+
+
+dolar_futuro_handler = CommandHandler('rofex', rofex)

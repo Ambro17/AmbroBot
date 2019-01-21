@@ -3,6 +3,7 @@ import logging
 import os
 import psycopg2
 from telegram import MessageEntity
+from telegram.ext import MessageHandler, Filters, CommandHandler
 
 from utils.decorators import admin_only, log_time
 
@@ -103,3 +104,7 @@ def update_all_users(users):
         success = False
 
     return success
+
+
+tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
+edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)

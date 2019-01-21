@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
-from telegram.ext import run_async
+from telegram.ext import run_async, RegexHandler, CommandHandler
 
+from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.snippets.utils import (
     lookup_content,
     save_to_db,
@@ -99,3 +100,10 @@ def delete_snippet(bot, update, **kwargs):
         message = 'No se pudo borrar la pregunta.'
 
     update.message.reply_text(message, parse_mode='markdown')
+
+
+save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
+get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
+delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
+snippet_get_command = CommandHandler('get', get_snippet_command, pass_args=True)
+show_snippets_handler = CommandHandler('snippets', show_snippets)

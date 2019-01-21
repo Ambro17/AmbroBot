@@ -2,7 +2,7 @@ import logging
 import os
 
 import requests
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.serie.keyboard import serie_main_keyboard
 from commands.serie.utils import prettify_serie
@@ -107,3 +107,6 @@ def serie(bot, update, chat_data, args):
         parse_mode='markdown',
         disable_web_page_preview=True,
     )
+
+
+serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)

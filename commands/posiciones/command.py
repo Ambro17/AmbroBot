@@ -1,4 +1,4 @@
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.posiciones.utils import parse_posiciones, prettify_table_posiciones
 from utils.decorators import send_typing_action, log_time
@@ -14,3 +14,6 @@ def posiciones(bot, update, **kwargs):
     info = parse_posiciones(tabla, posiciones=kwargs.get('args'))
     pretty = prettify_table_posiciones(info)
     bot.send_message(chat_id=update.message.chat_id, text=pretty, parse_mode='markdown')
+
+
+posiciones_handler = CommandHandler('posiciones', posiciones, pass_args=True)

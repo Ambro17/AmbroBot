@@ -1,6 +1,8 @@
 import datetime
 import logging
 
+from telegram.ext import CommandHandler
+
 from commands.feriados.utils import get_feriados, prettify_feriados, filter_feriados, next_feriado_message
 
 logger = logging.getLogger(__name__)
@@ -22,3 +24,6 @@ def feriadosarg(bot, update):
         msg = 'No hay más feriados este año'
 
     update.message.reply_text(msg, parse_mode='markdown')
+
+
+feriados_handler = CommandHandler('feriados', feriadosarg)

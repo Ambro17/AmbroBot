@@ -1,5 +1,5 @@
 import requests
-from telegram.ext import run_async
+from telegram.ext import run_async, CommandHandler
 
 from commands.pelicula.keyboard import pelis_keyboard
 from commands.pelicula.utils import (
@@ -58,3 +58,7 @@ def buscar_peli(bot, update, chat_data, **kwargs):
             text='Estoy descansando ahora, probá después de la siesta',
             parse_mode='markdown',
         )
+
+
+pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
+pelis_alt = CommandHandler('película', buscar_peli, pass_args=True, pass_chat_data=True)
