@@ -33,7 +33,7 @@ def _article(id, title, text, parse_mode=ParseMode.MARKDOWN):
         logger.error(text)
     return InlineQueryResultArticle(
         id=id,
-        title=f'📍 {title}',
+        title=f'{title}',
         description='Code snippets',
         input_message_content=msg,
     )
@@ -70,7 +70,7 @@ def inlinequery(bot, update, chat_data):
         results = _filter_snippets(snippets, lambda s: True)
     else:
         results = _filter_snippets(snippets, partial(is_similar, user_input.lower(), tolerance=0.58))
-        logger.info(f'Filtered results: {len(results)} by {user_input}')
+        logger.info(f"Filtered results: {len(results)} by '{user_input}'")
 
     update.inline_query.answer(results, cache_time=0)
     chat_data['last_update'] = time.time()
