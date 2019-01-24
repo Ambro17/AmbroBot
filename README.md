@@ -1,5 +1,5 @@
-# AmbroBot
-AmbroBot is a Bot that learns new commands as i get more things to study. Studying sometimes is boring. Coding is always fun (and a good excuse to not feel guilty about not studying).
+# CuervoBot
+CuervoBot is a Bot that learns new commands as i get more things to study. Studying sometimes is boring. Coding is always fun (and a good excuse to not feel guilty about not studying).
 
 It can set reminders, search series or movies for you, tell you if you should take the subway or not, and even help you solve system of linear equations!
 
@@ -35,27 +35,34 @@ Once you have all packages installed and all environment variables set you can r
 
 ## Bot in action
 
-**Search series by name**
+#### Search series by name
+`/serie Sherlock`
 
 ![Serie output](https://i.imgur.com/Kx0bvyz.jpg "Sherlock")
 
 
 
-**Search movie by name**
+#### Search movie by name
+`/pelicula The Matrix 2`
 
 ![Movie output](https://i.imgur.com/mWRG1HH.jpg "Matrix")
 
 
 
-**Get yts latest movies**
+#### Get yts latest movies
+`/yts`
 
 ![Yts movies](https://i.imgur.com/wpq84zo.jpg "Yts")
 
 
 
-**Get subte status of Buenos Aires City**
+#### Get subte status of Buenos Aires City
+`/subte`
 
 ![Subte status](https://i.imgur.com/Z0Aacyd.png "Subte")
+
+or if you want to receive updates without needing to ask every time..
+`/suscribe <line_letter>`
 
 
 
@@ -112,8 +119,19 @@ Show next feriados for Argentina
 
 Determine solution of diagonally dominant system of linear equations via Jacobi or Gauss Seidel iterative methods
 
+`/suscribe <line>`
+
+Suscribe to the updates of the subway line `<line>` on CABA. You will receive notifications of delays, suspensions, service normalization, etc.
+
+`/yttomp3`
+
+Given a youtube url, download its audio in the best quality available. Useful if you want to make your own ringtones 🎶
+
+`/feedback`
+
+Give feedback for the bot. Bugs, feature requests, questions, ideas, nuclear secrets, conspiracy theories, or whatever you feel worth sharing with the dev.
 
 
 ## Credits
 
-Feel free to modify this code to suit your needs. If you get inspired by this bot please reference this repo as source of inspiration.  ⭐️ Stars, issues and PRs are appreciated!
+Feel free to modify this code to suit your needs. If you get inspired by this bot please reference this repo as source of inspiration.  ⭐️ Stars, 🐞 issues and 🔀 PRs are appreciated!
