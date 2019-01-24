@@ -16,9 +16,12 @@ COMANDO_DESCONOCIDO = [
     'No existe ese comando.',
 ]
 
-# Ticket ids of 5 or 6 numbers preceded by t|osp||osp- or any casing variant.
-TICKET_REGEX = re.compile(r'(t|osp-?)(?P<ticket>\d{5,})', re.IGNORECASE)
+VALID_PREFIX = r'(\s|^)'  # It is valid if it is the beginning of the string or a space
+VALID_SUFFIX = r'(?=\s|$)'  # It is valid if space or EOS. (+ lookahead, not consuming)
+TICKET_MATCHER = r'(t-?|osp-?)(?P<ticket>\d{5,})'
 
+# Ticket ids of 5 or 6 numbers preceded by t|osp||osp- or any casing variant.
+TICKET_REGEX = re.compile(f'{VALID_PREFIX}{TICKET_MATCHER}{VALID_SUFFIX}', re.IGNORECASE)
 
 # Text starting with ~, \c, \code or $ will be monospaced formatted
 CODE_PREFIX = re.compile(r'^(~|\\code|\$|\\c) (?P<code>[\s\S]+)')
