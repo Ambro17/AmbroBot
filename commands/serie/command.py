@@ -93,8 +93,6 @@ def serie(bot, update, chat_data, args):
             'series_raw_name': serie_query,
             'message_info': (name, rating, overview, start_date),
         },
-        'command': 'serie',
-        'edit_original_text': True,
     }
 
     # Now that i have the imdb_id, show buttons to retrieve extra info.

@@ -73,14 +73,16 @@ def serie_callback_handler(bot, update, chat_data):
         # Todo, do further requests to show all api results. Maybe paging results into numbers?
 
     elif answer == GO_BACK_TO_MAIN:
-        # Remove season and episode context so we can start the search again if the user wants to download another episode.
+        # Remove season and episode context so we can start the search again
+        # if the user wants to download another episode.
         context.pop('selected_season_episodes', None)
 
         # Resend series basic description
         message = context['data']['message_info']
         response = prettify_serie(*message)
         keyboard = serie_main_keyboard(context['data']['imdb_id'])
-        # tothink: Maybe implement relative go back. chat_data context should be more intelligent to support that.
+        # tothink: Maybe implement relative go back. chat_data context
+        # should be more intelligent to support that.
         # temp key on chat_data (active_season) that resets after each episode go back?
 
     elif answer == LOAD_EPISODES:

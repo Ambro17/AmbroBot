@@ -174,14 +174,15 @@ def get_all_seasons(series_name, raw_user_query):
         and returns an episode namedtuple
         """
 
-        # First and last cell contain useless info (link with info and forum link)
-        torrent = torrent.find_all('td')[1:-1]
+        # First cell contain useless info (link with info)
+        torrent = torrent.find_all('td')[1:]
         links = torrent[1].find_all('a')
         name = torrent[NAME].text.strip()
 
         # Filter fake results that include series name but separated between other words.
-        # For example, a query for The 100 also returns '*The* TV Show S07E00 Catfish Keeps it *100*' which we don't want
-        # We also use the raw_user_query because sometimes the complete name from tmdb is not the same name used on eztv.
+        # For example, a query for The 100 also returns '*The* TV Show S07E00 Catfish
+        # Keeps it *100*' which we don't want. We also use the raw_user_query
+        # because sometimes the complete name from tmdb is not the same name used on eztv.
         if (
                 not series_name.lower() in name.lower()
                 and not raw_user_query.lower() in name.lower()
