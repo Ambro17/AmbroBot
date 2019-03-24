@@ -129,7 +129,6 @@ def main():
 
     updater.start_polling()
     logger.info('Listening humans as %s..' % updater.bot.username)
-    send_message_to_admin(updater.bot, "⚡️ I'm up and running ⚡️️")
     updater.idle()
     logger.info('Bot stopped gracefully')
 
