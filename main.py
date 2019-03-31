@@ -10,7 +10,7 @@ from callbacks.handler import callback_handler
 from commands.cartelera.command import cartelera_handler
 from commands.dolar.command import dolar_handler
 from commands.dolar_futuro.command import dolar_futuro_handler
-from commands.feriados.command import feriados_handler
+from commands.feriados.command import feriados_handler, proximo_feriado_handler
 from commands.hastebin.command import hastebin_handler
 from commands.hoypido.command import hoypido_handler
 from commands.meeting.command import show_meetings_handler, delete_meeting_handler
@@ -93,6 +93,7 @@ def main():
     dispatcher.add_handler(yts_handler)
     dispatcher.add_handler(hoypido_handler)
     dispatcher.add_handler(feriados_handler)
+    dispatcher.add_handler(proximo_feriado_handler)
     dispatcher.add_handler(serie_handler)
     dispatcher.add_handler(yt_handler)
     dispatcher.add_handler(yt_handler_alt)
