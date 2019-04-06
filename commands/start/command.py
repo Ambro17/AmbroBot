@@ -1,7 +1,7 @@
 def start(bot, update):
     message = (
-        "Hola, soy Cuervot!\n"
-        "Sé hacer un par de cosas:\n\n"
+        "🇦🇷 Hi, i'm Cuervot! \n"
+        "These are my skills:\n\n"
         "/dolar - Cotización del dólar\n"
         "/rofex - Cotizacion dólar futuro\n"
         "/subte - Estado de subtes CABA\n"
@@ -14,6 +14,8 @@ def start(bot, update):
         "/partido - Próximo partido de San Lorenzo\n"
         "/posiciones - Tabla de posiciones Argenntina\n"
         "/cartelera - Peliculas más populares en cartelera\n"
-        "/aproximar - Calcular la solución del sistema de ecuaciones lineales\n"
+        "/aproximar - Calcular la solución del sistema de ecuaciones lineales\n\n"
+        "If you find any bug or suggestion, you can send it through /feedback\n"
+        "I'm also open source so you can see how i work @ https://github.com/Ambro17/AmbroBot"
     )
-    update.message.reply_text(message, parse_mode='markdown')
+    update.message.reply_text(message, parse_mode='markdown', disable_web_page_preview=True)

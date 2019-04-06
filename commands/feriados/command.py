@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def feriadosarg(bot, update, args):
     limit = read_limit_from_args(args)
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
-    following_feriados = _get_feriados(today, update)
+    following_feriados = _get_next_feriados(today)
     if following_feriados:
         header_msg = next_feriado_message(today, next(following_feriados))
         all_feriados = prettify_feriados(following_feriados, limit=limit)
@@ -28,10 +28,9 @@ def feriadosarg(bot, update, args):
     update.message.reply_text(msg, parse_mode='markdown')
 
 
-def _get_feriados(today, update):
+def _get_next_feriados(today):
     feriados = get_feriados(today.year)
     if not feriados:
-        update.message.reply_text('🏳️ La api de feriados no responde')
         return []
 
     return filter_past_feriados(today, feriados)
@@ -39,7 +38,7 @@ def _get_feriados(today, update):
 
 def next_feriado(bot, update):
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
-    following_feriados = _get_feriados(today, update)
+    following_feriados = _get_next_feriados(today)
     if following_feriados:
         msg = next_feriado_message(today, next(following_feriados))
     else:

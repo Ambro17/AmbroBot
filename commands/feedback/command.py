@@ -6,13 +6,13 @@ SEND_FEEDBACK = 10
 
 
 def default_msg(bot, update):
-    update.effective_message.reply_text('El mensaje de feedback debe ser texto. Empecemos de nuevo con /feedback.')
+    update.effective_message.reply_text('Feedback message must be text. Let\'s try again with /feedback.')
     return ConversationHandler.END
 
 
 def feedback(bot, update, args):
     if not args:
-        update.effective_message.reply_text('Ingresa el bug/sugerencia/feature request', quote=False)
+        update.effective_message.reply_text('Enter the bug/suggestion/feature request', quote=False)
         return SEND_FEEDBACK
     suggestion = ' '.join(args)
     _send_feedback(bot, update, suggestion)
