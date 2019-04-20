@@ -1,14 +1,12 @@
-import re
 import logging
 
-from requests.exceptions import ReadTimeout
 from telegram.ext import run_async, CommandHandler
 
-from commands.subte.constants import SUBTE_UPDATES_CRON
-from commands.subte.utils import format_estado_de_linea
+from commands.subte.constants import SUBTE_UPDATES_CRON, SUBWAY_STATUS_OK
+from commands.subte.updates.alerts import check_update
+from commands.subte.updates.utils import prettify_updates
 from utils.constants import MINUTE
 from utils.decorators import send_typing_action, log_time, admin_only, handle_empty_arg
-from utils.utils import soupify_url, monospace
 
 logger = logging.getLogger(__name__)
 
@@ -18,32 +16,23 @@ logger = logging.getLogger(__name__)
 @run_async
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
+    NO_PROBLEMS = {}
     try:
-        soup = soupify_url('https://www.metrovias.com.ar')
-    except ReadTimeout:
-        logger.info('Error in metrovias url request')
-        update.message.reply_text('⚠️ Metrovias no responde. Intentá más tarde')
+        updates = check_update()
+    except Exception:
+        msg = 'Error checking updates. You can check status here https://www.metrovias.com.ar/'
+        update.message.reply_text(msg)
         return
 
-    subtes = soup.find('table', {'class': 'table'})
-    REGEX = re.compile(r'Línea *([A-Z]){1} +(.*)', re.IGNORECASE)
-    estado_lineas = []
-    for tr in subtes.tbody.find_all('tr'):
-        estado_linea = tr.text.strip().replace('\n', ' ')
-        match = REGEX.search(estado_linea)
-        if match:
-            linea, estado = match.groups()
-            estado_lineas.append((linea, estado))
+    if updates is None:
+        msg = 'API did not respond with status 200,\n. You can check subte status here https://www.metrovias.com.ar/'
+    elif updates == NO_PROBLEMS:
+        msg = SUBWAY_STATUS_OK
+    else:
+        msg = prettify_updates(updates)
 
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=monospace(
-            '\n'.join(
-                format_estado_de_linea(info_de_linea) for info_de_linea in estado_lineas
-            )
-        ),
-        parse_mode='markdown',
-    )
+    update.message.reply_text(msg)
+
 
 
 @admin_only

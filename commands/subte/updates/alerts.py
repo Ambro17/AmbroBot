@@ -24,7 +24,7 @@ def subte_updates_cron(bot, job):
         return
     if status_updates is None:
         logger.error("The api did not respond with status ok.")
-        send_message_to_admin(bot, 'Metrovias api is not operational. Check it please')
+        send_message_to_admin(bot, 'Metrovias api did not respond with status 200. Check it please')
         return
 
     context = job.context
@@ -62,6 +62,10 @@ def check_update():
 
     Returns:
         dict|None: mapping of line incidents
+        {
+          'A': 'rota',
+          'E': 'demorada',
+        }
     """
     params = {
         'client_id': os.environ['CABA_CLI_ID'],
