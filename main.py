@@ -15,7 +15,7 @@ from commands.github.command import github_handler
 from commands.hastebin.command import hastebin_handler
 from commands.hoypido.command import hoypido_handler
 from commands.meeting.command import show_meetings_handler, delete_meeting_handler
-from commands.misc.commands import code_handler, tickets_handler, generic_handler
+from commands.misc.commands import code_handler, tickets_handler, generic_handler, show_source
 from commands.partido.command import partido_handler
 from commands.pelicula.callback import peliculas_callback
 from commands.pelicula.command import pelis, pelis_alt
@@ -112,6 +112,7 @@ def main():
     dispatcher.add_handler(hastebin_handler)
     dispatcher.add_handler(tickets_handler)
     dispatcher.add_handler(edit_tag_all)
+    dispatcher.add_handler(show_source)
 
     # Add callback handlers
     dispatcher.add_handler(serie_callback)

@@ -2,7 +2,7 @@ import os
 import random
 import re
 
-from telegram.ext import run_async, RegexHandler, MessageHandler, Filters
+from telegram.ext import run_async, RegexHandler, MessageHandler, Filters, CommandHandler
 
 from utils.utils import monospace
 from utils.constants import COMANDO_DESCONOCIDO, TICKET_REGEX, CODE_PREFIX
@@ -43,6 +43,19 @@ def default(bot, update):
     )
 
 
+@send_typing_action
+@run_async
+def code(bot, update):
+    """If a user sends an unknown command, answer accordingly"""
+    REPO = 'https://github.com/Ambro17/AmbroBot'
+    msg = (
+        f"Here you can see my internals: {REPO}\n"
+        "Don't forget to give it a ⭐️ if you like it!"
+    )
+    update.message.reply_text(msg, disable_web_page_preview=True)
+
+
+show_source = CommandHandler('code', code)
 code_handler = RegexHandler(CODE_PREFIX, format_code, pass_groupdict=True)
 tickets_handler = MessageHandler(Filters.regex(TICKET_REGEX), link_ticket)
 generic_handler = MessageHandler(Filters.command, default)

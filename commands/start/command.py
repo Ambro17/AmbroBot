@@ -16,6 +16,6 @@ def start(bot, update):
         "/cartelera - Peliculas más populares en cartelera\n"
         "/aproximar - Calcular la solución del sistema de ecuaciones lineales\n\n"
         "If you find any bug or suggestion, you can send it through /feedback\n"
-        "I'm also open source so you can see how i work @ https://github.com/Ambro17/AmbroBot"
+        "I'm also open source so you can see how i work with /code"
     )
     update.message.reply_text(message, parse_mode='markdown', disable_web_page_preview=True)
