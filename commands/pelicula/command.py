@@ -41,9 +41,10 @@ def buscar_peli(bot, update, chat_data, args):
         movie_info = get_basic_info(movie)
         # Give context to button handlers
         chat_data['context'] = {
-            'data': {'movie': movie, 'movie_basic': movie_info},
-            'command': 'pelicula',
-            'edit_original_text': True,
+            'data': {
+                'movie': movie,
+                'movie_basic': movie_info
+            },
         }
 
         movie_details, poster = prettify_basic_movie_info(movie_info)

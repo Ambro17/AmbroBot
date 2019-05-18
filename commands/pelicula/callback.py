@@ -3,7 +3,6 @@ import logging
 import random
 
 import requests
-from telegram.ext import CallbackQueryHandler
 
 from commands.pelicula.constants import (
     IMDB,
@@ -13,7 +12,8 @@ from commands.pelicula.constants import (
     NO_TRAILER_MESSAGE,
     SUBTITLES,
     LOADING_GIFS,
-    PELICULA_REGEX)
+    PELICULA_REGEX,
+)
 from commands.pelicula.keyboard import pelis_keyboard
 from commands.pelicula.utils import (
     get_yts_torrent_info,
