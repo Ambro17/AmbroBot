@@ -10,10 +10,12 @@ from commands.feriados.utils import (
     next_feriado_message,
     read_limit_from_args,
 )
+from updater import elbot
 
 logger = logging.getLogger(__name__)
 
 
+@elbot.route(command='feriados', pass_args=True)
 def feriadosarg(bot, update, args):
     limit = read_limit_from_args(args)
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
@@ -28,14 +30,7 @@ def feriadosarg(bot, update, args):
     update.message.reply_text(msg, parse_mode='markdown')
 
 
-def _get_next_feriados(today):
-    feriados = get_feriados(today.year)
-    if not feriados:
-        return []
-
-    return filter_past_feriados(today, feriados)
-
-
+@elbot.route(command='feriado')
 def next_feriado(bot, update):
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
     following_feriados = _get_next_feriados(today)
@@ -47,5 +42,9 @@ def next_feriado(bot, update):
     update.message.reply_text(msg, parse_mode='markdown')
 
 
-feriados_handler = CommandHandler('feriados', feriadosarg, pass_args=True)
-proximo_feriado_handler = CommandHandler('feriado', next_feriado)
+def _get_next_feriados(today):
+    feriados = get_feriados(today.year)
+    if not feriados:
+        return []
+
+    return filter_past_feriados(today, feriados)

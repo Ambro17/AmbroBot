@@ -1,6 +1,7 @@
 from telegram.ext import run_async, CommandHandler
 
 from commands.dolar_futuro.constants import DOLAR_REGEX, Contrato, month_name, EMPTY_MESSAGE
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url, monospace
 
@@ -8,6 +9,7 @@ from utils.utils import soupify_url, monospace
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='rofex')
 def rofex(bot, update):
     """Print dolar futuro contracts."""
     rofex_data = get_rofex()
@@ -39,6 +41,3 @@ def prettify_rofex(contratos):
     )
     header = '  Dólar  | Valor\n'
     return monospace(header + values) if contratos is not None else EMPTY_MESSAGE
-
-
-dolar_futuro_handler = CommandHandler('rofex', rofex)

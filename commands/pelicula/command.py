@@ -7,14 +7,16 @@ from commands.pelicula.utils import (
     get_basic_info,
     prettify_basic_movie_info,
 )
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 
 
 @log_time
 @send_typing_action
 @run_async
-def buscar_peli(bot, update, chat_data, **kwargs):
-    pelicula = kwargs.get('args')
+@elbot.route(command='película', pass_args=True, pass_chat_data=True)
+def buscar_peli(bot, update, chat_data, args):
+    pelicula = args
     if not pelicula:
         bot.send_message(
             chat_id=update.message.chat_id,
@@ -60,5 +62,6 @@ def buscar_peli(bot, update, chat_data, **kwargs):
         )
 
 
-pelis = CommandHandler('pelicula', buscar_peli, pass_args=True, pass_chat_data=True)
-pelis_alt = CommandHandler('película', buscar_peli, pass_args=True, pass_chat_data=True)
+@elbot.route(command='película', pass_args=True, pass_chat_data=True)  # Revamp routing to support list of commands
+def _buscar_peli_alias(*args, **kwargs):
+    buscar_peli(*args, **kwargs)

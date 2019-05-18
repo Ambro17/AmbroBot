@@ -3,7 +3,8 @@ from datetime import timedelta
 from telegram.ext import run_async, CommandHandler
 
 from commands.meeting.db_operations import get_meetings, delete_meeting_db
-from commands.remindme.constants import GMT_BUENOS_AIRES
+from updater import elbot
+from utils.constants import GMT_BUENOS_AIRES
 from utils.decorators import group_only, log_time, send_typing_action
 
 
@@ -11,6 +12,7 @@ from utils.decorators import group_only, log_time, send_typing_action
 @send_typing_action
 @run_async
 @group_only
+@elbot.route(command='meetings')
 def show_meetings(bot, update):
     meetings = get_meetings()
     if meetings:
@@ -34,6 +36,7 @@ def _localize_time(date):
 @send_typing_action
 @run_async
 @group_only
+@elbot.route(command='delete_meeting', pass_args=True)
 def delete_meeting(bot, update, args):
     if not args:
         update.message.reply_text('Tenés que poner el nombre de la reunión a borrar')
@@ -45,7 +48,3 @@ def delete_meeting(bot, update, args):
         update.message.reply_text(f'Reunión `{name}` borrada', parse_mode='markdown')
     else:
         update.message.reply_text('No existe reunión bajo ese nombre')
-
-
-show_meetings_handler = CommandHandler('meetings', show_meetings)
-delete_meeting_handler = CommandHandler('delmeeting', delete_meeting, pass_args=True)

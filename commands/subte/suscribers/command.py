@@ -3,6 +3,7 @@ from telegram.ext import run_async, CommandHandler
 from commands.subte.suscribers.constants import MISSING_LINEA_MESSAGE, LINEAS, UNSUSCRIBED_MESSAGE
 from commands.subte.suscribers.db import get_suscriptors, remove_subte_suscriber
 from commands.subte.suscribers.utils import add_suscriber_to_linea
+from updater import elbot
 from utils.decorators import handle_empty_arg, private_chat_only, admin_only, send_typing_action
 
 
@@ -10,6 +11,7 @@ from utils.decorators import handle_empty_arg, private_chat_only, admin_only, se
 @run_async
 @private_chat_only
 @handle_empty_arg(required_params=('args',), error_message=MISSING_LINEA_MESSAGE, parse_mode='markdown')
+@elbot.route(command='suscribe', pass_args=True)
 def suscribe(bot, update, args):
     """Suscribe to a subte line to receive updates via private message."""
     linea = args[0]
@@ -34,6 +36,7 @@ def suscribe(bot, update, args):
 @send_typing_action
 @run_async
 @handle_empty_arg(required_params=('args',), error_message=UNSUSCRIBED_MESSAGE, parse_mode='markdown')
+@elbot.route(command='unsuscribe', pass_args=True)
 def unsuscribe(bot, update, args):
     linea = args[0]
     if linea.upper() not in LINEAS:
@@ -53,6 +56,7 @@ def unsuscribe(bot, update, args):
 @send_typing_action
 @run_async
 @admin_only
+@elbot.route(command='suscribers')
 def suscribers(bot, update):
     items = get_suscriptors()
     if items:
@@ -64,8 +68,3 @@ def suscribers(bot, update):
         )
     else:
         update.message.reply_text('📋 Aún no hay suscriptores a los subte updates')
-
-
-subte_suscriptions = CommandHandler('suscribe', suscribe, pass_args=True)
-subte_desuscriptions = CommandHandler('unsuscribe', unsuscribe, pass_args=True)
-subte_show_suscribers = CommandHandler('suscribers', suscribers)

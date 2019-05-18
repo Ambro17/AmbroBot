@@ -8,6 +8,7 @@ from commands.snippets.utils import (
     select_all_snippets,
     remove_snippet,
     link_key)
+from updater import elbot
 from utils.decorators import send_typing_action, log_time, admin_only, requires_auth
 
 
@@ -15,6 +16,7 @@ from utils.decorators import send_typing_action, log_time, admin_only, requires_
 @send_typing_action
 @run_async
 @requires_auth
+@elbot.route(handler_type='regex', pattern=SAVE_REGEX, pass_groupdict=True)
 def save_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = kwargs['groupdict'].get('content')
@@ -37,6 +39,7 @@ def save_snippet(bot, update, **kwargs):
 @send_typing_action
 @run_async
 @requires_auth
+@elbot.route(handler_type='regex', pattern=GET_REGEX, pass_groupdict=True)
 def get_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = lookup_content(key)
@@ -52,6 +55,7 @@ def get_snippet(bot, update, **kwargs):
 @send_typing_action
 @run_async
 @requires_auth
+@elbot.route(command='get', pass_args=True)
 def get_snippet_command(bot, update, args):
     """Duplicate of get_snippet because only /commands can be clickable."""
     if not args:
@@ -71,6 +75,7 @@ def get_snippet_command(bot, update, args):
 @send_typing_action
 @run_async
 @requires_auth
+@elbot.route(command='snippets')
 def show_snippets(bot, update):
     answers = select_all_snippets()
     if answers:
@@ -87,8 +92,9 @@ def show_snippets(bot, update):
 @run_async
 @log_time
 @admin_only
-def delete_snippet(bot, update, **kwargs):
-    key = kwargs['groupdict'].get('key')
+@elbot.route(handler_type='regex', pattern=DELETE_REGEX, pass_groupdict=True)
+def delete_snippet(bot, update, groupdict):
+    key = groupdict.get('key')
     if not key:
         update.message.reply_text('Te faltó poner qué snippet borrar')
         return
@@ -101,9 +107,3 @@ def delete_snippet(bot, update, **kwargs):
 
     update.message.reply_text(message, parse_mode='markdown')
 
-
-save_snippet_handler = RegexHandler(SAVE_REGEX, save_snippet, pass_groupdict=True)
-get_snippet_handler = RegexHandler(GET_REGEX, get_snippet, pass_groupdict=True)
-delete_snippet_handler = RegexHandler(DELETE_REGEX, delete_snippet, pass_groupdict=True)
-snippet_get_command = CommandHandler('get', get_snippet_command, pass_args=True)
-show_snippets_handler = CommandHandler('snippets', show_snippets)

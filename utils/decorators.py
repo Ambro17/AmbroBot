@@ -29,7 +29,7 @@ def send_action(action):
     return decorator
 
 
-send_typing_action = send_action(ChatAction.TYPING)
+send_typing_action = send_action(ChatAction.TYPING )
 send_recording_action = send_action(ChatAction.RECORD_AUDIO)
 send_upload_video_action = send_action(ChatAction.UPLOAD_VIDEO)
 send_upload_photo_action = send_action(ChatAction.UPLOAD_PHOTO)

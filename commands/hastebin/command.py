@@ -5,6 +5,7 @@ import re
 import requests
 from telegram.ext import RegexHandler
 
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import monospace
 
@@ -15,6 +16,7 @@ CODELINK_PREFIX = re.compile(r'^(@code) (?P<code>[\s\S]+)', re.IGNORECASE)
 
 @send_typing_action
 @log_time
+@elbot.route(handler_type='regex', pattern=CODELINK_PREFIX,pass_groupdict=True)
 def code_paster(bot, update, groupdict):
     code_snippet = groupdict.get('code')
     if not code_snippet:
@@ -95,6 +97,3 @@ class CodePaster:
             success, msg = cls.post_snippet_pastebin(snippet)
 
         return success, msg
-
-
-hastebin_handler = RegexHandler(CODELINK_PREFIX, code_paster, pass_groupdict=True)

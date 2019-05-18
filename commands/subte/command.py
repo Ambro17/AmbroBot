@@ -5,6 +5,7 @@ from telegram.ext import run_async, CommandHandler
 from commands.subte.constants import SUBTE_UPDATES_CRON, SUBWAY_STATUS_OK
 from commands.subte.updates.alerts import check_update
 from commands.subte.updates.utils import prettify_updates
+from updater import elbot
 from utils.constants import MINUTE
 from utils.decorators import send_typing_action, log_time, admin_only, handle_empty_arg
 
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='subte')
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
     NO_PROBLEMS = {}
@@ -34,9 +36,9 @@ def subte(bot, update):
     update.message.reply_text(msg)
 
 
-
 @admin_only
 @handle_empty_arg(required_params=('args',), error_message='Missing required frequency to set for the updates')
+@elbot.route(command='setsubfreq', pass_job_queue=True, pass_args=True)
 def modify_freq(bot, update, job_queue, args):
     """Modify subte updates cron tu run every x minutes"""
     minutes = args[0]
@@ -52,7 +54,3 @@ def modify_freq(bot, update, job_queue, args):
 
     update.message.reply_text(msg)
     logger.info(msg)
-
-
-subte_handler = CommandHandler('subte', subte)
-modify_subte_freq = CommandHandler('setsubfreq', modify_freq, pass_job_queue=True, pass_args=True)

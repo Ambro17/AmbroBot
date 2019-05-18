@@ -16,6 +16,7 @@ import logging
 from telegram.utils.helpers import escape_markdown
 
 from commands.snippets.utils import select_all_snippets
+from updater import elbot
 from utils.constants import MINUTE
 from utils.decorators import requires_auth, inline_auth
 
@@ -52,6 +53,7 @@ def _filter_snippets(snippets, filter_f):
 
 
 @inline_auth
+@elbot.route(handler_type='inlinequery', pass_chat_data=True)
 def inlinequery(bot, update, chat_data):
     """Show all snippets if query is empty string or filter by string similarity"""
     user_input = update.inline_query.query
@@ -74,6 +76,3 @@ def inlinequery(bot, update, chat_data):
 
     update.inline_query.answer(results, cache_time=0)
     chat_data['last_update'] = time.time()
-
-
-inline_snippets = InlineQueryHandler(inlinequery, pass_chat_data=True)

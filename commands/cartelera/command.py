@@ -1,5 +1,6 @@
 from telegram.ext import run_async, CommandHandler
 
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
 
@@ -7,6 +8,7 @@ from utils.utils import soupify_url
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='cartelera')
 def cinearg(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'
@@ -18,6 +20,3 @@ def cinearg(bot, update):
     ]
     top_5 = '\n'.join(f'[{rank}. {title}]({link})' for rank, title, link in listado[:5])
     bot.send_message(chat_id=update.message.chat_id, text=top_5, parse_mode='markdown')
-
-
-cartelera_handler = CommandHandler('cartelera', cinearg)

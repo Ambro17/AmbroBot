@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_posiciones(tabla, posiciones=None):
-    posiciones = int(posiciones[0]) if posiciones else 10
+    posiciones = int(posiciones) if posiciones else 10
     LIMIT = 4
     # ['#', 'Equipo', 'Pts', 'PJ']
     headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]

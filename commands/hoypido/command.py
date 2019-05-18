@@ -2,12 +2,14 @@ from telegram.ext import run_async, CommandHandler
 
 from commands.hoypido.keyboard import hoypido_keyboard
 from commands.hoypido.utils import get_comidas, prettify_food_offers
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 
 
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='hoypido', pass_chat_data=True)
 def hoypido(bot, update, chat_data):
     comidas = get_comidas()
     pretty_comidas = prettify_food_offers(comidas)
@@ -24,6 +26,3 @@ def hoypido(bot, update, chat_data):
         reply_markup=keyboard,
         parse_mode='markdown',
     )
-
-
-hoypido_handler = CommandHandler('hoypido', hoypido, pass_chat_data=True)

@@ -6,6 +6,7 @@ from telegram.ext import run_async, CommandHandler
 
 from commands.serie.keyboard import serie_main_keyboard
 from commands.serie.utils import prettify_serie
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='serie', pass_chat_data=True, pass_args=True)
 def serie(bot, update, chat_data, args):
     if not args:
         bot.send_message(
@@ -105,6 +107,3 @@ def serie(bot, update, chat_data, args):
         parse_mode='markdown',
         disable_web_page_preview=True,
     )
-
-
-serie_handler = CommandHandler('serie', serie, pass_args=True, pass_chat_data=True)

@@ -6,6 +6,7 @@ from telegram import ChatAction
 from telegram.error import NetworkError
 from telegram.ext import CommandHandler
 
+from updater import elbot
 from utils.decorators import handle_empty_arg, send_recording_action
 from utils.utils import send_message_to_admin
 
@@ -18,6 +19,7 @@ VLC_LINK = 'https://play.google.com/store/apps/details?id=org.videolan.vlc'
 @send_recording_action
 @handle_empty_arg(required_params=('args',), error_message='Y la url del video? `/yttomp3 <url>`',
                   parse_mode='markdown')
+@elbot.route(command='yttomp3', pass_args=True)
 def youtube_to_mp3(bot, update, args):
     video_url = args[0]
 
@@ -92,7 +94,3 @@ def get_audio_file(exts):
             continue
 
     return None, None
-
-
-yt_handler = CommandHandler('yttomp3', youtube_to_mp3, pass_args=True)
-yt_handler_alt = CommandHandler('y', youtube_to_mp3, pass_args=True)

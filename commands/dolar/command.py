@@ -2,6 +2,7 @@ from telegram.ext import run_async, CommandHandler
 
 from commands.dolar.keyboards import banco_keyboard
 from commands.dolar.utils import get_cotizaciones, pretty_print_dolar
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
 
@@ -9,6 +10,7 @@ from utils.utils import soupify_url
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='dolar', pass_chat_data=True)
 def dolar_hoy(bot, update, chat_data):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')
@@ -28,6 +30,3 @@ def dolar_hoy(bot, update, chat_data):
         reply_markup=keyboard,
         parse_mode='markdown',
     )
-
-
-dolar_handler = CommandHandler('dolar', dolar_hoy, pass_chat_data=True)

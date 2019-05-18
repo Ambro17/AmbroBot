@@ -4,6 +4,7 @@ import requests
 from telegram.ext import run_async, CommandHandler
 
 from commands.yts.utils import get_minimal_movie, prettify_yts_movie
+from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from keyboards.keyboards import yts_navigator_keyboard
 
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
+@elbot.route(command='yts', pass_chat_data=True)
 def yts(bot, update, chat_data):
     try:
         r = requests.get('https://yts.am/api/v2/list_movies.json', params={'limit': 50})
@@ -47,6 +49,3 @@ def yts(bot, update, chat_data):
         caption=movie_desc,
         reply_markup=yts_navigator,
     )
-
-
-yts_handler = CommandHandler('yts', yts, pass_chat_data=True)

@@ -5,6 +5,7 @@ import psycopg2
 from telegram import MessageEntity
 from telegram.ext import MessageHandler, Filters, CommandHandler
 
+from updater import elbot
 from utils.decorators import admin_only, log_time
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ logger = logging.getLogger(__name__)
 DB = os.environ['DATABASE_URL']
 
 
+@elbot.route(handler_type='regex', pattern=r'@all')
 def tag_all(bot, update):
     """Reply to a message containing '@all' tagging all users so they can read the msg."""
     try:
@@ -30,6 +32,7 @@ def tag_all(bot, update):
 
 @log_time
 @admin_only
+@elbot.route(command='setall', pass_args=True)
 def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')
@@ -104,7 +107,3 @@ def update_all_users(users):
         success = False
 
     return success
-
-
-tag_all = MessageHandler(Filters.regex(r'@all'), tag_all)
-edit_tag_all = CommandHandler('setall', set_all_members, pass_args=True)

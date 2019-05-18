@@ -5,6 +5,7 @@ from telegram.error import BadRequest
 from telegram.ext import CommandHandler
 
 from commands.register.db import add_user, _get_users
+from updater import elbot
 from utils.decorators import handle_empty_arg, send_typing_action, admin_only
 from utils.utils import send_message_to_admin
 
@@ -12,6 +13,7 @@ from utils.utils import send_message_to_admin
 logger = logging.getLogger(__name__)
 
 
+@elbot.route(command='register')
 def register(bot, update):
     """A user that wants to access private commands must first register"""
     user = update.message.from_user
@@ -27,7 +29,11 @@ def register(bot, update):
 @handle_empty_arg(required_params=('args',))
 @send_typing_action
 @admin_only
+@elbot.route(command='authorize', pass_args=True)
 def authorize(bot, update, args):
+    if not args:
+        update.message.reply_text('Y el user?')
+        return
     user = _string_to_user(args[0])
     added = add_user_to_db(user)
     if added:
@@ -43,6 +49,7 @@ def authorize(bot, update, args):
 
 @send_typing_action
 @admin_only
+@elbot.route(command='users')
 def show_users(bot, update):
     users = _get_users()
     total_users = len(users)
@@ -67,7 +74,7 @@ def _string_to_user(user_string):
         fields = user_string.split(';')
         user_attrs = [f.split(':') for f in fields]
         user_dict = {
-            attrib:value for attrib, value in user_attrs
+            attrib: value for attrib, value in user_attrs
         }
         return user_dict
     except ValueError:
