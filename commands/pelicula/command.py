@@ -1,5 +1,6 @@
 import requests
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import run_async
+import logging
 
 from commands.pelicula.keyboard import pelis_keyboard
 from commands.pelicula.utils import (
@@ -10,11 +11,13 @@ from commands.pelicula.utils import (
 from updater import elbot
 from utils.decorators import send_typing_action, log_time
 
+logger = logging.getLogger(__name__)
+
 
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='película', pass_args=True, pass_chat_data=True)
+@elbot.command(command=['pelicula', 'película'], pass_args=True, pass_chat_data=True)
 def buscar_peli(bot, update, chat_data, args):
     pelicula = args
     if not pelicula:
@@ -60,8 +63,6 @@ def buscar_peli(bot, update, chat_data, args):
             text='Estoy descansando ahora, probá después de la siesta',
             parse_mode='markdown',
         )
-
-
-@elbot.route(command='película', pass_args=True, pass_chat_data=True)  # Revamp routing to support list of commands
-def _buscar_peli_alias(*args, **kwargs):
-    buscar_peli(*args, **kwargs)
+    except Exception:
+        logger.error('something bad happened')
+        update.message.reply_text('Something bad happened, sorry')

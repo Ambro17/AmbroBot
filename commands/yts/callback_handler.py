@@ -16,10 +16,12 @@ from commands.yts.utils import (
     get_photo,
 )
 from keyboards.keyboards import yts_navigator_keyboard
+from updater import elbot
 
 logger = logging.getLogger(__name__)
 
 
+@elbot.callbackquery(pattern=YTS_REGEX, pass_chat_data=True)
 def handle_callback(bot, update, chat_data):
     # Get the handler based on the commands
     context = chat_data.get('context')
@@ -123,6 +125,3 @@ def handle_callback(bot, update, chat_data):
             text=pretty_torrents,
             parse_mode='markdown',
         )
-
-
-yts_callback_handler = CallbackQueryHandler(handle_callback, pattern=YTS_REGEX, pass_chat_data=True)

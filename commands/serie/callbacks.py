@@ -26,10 +26,12 @@ from commands.serie.utils import (
     prettify_episodes,
     prettify_torrents,
 )
+from updater import elbot
 
 logger = logging.getLogger(__name__)
 
 
+@elbot.callbackquery(pattern=SERIE_REGEX, pass_chat_data=True)
 def serie_callback_handler(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
@@ -135,6 +137,3 @@ def serie_callback_handler(bot, update, chat_data):
             "Selected option '%s' would leave text as it is. Ignoring to avoid exception. '%s' "
             % (answer, response)
         )
-
-
-serie_callback = CallbackQueryHandler(serie_callback_handler, pattern=SERIE_REGEX, pass_chat_data=True)

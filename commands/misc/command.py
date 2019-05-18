@@ -39,15 +39,6 @@ def link_ticket(bot, update):
 
 @send_typing_action
 @run_async
-def default(bot, update):
-    """If a user sends an unknown command, answer accordingly"""
-    bot.send_message(
-        chat_id=update.message.chat_id, text=random.choice(COMANDO_DESCONOCIDO)
-    )
-
-
-@send_typing_action
-@run_async
 @elbot.route(command='code')
 def code(bot, update):
     """If a user sends an unknown command, answer accordingly"""

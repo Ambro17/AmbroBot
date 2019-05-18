@@ -22,11 +22,13 @@ from commands.pelicula.utils import (
     search_movie_subtitle,
     send_subtitle,
 )
+from updater import elbot
 from utils.constants import IMDB_LINK
 
 logger = logging.getLogger(__name__)
 
 
+@elbot.callbackquery(pattern=PELICULA_REGEX, pass_chat_data=True)
 def pelicula_callback(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
@@ -82,7 +84,7 @@ def handle_answer(bot, update, data, link_choice):
     if link_choice == IMDB:
         answer = f"[IMDB]({IMDB_LINK.format(imdb_id)}"
 
-    if link_choice == SINOPSIS:
+    elif link_choice == SINOPSIS:
         pelicula = data['movie_basic']
         answer = pelicula.overview
 
@@ -120,8 +122,7 @@ def handle_answer(bot, update, data, link_choice):
             )
         else:
             answer = "🚧 No torrent available for this movie."
+    else:
+        answer = 'That was unexpected..'
 
     return answer
-
-
-peliculas_callback = CallbackQueryHandler(pelicula_callback, pattern=PELICULA_REGEX, pass_chat_data=True)

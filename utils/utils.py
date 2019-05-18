@@ -1,13 +1,17 @@
 import logging
 import os
 import signal
+import random
 
 from requests import ReadTimeout
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut
 
 import requests
 from bs4 import BeautifulSoup
+from telegram.ext import run_async, CommandHandler, MessageHandler, Filters
 
+from utils.constants import COMANDO_DESCONOCIDO
+from utils.decorators import send_typing_action
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +59,11 @@ def error_handler(bot, update, error):
             raise
         if msg == 'Query_id_invalid':
             logger.info("We took too long to answer.")
-        elif msg == 'Message is not modified':
+        elif 'Message is not modified' in msg:
             logger.info(
                 "Tried to edit a message but text hasn't changed."
                 " Probably a button in inline keyboard was pressed but it didn't change the message"
             )
-            return
         else:
             logger.info("Bad Request exception: %s", msg)
 
@@ -89,7 +92,8 @@ def error_handler(bot, update, error):
             error_msg = f'Error found: {error}. Update: {update}'
             logger.error(error_msg, exc_info=True)
 
-        send_message_to_admin(bot, error_msg)
+        if 'Message is not modified' not in error_msg:
+            send_message_to_admin(bot, error_msg)
 
 
 def send_message_to_admin(bot, message, **kwargs):
@@ -99,3 +103,13 @@ def send_message_to_admin(bot, message, **kwargs):
 def signal_handler(signal_number, frame):
     sig_name = signal.Signals(signal_number).name
     logger.info(f'Captured signal number {signal_number}. Name: {sig_name}')
+
+
+@send_typing_action
+@run_async
+def unknown_command(bot, update):
+    """If a user sends an unknown command, answer accordingly"""
+    update.message.reply_text(random.choice(COMANDO_DESCONOCIDO))
+
+
+unknown_commands = MessageHandler(Filters.command, unknown_command)
