@@ -14,8 +14,10 @@ from utils.utils import signal_handler
 
 
 class TheDispatcher(Dispatcher):
+    """Dispatcher with decorator to map functions to handlers"""
+
     def route(self, handler_type='command', group=0, **handler_args):
-        """Add a handler under the hood by decorating a function.
+        """Add the handler to the dispatcher by decorating a function.
 
         Usage:
             @dispatcher.route(command='code')
@@ -53,7 +55,7 @@ class TheDispatcher(Dispatcher):
 
 
 class TheUpdater(Updater):
-    """Updater subclass with support for dispatcher with extra functionality"""
+    """Updater with support for dispatcher with extra functionality"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

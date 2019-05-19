@@ -25,7 +25,7 @@ def format_code(bot, update, groupdict):
 
 @send_typing_action
 @run_async
-@elbot.route(handler_type='message', filters=Filters.regex(TICKET_REGEX))
+@elbot.message(filters=Filters.regex(TICKET_REGEX))
 def link_ticket(bot, update):
     """Given a ticket id, return the url."""
     jira_base = os.environ['jira']

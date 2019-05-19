@@ -16,7 +16,7 @@ CODELINK_PREFIX = re.compile(r'^(@code) (?P<code>[\s\S]+)', re.IGNORECASE)
 
 @send_typing_action
 @log_time
-@elbot.route(handler_type='regex', pattern=CODELINK_PREFIX,pass_groupdict=True)
+@elbot.regex(pattern=CODELINK_PREFIX, pass_groupdict=True)
 def code_paster(bot, update, groupdict):
     code_snippet = groupdict.get('code')
     if not code_snippet:
@@ -28,12 +28,13 @@ def code_paster(bot, update, groupdict):
     if not success:
         logger.info('Error posting snippet')
         update.message.reply_text(
-            f"Che, no pude postearlo en hastebin.. Te lo pego en monospace a ver si te sirve\n"
+            f"Che, no pude postearlo en hastebin ni pastebin.. Te lo pego en monospace a ver si te sirve\n"
             f"{monospace(code_snippet)}",
             parse_mode='markdown'
         )
     else:
         update.message.reply_text(link)
+        logger.info(f'SUCCESS: {link}')
 
 
 class CodePaster:
@@ -48,7 +49,7 @@ class CodePaster:
             'api_option': 'paste',
             'api_paste_format': 'python',
             'api_user_key': os.environ['PASTEBIN_PRIV'],
-            'api_paste_private': 2,
+            'api_paste_private': 1,
 
         }
 
@@ -60,7 +61,7 @@ class CodePaster:
             (bool, str): True and link if successful. False, error_msg otherwise
         """
         try:
-            r = requests.post(cls.URL + '/documents', data=snippet.encode('utf-8'))
+            r = requests.post(cls.URL + '/documents', data=snippet.encode('utf-8'), timeout=5)
         except Exception:
             return False, f'Could not post snippet to hastebin'
 
@@ -79,7 +80,7 @@ class CodePaster:
     @classmethod
     def post_snippet_pastebin(cls, snippet):
         try:
-            r = requests.post(cls.ALT_URL, data=cls._pastebin_args(snippet.encode('utf-8')))
+            r = requests.post(cls.ALT_URL, data=cls._pastebin_args(snippet.encode('utf-8')), timeout=5)
         except Exception:
             msg = 'Error uploading snippet to pastebin.'
             logger.exception(msg)

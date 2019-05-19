@@ -45,7 +45,7 @@ def main():
                     # Import the callback also if there is one
                     path = f'commands.{folder.name}.{callback_file}'
                     import_module(path)
-                    callbacks += 3
+                    callbacks += 1
                 except ModuleNotFoundError:
                     # It is okay, not all commands have callbacks
                     logger.debug(f'{folder} has no callback')
@@ -53,7 +53,7 @@ def main():
                 except ImportError:
                     logger.error(f'Error importing {folder.name}')
 
-        logger.info(f'Imported {commands} commands')
+        logger.info(f'Imported {commands} commands and {callbacks} callbacks')
 
     load_handlers()
 
