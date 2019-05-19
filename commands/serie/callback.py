@@ -36,7 +36,7 @@ def serie_callback_handler(bot, update, chat_data):
     context = chat_data.get('context')
     if not context:
         message = (
-            f"Lpm, no pude responder a tu pedido.\n"
+            f"Ouch, no pude responder a tu pedido.\n"
             f"Probá invocando de nuevo el comando a ver si me sale 😊"
         )
         logger.info(f"Conflicting update: '{update.to_dict()}'. Chat data: {chat_data}")

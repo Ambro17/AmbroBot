@@ -12,8 +12,7 @@ from utils.decorators import send_typing_action, log_time
 
 @log_time
 @send_typing_action
-@run_async
-@elbot.route(handler_type='regex', pattern=CODE_PREFIX, pass_groupdict=True)
+@elbot.regex(pattern=CODE_PREFIX, pass_groupdict=True)
 def format_code(bot, update, groupdict):
     """Format text as code if it starts with $, ~, \c or \code."""
     code = groupdict.get('code')

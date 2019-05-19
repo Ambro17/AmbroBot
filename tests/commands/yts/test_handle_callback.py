@@ -3,7 +3,7 @@ import logging
 import pytest
 from telegram.error import TimedOut
 
-from commands.yts.callback_handler import handle_callback
+from commands.yts.callback import handle_callback
 from commands.yts.constants import NEXT_YTS
 from commands.yts.utils import get_photo
 

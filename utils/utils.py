@@ -106,7 +106,6 @@ def signal_handler(signal_number, frame):
 
 
 @send_typing_action
-@run_async
 def unknown_command(bot, update):
     """If a user sends an unknown command, answer accordingly"""
     update.message.reply_text(random.choice(COMANDO_DESCONOCIDO))
