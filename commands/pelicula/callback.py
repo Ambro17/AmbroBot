@@ -95,7 +95,7 @@ def handle_answer(bot, update, data, link_choice):
     elif link_choice == SUBTITLES:
         gif = random.choice(LOADING_GIFS)
         logger.info("Gif elegido: %s", gif)
-        update.callback_query.answer(text='')
+        update.callback_query.answer(text='Great! Let me search the web for subtitles')
         loading_message = bot.send_animation(
             chat_id=update.callback_query.message.chat_id,
             animation=gif,

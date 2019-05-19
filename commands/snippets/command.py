@@ -1,5 +1,12 @@
 # -*- coding: UTF-8 -*-
-from telegram.ext import run_async, RegexHandler, CommandHandler
+import logging
+import time
+from functools import partial
+
+from Levenshtein._levenshtein import jaro_winkler
+from telegram import ParseMode, InputTextMessageContent, InlineQueryResultArticle
+from telegram.ext import run_async
+from telegram.utils.helpers import escape_markdown
 
 from commands.snippets.constants import SAVE_REGEX, GET_REGEX, DELETE_REGEX
 from commands.snippets.utils import (
@@ -9,7 +16,10 @@ from commands.snippets.utils import (
     remove_snippet,
     link_key)
 from updater import elbot
-from utils.decorators import send_typing_action, log_time, admin_only, requires_auth
+from utils.constants import MINUTE
+from utils.decorators import send_typing_action, log_time, admin_only, requires_auth, inline_auth
+
+logger = logging.getLogger(__name__)
 
 
 @log_time
@@ -107,3 +117,55 @@ def delete_snippet(bot, update, groupdict):
 
     update.message.reply_text(message, parse_mode='markdown')
 
+
+def _article(id, title, text, parse_mode=ParseMode.MARKDOWN):
+    reply_text = f"*» {title}*\n{escape_markdown(text)}"
+    try:
+        msg = InputTextMessageContent(reply_text, parse_mode=parse_mode)
+    except Exception:
+        logger.error(text)
+        raise
+    return InlineQueryResultArticle(
+        id=id,
+        title=f'{title}',
+        description='Code snippets',
+        input_message_content=msg,
+    )
+
+
+def is_similar(a, b, tolerance=0.58):
+    similarity = jaro_winkler(a.lower(), b.lower())
+    return similarity > tolerance
+
+
+def _filter_snippets(snippets, filter_f):
+    return [
+        _article(id, snippet_key, content)
+        for id, snippet_key, content in snippets if filter_f(snippet_key)
+    ]
+
+
+@inline_auth
+@elbot.route(handler_type='inlinequery', pass_chat_data=True)
+def inlinequery(bot, update, chat_data):
+    """Show all snippets if query is empty string or filter by string similarity"""
+    user_input = update.inline_query.query
+
+    # Cache for 5 minutes in chat_data.
+    snippets = chat_data.get('snippets')
+    if not snippets or (chat_data.get('last_update', 0) - time.time()) > 1 * MINUTE:
+        chat_data['snippets'] = snippets = select_all_snippets()
+        logger.info('Recaching snippets')
+
+    logger.info(f'Snippets: {len(snippets)}')
+
+    if not snippets:
+        return
+    if len(user_input) == 0:
+        results = _filter_snippets(snippets, lambda s: True)
+    else:
+        results = _filter_snippets(snippets, partial(is_similar, user_input.lower(), tolerance=0.58))
+        logger.info(f"Filtered results: {len(results)} by '{user_input}'")
+
+    update.inline_query.answer(results, cache_time=0)
+    chat_data['last_update'] = time.time()

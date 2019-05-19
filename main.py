@@ -28,15 +28,28 @@ def main():
                              context={},
                              name=SUBTE_UPDATES_CRON)
 
-    def load_handlers(command_file='command'):
+    def load_handlers(command_file='command', callback_file='callback'):
         """Load all decorated callbacks from commands subdirectory"""
         commands = 0
+        callbacks = 0
         for folder in os.scandir('commands'):
             if folder.is_dir():
                 try:
                     path = f'commands.{folder.name}.{command_file}'
                     import_module(path)
                     commands += 1
+                except ImportError:
+                    logger.error(f'Error importing {folder.name}')
+
+                try:
+                    # Import the callback also if there is one
+                    path = f'commands.{folder.name}.{callback_file}'
+                    import_module(path)
+                    callbacks += 3
+                except ModuleNotFoundError:
+                    # It is okay, not all commands have callbacks
+                    logger.debug(f'{folder} has no callback')
+
                 except ImportError:
                     logger.error(f'Error importing {folder.name}')
 
