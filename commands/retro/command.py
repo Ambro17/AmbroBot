@@ -11,11 +11,11 @@ from utils.decorators import send_typing_action, log_time, group_only, admin_onl
 logger = logging.getLogger(__name__)
 
 
+@elbot.command(command='retro', pass_args=True)
 @log_time
 @send_typing_action
 @run_async
 @group_only
-@elbot.command(command='retro', pass_args=True)
 def retro_add(bot, update, args):
     if not args:
         update.message.reply_text(
@@ -44,11 +44,11 @@ def save_retro_item(retro_item, user, date_time):
     session.commit()
 
 
+@elbot.command(command='retroitems')
 @log_time
 @send_typing_action
 @run_async
 @group_only
-@elbot.command(command='retroitems')
 def show_retro_items(bot, update):
     items = get_retro_items()
     if items:
@@ -75,9 +75,9 @@ def _localize_time(date):
     return date.strftime('%A %d/%m %H:%M').capitalize()
 
 
+@elbot.command(command='retroitems')
 @log_time
 @admin_only
-@elbot.command(command='retroitems')
 def expire_retro(bot, update):
     session = Session()
     for item in session.query(RetroItem):

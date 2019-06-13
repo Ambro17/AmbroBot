@@ -11,10 +11,10 @@ from keyboards.keyboards import yts_navigator_keyboard
 logger = logging.getLogger(__name__)
 
 
+@elbot.command(command='yts', pass_chat_data=True)
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='yts', pass_chat_data=True)
 def yts(bot, update, chat_data):
     try:
         r = requests.get('https://yts.am/api/v2/list_movies.json', params={'limit': 50})

@@ -16,10 +16,11 @@ FILENAME = 'Audio_Cuervot'
 VLC_LINK = 'https://play.google.com/store/apps/details?id=org.videolan.vlc'
 
 
-@send_recording_action
-@handle_empty_arg(required_params=('args',), error_message='Y la url del video? `/yttomp3 <url>`',
-                  parse_mode='markdown')
 @elbot.command(command='yttomp3', pass_args=True)
+@send_recording_action
+@handle_empty_arg(required_params=('args',),
+                  error_message='Y la url del video? `/yttomp3 <url>`',
+                  parse_mode='markdown')
 def youtube_to_mp3(bot, update, args):
     video_url = args[0]
 

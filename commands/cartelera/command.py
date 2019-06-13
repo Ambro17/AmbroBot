@@ -1,14 +1,14 @@
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import run_async
 
 from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
 
 
+@elbot.command(command='cartelera')
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='cartelera')
 def cinearg(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'

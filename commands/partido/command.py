@@ -1,15 +1,15 @@
 import requests
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import run_async
 
 from updater import elbot
 from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
 
 
+@elbot.command(command='partido')
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='partido')
 def partido(bot, update):
     try:
         soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')

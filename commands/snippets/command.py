@@ -22,11 +22,11 @@ from utils.decorators import send_typing_action, log_time, admin_only, requires_
 logger = logging.getLogger(__name__)
 
 
+@elbot.regex(pattern=SAVE_REGEX, pass_groupdict=True)
 @log_time
 @send_typing_action
 @run_async
 @requires_auth
-@elbot.regex(pattern=SAVE_REGEX, pass_groupdict=True)
 def save_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = kwargs['groupdict'].get('content')
@@ -45,11 +45,11 @@ def save_snippet(bot, update, **kwargs):
     )
 
 
+@elbot.regex(pattern=GET_REGEX, pass_groupdict=True)
 @log_time
 @send_typing_action
 @run_async
 @requires_auth
-@elbot.regex(pattern=GET_REGEX, pass_groupdict=True)
 def get_snippet(bot, update, **kwargs):
     key = kwargs['groupdict'].get('key')
     content = lookup_content(key)
@@ -61,11 +61,11 @@ def get_snippet(bot, update, **kwargs):
         bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
+@elbot.command(command='get', pass_args=True)
 @log_time
 @send_typing_action
 @run_async
 @requires_auth
-@elbot.command(command='get', pass_args=True)
 def get_snippet_command(bot, update, args):
     """Duplicate of get_snippet because only /commands can be clickable."""
     if not args:
@@ -81,17 +81,17 @@ def get_snippet_command(bot, update, args):
         bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
+@elbot.command(command='snippets')
 @log_time
 @send_typing_action
 @run_async
 @requires_auth
-@elbot.command(command='snippets')
 def show_snippets(bot, update):
     answers = select_all_snippets()
     if answers:
         keys = [f'🔑  {link_key(key)}' for id, key, content in answers]
         reminder = ['Para ver algún snippet » `/get <clave>` o\nclickeá la clave y reenviá a un chat donde esté yo']
-        update.message.reply_text(text='\n\n'.join(keys + reminder), parse_mode='markdown')
+        update.message.reply_text(text='\n'.join(keys + reminder), parse_mode='markdown')
     else:
         update.message.reply_text(
             'No hay ningún snippet guardado!\nPodés empezar usando `#key snippet_to_save`',
@@ -99,10 +99,10 @@ def show_snippets(bot, update):
         )
 
 
+@elbot.regex(pattern=DELETE_REGEX, pass_groupdict=True)
 @run_async
 @log_time
 @admin_only
-@elbot.regex(pattern=DELETE_REGEX, pass_groupdict=True)
 def delete_snippet(bot, update, groupdict):
     key = groupdict.get('key')
     if not key:
@@ -145,8 +145,8 @@ def _filter_snippets(snippets, filter_f):
     ]
 
 
-@inline_auth
 @elbot.inlinequery(pass_chat_data=True)
+@inline_auth
 def inlinequery(bot, update, chat_data):
     """Show all snippets if query is empty string or filter by string similarity"""
     user_input = update.inline_query.query

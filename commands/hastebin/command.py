@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 CODELINK_PREFIX = re.compile(r'^(@code) (?P<code>[\s\S]+)', re.IGNORECASE)
 
 
+@elbot.regex(pattern=CODELINK_PREFIX, pass_groupdict=True)
 @send_typing_action
 @log_time
-@elbot.regex(pattern=CODELINK_PREFIX, pass_groupdict=True)
 def code_paster(bot, update, groupdict):
     code_snippet = groupdict.get('code')
     if not code_snippet:

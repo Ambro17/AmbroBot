@@ -1,4 +1,4 @@
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import run_async
 
 from commands.hoypido.keyboard import hoypido_keyboard
 from commands.hoypido.utils import get_comidas, prettify_food_offers
@@ -6,10 +6,10 @@ from updater import elbot
 from utils.decorators import send_typing_action, log_time
 
 
+@elbot.command(command='hoypido', pass_chat_data=True)
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='hoypido', pass_chat_data=True)
 def hoypido(bot, update, chat_data):
     comidas = get_comidas()
     pretty_comidas = prettify_food_offers(comidas)

@@ -12,10 +12,10 @@ from utils.decorators import send_typing_action, log_time
 logger = logging.getLogger(__name__)
 
 
+@elbot.command(command='serie', pass_chat_data=True, pass_args=True)
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='serie', pass_chat_data=True, pass_args=True)
 def serie(bot, update, chat_data, args):
     if not args:
         bot.send_message(

@@ -14,10 +14,10 @@ from utils.decorators import send_typing_action, log_time
 logger = logging.getLogger(__name__)
 
 
+@elbot.command(command=['pelicula', 'película'], pass_args=True, pass_chat_data=True)
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command=['pelicula', 'película'], pass_args=True, pass_chat_data=True)
 def buscar_peli(bot, update, chat_data, args):
     pelicula = args
     if not pelicula:

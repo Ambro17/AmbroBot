@@ -6,10 +6,10 @@ from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url, monospace
 
 
+@elbot.command(command='rofex')
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='rofex')
 def rofex(bot, update):
     """Print dolar futuro contracts."""
     rofex_data = get_rofex()

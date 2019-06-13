@@ -8,11 +8,11 @@ from utils.constants import GMT_BUENOS_AIRES
 from utils.decorators import group_only, log_time, send_typing_action
 
 
+@elbot.command(command='meetings')
 @log_time
 @send_typing_action
 @run_async
 @group_only
-@elbot.command(command='meetings')
 def show_meetings(bot, update):
     meetings = get_meetings()
     if meetings:
@@ -32,11 +32,11 @@ def _localize_time(date):
     return date.strftime('%A %d/%m %H:%M').capitalize()
 
 
+@elbot.command(command='delete_meeting', pass_args=True)
 @log_time
 @send_typing_action
 @run_async
 @group_only
-@elbot.command(command='delete_meeting', pass_args=True)
 def delete_meeting(bot, update, args):
     if not args:
         update.message.reply_text('Tenés que poner el nombre de la reunión a borrar')

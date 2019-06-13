@@ -30,9 +30,9 @@ def tag_all(bot, update):
         logger.error(e)
 
 
+@elbot.command(command='setall', pass_args=True)
 @log_time
 @admin_only
-@elbot.command(command='setall', pass_args=True)
 def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')

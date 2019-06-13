@@ -7,10 +7,10 @@ from utils.decorators import send_typing_action, log_time
 from utils.utils import soupify_url
 
 
+@elbot.command(command='dolar', pass_chat_data=True)
 @log_time
 @send_typing_action
 @run_async
-@elbot.command(command='dolar', pass_chat_data=True)
 def dolar_hoy(bot, update, chat_data):
     soup = soupify_url("http://www.dolarhoy.com/usd")
     data = soup.find_all('table')

@@ -66,4 +66,4 @@ def _get_users():
 def authorized_user(user_id):
     """Returns None if user does not exist, user if it exists"""
     session = Session()
-    return session.query(User).filter(User.id==user_id).first()
+    return session.query(User).filter(User.id == user_id).first()

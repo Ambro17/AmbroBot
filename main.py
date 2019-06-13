@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 from importlib import import_module
@@ -32,32 +33,28 @@ def main():
                              context={},
                              name=SUBTE_UPDATES_CRON)
 
-    def import_commands(command_file='command', callback_file='callback'):
+    def import_commands():
         """Load all decorated callbacks from commands subdirectory"""
-        commands = 0
-        callbacks = 0
-        for folder in os.scandir('commands'):
-            if folder.is_dir():
-                try:
-                    path = f'commands.{folder.name}.{command_file}'
-                    import_module(path)
-                    commands += 1
-                except ImportError:
-                    logger.error(f'Error importing {folder.name}')
+        commands = []
+        callbacks = []
+        for command_file in glob.glob('commands/**/command.py', recursive=True):
+            try:
+                import_path = command_file.replace('/', '.').rstrip('.py')  # 'my_path/to_file.py' -> 'my_path.to_file'
+                import_module(import_path)
+                commands.append(import_path)
+            except ImportError:
+                logger.error(f'Error importing {import_path}')
 
-                try:
-                    # Import the callback also if there is one
-                    path = f'commands.{folder.name}.{callback_file}'
-                    import_module(path)
-                    callbacks += 1
-                except ModuleNotFoundError:
-                    # It is okay, not all commands have callbacks
-                    logger.debug(f'{folder} has no callback')
+        for callback_file in glob.glob('commands/**/callback.py', recursive=True):
+            try:
+                import_path = callback_file.replace('/', '.').rstrip('.py')
+                import_module(import_path)
+                callbacks.append(import_path)
+            except ImportError:
+                logger.error(f'Error importing {import_path}')
 
-                except ImportError:
-                    logger.error(f'Error importing {folder.name}')
-
-        logger.info(f'Imported {commands} commands and {callbacks} callbacks')
+        logger.info(f'Imported {len(commands)} commands:\n{sorted(commands)}')
+        logger.info(f'Imported {len(callbacks)} callbacks:\n{sorted(callbacks)}')
 
     import_commands()
 

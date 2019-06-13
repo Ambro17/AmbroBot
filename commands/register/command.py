@@ -26,10 +26,10 @@ def register(bot, update):
     update.message.reply_text('✅ Your registration request has been sent.\nPlease wait for approval.. ⏳', quote=False)
 
 
+@elbot.command(command='authorize', pass_args=True)
 @handle_empty_arg(required_params=('args',))
 @send_typing_action
 @admin_only
-@elbot.command(command='authorize', pass_args=True)
 def authorize(bot, update, args):
     if not args:
         update.message.reply_text('Y el user?')
@@ -47,9 +47,9 @@ def authorize(bot, update, args):
         update.message.reply_text('🚫 Error saving user to db')
 
 
+@elbot.command(command='users')
 @send_typing_action
 @admin_only
-@elbot.command(command='users')
 def show_users(bot, update):
     users = _get_users()
     total_users = len(users)
