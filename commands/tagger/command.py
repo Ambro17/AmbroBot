@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 DB = os.environ['DATABASE_URL']
 
 
-@elbot.route(handler_type='regex', pattern=r'@all')
+@elbot.regex(pattern=r'@all')
 def tag_all(bot, update):
     """Reply to a message containing '@all' tagging all users so they can read the msg."""
     try:
@@ -32,7 +32,7 @@ def tag_all(bot, update):
 
 @log_time
 @admin_only
-@elbot.route(command='setall', pass_args=True)
+@elbot.command(command='setall', pass_args=True)
 def set_all_members(bot, update, **kwargs):
     """Set members to be tagged when @all keyword is used."""
     msg = kwargs.get('args')

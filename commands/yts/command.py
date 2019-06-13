@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='yts', pass_chat_data=True)
+@elbot.command(command='yts', pass_chat_data=True)
 def yts(bot, update, chat_data):
     try:
         r = requests.get('https://yts.am/api/v2/list_movies.json', params={'limit': 50})

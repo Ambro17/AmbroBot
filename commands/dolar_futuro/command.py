@@ -9,7 +9,7 @@ from utils.utils import soupify_url, monospace
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='rofex')
+@elbot.command(command='rofex')
 def rofex(bot, update):
     """Print dolar futuro contracts."""
     rofex_data = get_rofex()

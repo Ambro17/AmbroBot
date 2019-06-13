@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='subte')
+@elbot.command(command='subte')
 def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
     NO_PROBLEMS = {}
@@ -38,7 +38,7 @@ def subte(bot, update):
 
 @admin_only
 @handle_empty_arg(required_params=('args',), error_message='Missing required frequency to set for the updates')
-@elbot.route(command='setsubfreq', pass_job_queue=True, pass_args=True)
+@elbot.command(command='setsubfreq', pass_job_queue=True, pass_args=True)
 def modify_freq(bot, update, job_queue, args):
     """Modify subte updates cron tu run every x minutes"""
     minutes = args[0]

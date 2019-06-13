@@ -13,7 +13,7 @@ from utils.utils import send_message_to_admin
 logger = logging.getLogger(__name__)
 
 
-@elbot.route(command='register')
+@elbot.command(command='register')
 def register(bot, update):
     """A user that wants to access private commands must first register"""
     user = update.message.from_user
@@ -29,7 +29,7 @@ def register(bot, update):
 @handle_empty_arg(required_params=('args',))
 @send_typing_action
 @admin_only
-@elbot.route(command='authorize', pass_args=True)
+@elbot.command(command='authorize', pass_args=True)
 def authorize(bot, update, args):
     if not args:
         update.message.reply_text('Y el user?')
@@ -49,7 +49,7 @@ def authorize(bot, update, args):
 
 @send_typing_action
 @admin_only
-@elbot.route(command='users')
+@elbot.command(command='users')
 def show_users(bot, update):
     users = _get_users()
     total_users = len(users)

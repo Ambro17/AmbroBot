@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='serie', pass_chat_data=True, pass_args=True)
+@elbot.command(command='serie', pass_chat_data=True, pass_args=True)
 def serie(bot, update, chat_data, args):
     if not args:
         bot.send_message(

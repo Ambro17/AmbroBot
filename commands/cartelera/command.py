@@ -8,7 +8,7 @@ from utils.utils import soupify_url
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='cartelera')
+@elbot.command(command='cartelera')
 def cinearg(bot, update):
     """Get top 5 Argentina movies"""
     CINE_URL = 'https://www.cinesargentinos.com.ar/cartelera'

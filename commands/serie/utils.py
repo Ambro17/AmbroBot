@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 from functools import lru_cache
+from json import JSONDecodeError
 from operator import attrgetter
 
 import requests
@@ -47,10 +48,14 @@ def request_eztv_torrents_by_imdb_id(imdb_id, limit=None):
         r = requests.get(
             'https://eztv.ag/api/get-torrents',
             params={'imdb_id': imdb_id, 'limit': limit},
+            verify=False
         )
         torrents = r.json()['torrents']
     except KeyError:
         logger.info("No torrents in eztv api for this serie. Response %s", r.json())
+        return None
+    except JSONDecodeError:
+        logger.info("Error reading json response. '%r'. \nRequest: %r.", r.text, r.url)
         return None
     except Exception:
         logger.exception("Error requesting torrents for %s", imdb_id)

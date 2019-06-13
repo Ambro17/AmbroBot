@@ -9,7 +9,7 @@ from utils.decorators import send_typing_action, log_time
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='hoypido', pass_chat_data=True)
+@elbot.command(command='hoypido', pass_chat_data=True)
 def hoypido(bot, update, chat_data):
     comidas = get_comidas()
     pretty_comidas = prettify_food_offers(comidas)

@@ -12,7 +12,7 @@ from utils.decorators import group_only, log_time, send_typing_action
 @send_typing_action
 @run_async
 @group_only
-@elbot.route(command='meetings')
+@elbot.command(command='meetings')
 def show_meetings(bot, update):
     meetings = get_meetings()
     if meetings:
@@ -36,7 +36,7 @@ def _localize_time(date):
 @send_typing_action
 @run_async
 @group_only
-@elbot.route(command='delete_meeting', pass_args=True)
+@elbot.command(command='delete_meeting', pass_args=True)
 def delete_meeting(bot, update, args):
     if not args:
         update.message.reply_text('Tenés que poner el nombre de la reunión a borrar')

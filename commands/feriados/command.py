@@ -15,7 +15,7 @@ from updater import elbot
 logger = logging.getLogger(__name__)
 
 
-@elbot.route(command='feriados', pass_args=True)
+@elbot.command(command='feriados', pass_args=True)
 def feriadosarg(bot, update, args):
     limit = read_limit_from_args(args)
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
@@ -30,7 +30,7 @@ def feriadosarg(bot, update, args):
     update.message.reply_text(msg, parse_mode='markdown')
 
 
-@elbot.route(command='feriado')
+@elbot.command(command='feriado')
 def next_feriado(bot, update):
     today = datetime.now(tz=timezone(timedelta(hours=-3)))
     following_feriados = _get_next_feriados(today)

@@ -53,6 +53,7 @@ def serie_callback_handler(bot, update, chat_data):
     answer = update.callback_query.data
     if answer == LATEST_EPISODES:
         # Get latest episodes from eztv api
+        logger.info("User chose latest episodes")
         update.callback_query.answer(text='Getting latest episodes.. Please be patient')
         imdb_id = context['data']['imdb_id']
         context['data']['torrents'] = torrents = request_eztv_torrents_by_imdb_id(imdb_id)

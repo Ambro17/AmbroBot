@@ -1,7 +1,7 @@
 from updater import elbot
 
 
-@elbot.route(command='start')
+@elbot.command(command='start')
 def start(bot, update):
     message = (
         "🇦🇷 Hi, i'm Cuervot! \n"

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @send_typing_action
 @run_async
 @group_only
-@elbot.route(command='retro', pass_args=True)
+@elbot.command(command='retro', pass_args=True)
 def retro_add(bot, update, args):
     if not args:
         update.message.reply_text(
@@ -48,7 +48,7 @@ def save_retro_item(retro_item, user, date_time):
 @send_typing_action
 @run_async
 @group_only
-@elbot.route(command='retroitems')
+@elbot.command(command='retroitems')
 def show_retro_items(bot, update):
     items = get_retro_items()
     if items:
@@ -77,7 +77,7 @@ def _localize_time(date):
 
 @log_time
 @admin_only
-@elbot.route(command='retroitems')
+@elbot.command(command='retroitems')
 def expire_retro(bot, update):
     session = Session()
     for item in session.query(RetroItem):

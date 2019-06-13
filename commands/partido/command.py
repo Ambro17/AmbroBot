@@ -9,7 +9,7 @@ from utils.utils import soupify_url
 @log_time
 @send_typing_action
 @run_async
-@elbot.route(command='partido')
+@elbot.command(command='partido')
 def partido(bot, update):
     try:
         soup = soupify_url('https://mundoazulgrana.com.ar/sanlorenzo/')

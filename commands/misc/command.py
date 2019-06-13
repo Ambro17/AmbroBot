@@ -1,12 +1,11 @@
 import os
-import random
 import re
 
-from telegram.ext import run_async, RegexHandler, MessageHandler, Filters, CommandHandler
+from telegram.ext import run_async, Filters
 
 from updater import elbot
 from utils.utils import monospace
-from utils.constants import COMANDO_DESCONOCIDO, TICKET_REGEX, CODE_PREFIX
+from utils.constants import TICKET_REGEX, CODE_PREFIX
 from utils.decorators import send_typing_action, log_time
 
 
@@ -38,7 +37,7 @@ def link_ticket(bot, update):
 
 @send_typing_action
 @run_async
-@elbot.route(command='code')
+@elbot.command(command='code')
 def code(bot, update):
     """If a user sends an unknown command, answer accordingly"""
     REPO = 'https://github.com/Ambro17/AmbroBot'
