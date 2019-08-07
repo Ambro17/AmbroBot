@@ -76,7 +76,7 @@ def send_service_normalization_updates(bot, context, status_updates):
     # Solved issues were part of the context, but are not part of the status_updates, because they were solved.
     msg_count = 0
     solved_issues = {line: st for line, st in context.items() if line not in status_updates}
-    logger.info('Solved issues:\n%s', solved_issues)
+    logger.info('Solved incidents:\n%s', solved_issues)
     for line, previous_status in solved_issues.items():
         for suscription in get_suscriptors_by_line(line):
             logger.info(f'Send OK status about {line} to {suscription.user_name}')

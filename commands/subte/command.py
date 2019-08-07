@@ -1,6 +1,6 @@
 import logging
 
-from telegram.ext import run_async, CommandHandler
+from telegram.ext import run_async
 
 from commands.subte.constants import SUBTE_UPDATES_CRON, SUBWAY_STATUS_OK
 from commands.subte.updates.alerts import check_update
@@ -8,6 +8,7 @@ from commands.subte.updates.utils import prettify_updates
 from updater import elbot
 from utils.constants import MINUTE
 from utils.decorators import send_typing_action, log_time, admin_only, handle_empty_arg
+from utils.utils import send_message_to_admin
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +21,18 @@ def subte(bot, update):
     """Estado de las lineas de subte, premetro y urquiza."""
     NO_PROBLEMS = {}
     try:
-        updates = check_update()
+        updates, success = check_update()
+    except ConnectionError as e:
+        send_message_to_admin(f'User /subte failed. Known error. {repr(e)}')
+        return
     except Exception:
         msg = 'Error checking updates. You can check status here https://www.metrovias.com.ar/'
         update.message.reply_text(msg)
         return
 
-    if updates is None:
-        msg = 'API did not respond with status 200,\n. You can check subte status here https://www.metrovias.com.ar/'
+    if not success:
+        logger.error(f'ERROR in subte request {updates.get("error")}')
+        msg = 'API did not respond with status 200,\n.You can check subte status here https://www.metrovias.com.ar/'
     elif updates == NO_PROBLEMS:
         msg = SUBWAY_STATUS_OK
     else:

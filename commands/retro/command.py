@@ -75,7 +75,7 @@ def _localize_time(date):
     return date.strftime('%A %d/%m %H:%M').capitalize()
 
 
-@elbot.command(command='retroitems')
+@elbot.command(command='endretro')
 @log_time
 @admin_only
 def expire_retro(bot, update):

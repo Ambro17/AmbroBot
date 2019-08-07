@@ -1,5 +1,7 @@
 import logging
 import os
+from time import sleep
+from typing import Optional
 
 import requests
 
@@ -17,14 +19,18 @@ logger = logging.getLogger(__name__)
 
 def subte_updates_cron(bot, job):
     try:
-        status_updates = check_update()
-    except Exception:
-        logger.exception('An unexpected error ocurred when fetching updates.')
-        send_message_to_admin(bot, 'An unexpected error ocurred when requesting subte updates. Please see the logs.')
+        status_updates, success = check_update()
+    except ConnectionError as e:
+        send_message_to_admin(f'Known error. {repr(e)} `/setsubfreq`')
         return
-    if status_updates is None:
-        logger.error("The api did not respond with status ok.")
-        send_message_to_admin(bot, 'Metrovias api did not respond with status 200. Check it please')
+    except Exception as e:
+        logger.exception('An unexpected error ocurred when fetching updates.')
+        send_message_to_admin(bot, f'Error fetching updates. Exception: {repr(e)}. `/setsubfreq`')
+        return
+    if not success:
+        error = status_updates['error']
+        logger.error(f"The api did not respond with status ok. error: {error}")
+        send_message_to_admin(bot, f'Metrovias api did not respond with status 200. {status_updates["error"]}')
         return
 
     context = job.context
@@ -53,7 +59,7 @@ def subte_updates_cron(bot, job):
         logger.info("Subte status has not changed. Not posting new reply.")
 
 
-def check_update():
+def check_update() -> (Optional[dict], bool):
     """Returns status incidents per line.
 
     None if response code is not 200
@@ -61,11 +67,16 @@ def check_update():
     dict with linea as keys and incident details as values.
 
     Returns:
-        dict|None: mapping of line incidents
+        tuple:
+            dict, success
+
+        dict: mapping of line incidents
         {
           'A': 'rota',
           'E': 'demorada',
         }
+
+        success (bool): True if request was successfull
     """
     params = {
         'client_id': os.environ['CABA_CLI_ID'],
@@ -73,18 +84,29 @@ def check_update():
         'json': 1,
     }
     url = 'https://apitransporte.buenosaires.gob.ar/subtes/serviceAlerts'
-    r = requests.get(url, params=params)
+
+    msg = 'X'
+    for i in range(3):
+        try:
+            r = requests.get(url, params=params, timeout=10)
+            break
+        except requests.exceptions.ConnectionError as e:
+            msg = repr(e)
+            logger.debug(f'Retrying request. Previous exception was {repr(e)}')
+            sleep(1)
+    else:
+        raise ConnectionError(f'Retried 3 times and failed to reach {url}. Params: {params}. Exc: {msg}')
 
     if r.status_code != 200:
         logger.info('Response failed. %s, %s' % (r.status_code, r.reason))
-        return None
+        return {'error': f'Response failed. {r.status_code} -  {r.reason} - {r.text}'}, False
 
     data = r.json()
 
     alerts = data['entity']
     logger.info('Alerts: %s', alerts)
 
-    return dict(get_update_info(alert['alert']) for alert in alerts)
+    return dict(get_update_info(alert['alert']) for alert in alerts), True
 
 
 def notify_suscribers(bot, status_updates, context):
