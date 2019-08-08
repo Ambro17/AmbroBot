@@ -132,6 +132,9 @@ Given a youtube url, download its audio in the best quality available. Useful if
 Give feedback for the bot. Bugs, feature requests, questions, ideas, nuclear secrets, conspiracy theories, or whatever you feel worth sharing with the dev.
 
 
+## Extra for the curious
+Feedback was received from diffferent users that use AmbroBot source code to create nice keyboard layouts/more complex callback interactions. As a consecuence, i decided to leave master branch as is with no further changes as it uses the ptb api 'the right way'. Nevertheless, on style-improvements branch you can peek on a custom decorator that automagically adds handlers just by decorating handler functions avoiding boilerplate code. It's really handy!
+
 ## Credits
 
 Feel free to modify this code to suit your needs. If you get inspired by this bot please reference this repo as source of inspiration.  ⭐️ Stars, 🐞 issues and 🔀 PRs are appreciated!
