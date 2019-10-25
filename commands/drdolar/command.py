@@ -51,8 +51,8 @@ def read_args(args):
     bank_url = 'https://drdolar.com/cotizaciones/bancos'
     online_url = 'https://drdolar.com/cotizaciones/agencias-online'
 
-    match = re.search(r'-n (\d+)', args)
-    limit = max(int(match.group(1)), 3) if match else 10
+    match = re.search(r'(\d+)', args)
+    limit = max(int(match.group(1)), 1) if match else 10
     if '-b' in args or '--banks' in args:
         url = bank_url
     elif '-o' in args or '--online' in args:
@@ -61,7 +61,7 @@ def read_args(args):
         url = bank_url
         limit = None
     elif '--oall' in args or '—oall' in args:
-        url = bank_url
+        url = online_url
         limit = None
     if '--all' in args or '—all' in args:
         limit = None
