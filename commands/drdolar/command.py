@@ -90,7 +90,7 @@ def _cotizacion_from_bank(bank):
 
 
 def format_rates(cotizaciones, limit=10):
-    sorted_cots = sorted(cotizaciones, key=attrgetter('buy'))
+    sorted_cots = sorted(cotizaciones, key=attrgetter('sell'))
     return monospace(
         '\n'.join(
             f'{cot.seller:<17} | {cot.buy} | {cot.sell}'
