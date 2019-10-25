@@ -1,12 +1,16 @@
+import logging
 import re
+import traceback
 from collections import namedtuple
-from operator import attrgetter
 
 from telegram.ext import run_async
 
 from updater import elbot
 from utils.decorators import send_typing_action
 from utils.utils import soupify_url, monospace, send_message_to_admin
+
+logger = logging.getLogger(__name__)
+
 
 Cotizacion = namedtuple('Cotizacion', 'seller, buy, sell, updated_on')
 price_pattern = re.compile(r'(.*)[+\-=]')
@@ -35,13 +39,17 @@ def dr_dolar(bot, update):
             return
         url, limit = read_args(args)
 
-    soup = soupify_url(f'{url}?sort=buy')
+    soup = soupify_url(f'{url}?sort=sell')
     try:
         rates = parse_webpage(soup)
         message = format_rates(rates, limit)
     except Exception as e:
-        send_message_to_admin(bot, f'dr dolar failed {e!r}.\n```{e.__traceback__}```')
-        message = "Sorry, i couldn't get the requested info. Error logs have been automatically sent to the admin."
+        logger.exception('Error parsing dollar rates')
+        send_message_to_admin(bot,
+                              f'dr dolar failed `{e!r}`.\n```\n{traceback.format_exc()}```',
+                              parse_mode='markdown')
+        message = ("Sorry, i couldn't get the requested info. "
+                   "Error logs have been automatically sent to the admin.")
 
     update.message.reply_markdown(message, quote=False)
 
@@ -90,10 +98,11 @@ def _cotizacion_from_bank(bank):
 
 
 def format_rates(cotizaciones, limit=10):
-    sorted_cots = sorted(cotizaciones, key=attrgetter('sell'))
+    data = [f'{cot.seller:<17} | {cot.buy}  | {cot.sell}'
+            for cot in cotizaciones[:limit]]
+    header = ['{0:^17} | Vendo a | Compro a'.format('Entidad')]
     return monospace(
         '\n'.join(
-            f'{cot.seller:<17} | {cot.buy} | {cot.sell}'
-            for cot in sorted_cots[:limit]
+            header + data
         )
     )
