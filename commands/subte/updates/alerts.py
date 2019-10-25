@@ -88,7 +88,7 @@ def check_update() -> (Optional[dict], bool):
     msg = 'X'
     for i in range(3):
         try:
-            r = requests.get(url, params=params, timeout=10)
+            r = requests.get(url, params=params, timeout=30)
             break
         except requests.exceptions.ConnectionError as e:
             msg = repr(e)
