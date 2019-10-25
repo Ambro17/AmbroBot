@@ -43,7 +43,7 @@ def dr_dolar(bot, update):
         send_message_to_admin(bot, f'dr dolar failed {e!r}.\n```{e.__traceback__}```')
         message = "Sorry, i couldn't get the requested info. Error logs have been automatically sent to the admin."
 
-    update.message.reply_markdown(message)
+    update.message.reply_markdown(message, quote=False)
 
 
 def read_args(args):
