@@ -3,12 +3,10 @@ import os
 import signal
 import random
 
-from requests import ReadTimeout
-from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut
-
 import requests
 from bs4 import BeautifulSoup
-from telegram.ext import run_async, CommandHandler, MessageHandler, Filters
+from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut
+from telegram.ext import MessageHandler, Filters
 
 from utils.constants import COMANDO_DESCONOCIDO
 from utils.decorators import send_typing_action
@@ -21,7 +19,7 @@ def monospace(text):
     return f'```\n{text}\n```'
 
 
-def normalize(text, limit=11, trim_end='.'):
+def trim(text, limit=11, trim_end='.'):
     """Trim and append . if text is too long. Else return it unmodified"""
     return f'{text[:limit]}{trim_end}' if len(text) > limit else text
 
@@ -30,13 +28,12 @@ def soupify_url(url, timeout=2, encoding='utf-8', **kwargs):
     """Given a url returns a BeautifulSoup object"""
     try:
         r = requests.get(url, timeout=timeout, **kwargs)
-    except ReadTimeout:
+    except requests.ReadTimeout:
         logger.info("[soupify_url] Request for %s timed out.", url)
         raise
     except Exception as e:
         logger.error(f"Request for {url} could not be resolved", exc_info=True)
         raise ConnectionError(repr(e))
-
 
     r.raise_for_status()
     r.encoding = encoding

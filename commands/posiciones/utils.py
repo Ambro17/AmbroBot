@@ -1,6 +1,6 @@
 import logging
 
-from utils.utils import normalize, monospace
+from utils.utils import trim, monospace
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ def parse_posiciones(tabla, posiciones=None):
     headers = [th.text for th in tabla.thead.find_all('th')[:LIMIT]]
     a = []
     for row in tabla.tbody.find_all('tr')[:posiciones]:
-        b = [normalize(r.text) for r in row.find_all('td')[:LIMIT]]
+        b = [trim(r.text) for r in row.find_all('td')[:LIMIT]]
         a.append(b)
     a.insert(0, headers)
     return a

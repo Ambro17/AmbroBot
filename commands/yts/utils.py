@@ -5,7 +5,7 @@ from telegram import InputMediaPhoto
 from telegram.error import TimedOut
 
 from commands.serie.utils import rating_stars
-from utils.utils import normalize
+from utils.utils import trim
 
 Torrent = namedtuple('Torrent', ['url', 'size', 'seeds', 'quality'])
 
@@ -18,7 +18,7 @@ def get_minimal_movie(movie, trim_description=True):
     imdb = movie['imdb_code']
     yt_trailer = movie['yt_trailer_code']
     if trim_description:
-        synopsis = normalize(movie['synopsis'], limit=150, trim_end='..')
+        synopsis = trim(movie['synopsis'], limit=150, trim_end='..')
     else:
         synopsis = movie['synopsis']
 

@@ -1,7 +1,7 @@
 import unicodedata
 from collections import defaultdict
 
-from utils.utils import monospace, normalize
+from utils.utils import monospace, trim
 
 
 def get_cotizaciones(response_soup):
@@ -52,7 +52,7 @@ def pretty_print_dolar(cotizaciones, limit=7):
     return monospace(
         '\n'.join(
             "{:8} | {:7} | {:7}".format(
-                normalize(banco, limit), valor['compra'], valor['venta']
+                trim(banco, limit), valor['compra'], valor['venta']
             )
             for banco, valor in cotizaciones.items()
         )
