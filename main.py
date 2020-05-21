@@ -27,11 +27,11 @@ def main():
     updater = Updater(os.environ['PYTEL'], user_sig_handler=signal_handler)
     dp = updater.dispatcher
     cron_tasks = updater.job_queue
-    cron_tasks.run_repeating(subte_updates_cron,
-                             interval=5 * MINUTE,
-                             first=50 * MINUTE,
-                             context={},
-                             name=SUBTE_UPDATES_CRON)
+    # cron_tasks.run_repeating(subte_updates_cron,
+    #                          interval=5 * MINUTE,
+    #                          first=50 * MINUTE,
+    #                          context={},
+    #                          name=SUBTE_UPDATES_CRON)
 
     def import_commands():
         """Load all decorated callbacks from commands subdirectory"""
