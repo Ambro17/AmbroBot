@@ -44,7 +44,6 @@ def set_all_members(bot, update, **kwargs):
     user_entities = update.message.parse_entities(
         [MessageEntity.MENTION, MessageEntity.TEXT_MENTION]
     )
-    import pdb; pdb.set_trace()
     updated = update_all_users(user_entities)
     if updated:
         bot.send_message(
