@@ -1,7 +1,7 @@
 requests
 beautifulsoup4
 lxml
-python-telegram-bot
+python-telegram-bot==11
 psycopg2-binary
 sqlalchemy
 subliminal
