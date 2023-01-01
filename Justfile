@@ -15,3 +15,9 @@ lockdeps:
 
 deploy:
     git push dokku master:master
+
+envs:
+    ssh dokku@157.230.228.39 config:show cuervot
+
+ssh:
+    ssh root@157.230.228.39
