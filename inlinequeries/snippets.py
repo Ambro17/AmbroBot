@@ -3,7 +3,7 @@
 import time
 from functools import partial
 
-from Levenshtein._levenshtein import jaro_winkler
+from Levenshtein import jaro_winkler
 
 from telegram import (
     InlineQueryResultArticle,
