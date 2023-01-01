@@ -3,9 +3,10 @@ from datetime import timedelta
 from telegram.ext import run_async, CommandHandler
 
 from commands.meeting.db_operations import get_meetings, delete_meeting_db
-from commands.remindme.constants import GMT_BUENOS_AIRES
 from utils.decorators import group_only, log_time, send_typing_action
 
+
+GMT_BUENOS_AIRES = -3
 
 @log_time
 @send_typing_action

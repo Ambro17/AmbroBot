@@ -21,7 +21,6 @@ from commands.pelicula.callback import peliculas_callback
 from commands.pelicula.command import pelis, pelis_alt
 from commands.posiciones.command import posiciones_handler
 from commands.register.command import register_user, show_users_handler, authorize_handler
-from commands.remindme.command import remind_me_handler, reminders_callback_handler
 from commands.serie.callbacks import serie_callback
 from commands.serie.command import serie_handler
 from commands.snippets.command import save_snippet_handler, get_snippet_handler, snippet_get_command, \
@@ -34,7 +33,6 @@ from commands.yts.command import yts_handler
 from commands.aproximacion.conversation_handler import msup_conversation
 from commands.feedback.command import feedback_receiver
 from commands.meeting.conversation_handler import meeting_conversation
-from commands.remindme.persistence.job_loader import load_reminders
 from commands.retro.handler import add_retro_item, show_retro_details, expire_retro_command
 from commands.start.command import start
 from commands.subte.constants import SUBTE_UPDATES_CRON
@@ -65,9 +63,6 @@ def main():
                              context={},
                              name=SUBTE_UPDATES_CRON)
 
-    # Load reminders that were lost on bot restart (job_queue is not persistent)
-    loaded_reminders = load_reminders(updater.bot, cron_tasks)
-    logger.info(f"Recovered {loaded_reminders} reminders")
 
     #  Associate commands with action.
     dispatcher.add_handler(feedback_receiver)
@@ -105,7 +100,6 @@ def main():
     dispatcher.add_handler(snippet_get_command)
     dispatcher.add_handler(show_snippets_handler)
     dispatcher.add_handler(delete_snippet_handler)
-    dispatcher.add_handler(remind_me_handler)
     dispatcher.add_handler(tag_all)
     dispatcher.add_handler(show_meetings_handler)
     dispatcher.add_handler(delete_meeting_handler)
@@ -117,7 +111,6 @@ def main():
     # Add callback handlers
     dispatcher.add_handler(serie_callback)
     dispatcher.add_handler(yts_callback_handler)
-    dispatcher.add_handler(reminders_callback_handler)
     dispatcher.add_handler(peliculas_callback)
 
     # Add Conversation handler

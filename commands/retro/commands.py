@@ -3,12 +3,13 @@ from datetime import datetime as d, timezone, timedelta
 
 from telegram.ext import run_async
 
-from commands.remindme.constants import GMT_BUENOS_AIRES
 from commands.retro.models import RetroItem, Session
 from utils.decorators import send_typing_action, log_time, group_only, admin_only
 
 logger = logging.getLogger(__name__)
 
+
+GMT_BUENOS_AIRES = -3
 
 @log_time
 @send_typing_action
