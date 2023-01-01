@@ -16,6 +16,12 @@ lockdeps:
 deploy:
     git push dokku master:master
 
+logs:
+    ssh dokku@157.230.228.39 logs cuervot --tail
+
+logsdeploy:
+    ssh dokku@157.230.228.39 logs:failed cuervot
+
 envs:
     ssh dokku@157.230.228.39 config:show cuervot
 
