@@ -24,3 +24,6 @@ class SubteSuscription(Base):
             self.name,
             self.linea,
         )
+
+
+Base.metadata.create_all(bind=engine)

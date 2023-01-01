@@ -25,3 +25,6 @@ class Meeting(Base):
             self.datetime,
             self.expired,
         )
+
+
+Base.metadata.create_all(bind=engine)
